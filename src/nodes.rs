@@ -30,7 +30,9 @@ pub enum OpCode {
     Power(Power),
     Clamp(Clamp),
     Lerp(Lerp),
+    LerpClamped(LerpClamped),
     Unlerp(Unlerp),
+    UnlerpClamped(UnlerpClamped),
 
     // Logical
     Equal(Equal),

@@ -25,6 +25,68 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         self.builder.ins().fsub(a, mul)
     }
 
+    fn build_clamp(&mut self, min: Value, max: Value, value: Value) -> Value {
+        let block_result = self.builder.create_block();
+        let final_result = self.builder.append_block_param(block_result, types::F32);
+
+        let block_min = self.builder.create_block();
+        let block_max = self.builder.create_block();
+        let block_value = self.builder.create_block();
+
+        let lt_min = self.builder.ins().fcmp(FloatCC::LessThan, value, min);
+        self.builder
+            .ins()
+            .brif(lt_min, block_min, &[], block_max, &[]);
+
+        self.builder.switch_to_block(block_min);
+        self.builder
+            .ins()
+            .jump(block_result, &[BlockArg::Value(min)]);
+
+        self.builder.switch_to_block(block_max);
+        let gt_max = self.builder.ins().fcmp(FloatCC::GreaterThan, value, max);
+        self.builder.ins().brif(
+            gt_max,
+            block_result,
+            &[BlockArg::Value(max)],
+            block_value,
+            &[],
+        );
+
+        self.builder.switch_to_block(block_value);
+        self.builder
+            .ins()
+            .jump(block_result, &[BlockArg::Value(value)]);
+
+        self.builder.switch_to_block(block_result);
+
+        self.builder.seal_block(block_result);
+        self.builder.seal_block(block_min);
+        self.builder.seal_block(block_max);
+        self.builder.seal_block(block_value);
+
+        final_result
+    }
+
+    fn build_lerp(&mut self, min: Value, max: Value, value: Value) -> Value {
+        let one = self.builder.ins().f32const(1.0);
+        let one_minus_value = self.builder.ins().fsub(one, value);
+
+        let min_mul_one_minus_value = self.builder.ins().fmul(min, one_minus_value);
+        let max_mul_value = self.builder.ins().fmul(max, value);
+
+        self.builder
+            .ins()
+            .fadd(min_mul_one_minus_value, max_mul_value)
+    }
+
+    fn build_unlerp(&mut self, min: Value, max: Value, value: Value) -> Value {
+        let value_minus_min = self.builder.ins().fsub(value, min);
+        let max_minus_min = self.builder.ins().fsub(max, min);
+
+        self.builder.ins().fdiv(value_minus_min, max_minus_min)
+    }
+
     pub(crate) fn build_abs_ir(&mut self, node: &Abs) -> Value {
         let value = self.build_node_ir(node.value);
         self.builder.ins().fabs(value)
@@ -151,46 +213,7 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         let max = self.build_node_ir(node.max);
         let value = self.build_node_ir(node.value);
 
-        let block_result = self.builder.create_block();
-        let final_result = self.builder.append_block_param(block_result, types::F32);
-
-        let block_min = self.builder.create_block();
-        let block_max = self.builder.create_block();
-        let block_value = self.builder.create_block();
-
-        let lt_min = self.builder.ins().fcmp(FloatCC::LessThan, value, min);
-        self.builder
-            .ins()
-            .brif(lt_min, block_min, &[], block_max, &[]);
-
-        self.builder.switch_to_block(block_min);
-        self.builder
-            .ins()
-            .jump(block_result, &[BlockArg::Value(min)]);
-
-        self.builder.switch_to_block(block_max);
-        let gt_max = self.builder.ins().fcmp(FloatCC::GreaterThan, value, max);
-        self.builder.ins().brif(
-            gt_max,
-            block_result,
-            &[BlockArg::Value(max)],
-            block_value,
-            &[],
-        );
-
-        self.builder.switch_to_block(block_value);
-        self.builder
-            .ins()
-            .jump(block_result, &[BlockArg::Value(value)]);
-
-        self.builder.switch_to_block(block_result);
-
-        self.builder.seal_block(block_result);
-        self.builder.seal_block(block_min);
-        self.builder.seal_block(block_max);
-        self.builder.seal_block(block_value);
-
-        final_result
+        self.build_clamp(min, max, value)
     }
 
     pub(crate) fn build_lerp_ir(&mut self, node: &Lerp) -> Value {
@@ -198,15 +221,20 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         let max = self.build_node_ir(node.max);
         let value = self.build_node_ir(node.value);
 
+        self.build_lerp(min, max, value)
+    }
+
+    pub(crate) fn build_lerp_clamped_ir(&mut self, node: &LerpClamped) -> Value {
+        let zero = self.builder.ins().f32const(0.0);
         let one = self.builder.ins().f32const(1.0);
-        let one_minus_value = self.builder.ins().fsub(one, value);
+        let value = self.build_node_ir(node.value);
 
-        let min_mul_one_minus_value = self.builder.ins().fmul(min, one_minus_value);
-        let max_mul_value = self.builder.ins().fmul(max, value);
+        let clamped = self.build_clamp(zero, one, value);
 
-        self.builder
-            .ins()
-            .fadd(min_mul_one_minus_value, max_mul_value)
+        let min = self.build_node_ir(node.min);
+        let max = self.build_node_ir(node.max);
+
+        self.build_lerp(min, max, clamped)
     }
 
     pub(crate) fn build_unlerp_ir(&mut self, node: &Unlerp) -> Value {
@@ -214,10 +242,48 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         let max = self.build_node_ir(node.max);
         let value = self.build_node_ir(node.value);
 
-        let value_minus_min = self.builder.ins().fsub(value, min);
-        let max_minus_min = self.builder.ins().fsub(max, min);
+        self.build_unlerp(min, max, value)
+    }
 
-        self.builder.ins().fdiv(value_minus_min, max_minus_min)
+    pub(crate) fn build_unlerp_clamped_ir(&mut self, node: &UnlerpClamped) -> Value {
+        let block_return_zero = self.builder.create_block();
+        let block_return_unlerp_clamped = self.builder.create_block();
+        let block_join = self.builder.create_block();
+        let block_join_param = self.builder.append_block_param(block_join, types::F32);
+
+        let zero = self.builder.ins().f32const(0.0);
+        let one = self.builder.ins().f32const(1.0);
+
+        let min = self.build_node_ir(node.min);
+        let max = self.build_node_ir(node.max);
+        let value = self.build_node_ir(node.value);
+
+        let min_eq_max = self.builder.ins().fcmp(FloatCC::Equal, min, max);
+        self.builder.ins().brif(
+            min_eq_max,
+            block_return_zero,
+            [],
+            block_return_unlerp_clamped,
+            [],
+        );
+
+        self.builder.switch_to_block(block_return_zero);
+        self.builder
+            .ins()
+            .jump(block_join, &[BlockArg::Value(zero)]);
+
+        self.builder.switch_to_block(block_return_unlerp_clamped);
+        let lerped = self.build_unlerp(min, max, value);
+        let clamped = self.build_clamp(zero, one, lerped);
+        self.builder
+            .ins()
+            .jump(block_join, &[BlockArg::Value(clamped)]);
+
+        self.builder.switch_to_block(block_join);
+        self.builder.seal_block(block_join);
+        self.builder.seal_block(block_return_unlerp_clamped);
+        self.builder.seal_block(block_return_zero);
+        block_join_param
     }
 }
 
@@ -696,6 +762,106 @@ mod tests {
     }
 
     #[test]
+    fn test_lerp_clamped_below_zero() {
+        let nodes = vec![
+            ResolvedNode::Value(100.0), // 0 = min
+            ResolvedNode::Value(200.0), // 1 = max
+            ResolvedNode::Value(-1.0),  // 2 = value (t < 0)
+            ResolvedNode::OpCode(OpCode::LerpClamped(LerpClamped {
+                min: 0,
+                max: 1,
+                value: 2,
+            })), // 3
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 3);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 100.0); // clamped to 0.0 → lerp(min, max, 0.0) = min
+    }
+
+    #[test]
+    fn test_lerp_clamped_above_one() {
+        let nodes = vec![
+            ResolvedNode::Value(100.0), // 0 = min
+            ResolvedNode::Value(200.0), // 1 = max
+            ResolvedNode::Value(2.0),   // 2 = value (t > 1)
+            ResolvedNode::OpCode(OpCode::LerpClamped(LerpClamped {
+                min: 0,
+                max: 1,
+                value: 2,
+            })), // 3
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 3);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 200.0); // clamped to 1.0 → lerp(min, max, 1.0) = max
+    }
+
+    #[test]
+    fn test_lerp_clamped_midpoint() {
+        let nodes = vec![
+            ResolvedNode::Value(100.0), // 0 = min
+            ResolvedNode::Value(200.0), // 1 = max
+            ResolvedNode::Value(0.5),   // 2 = value (t = 0.5)
+            ResolvedNode::OpCode(OpCode::LerpClamped(LerpClamped {
+                min: 0,
+                max: 1,
+                value: 2,
+            })), // 3
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 3);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 150.0); // lerp(min, max, 0.5)
+    }
+
+    #[test]
+    fn test_lerp_clamped_exact_zero() {
+        let nodes = vec![
+            ResolvedNode::Value(10.0), // 0 = min
+            ResolvedNode::Value(20.0), // 1 = max
+            ResolvedNode::Value(0.0),  // 2 = value
+            ResolvedNode::OpCode(OpCode::LerpClamped(LerpClamped {
+                min: 0,
+                max: 1,
+                value: 2,
+            })), // 3
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 3);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 10.0); // no clamping needed
+    }
+
+    #[test]
+    fn test_lerp_clamped_exact_one() {
+        let nodes = vec![
+            ResolvedNode::Value(10.0), // 0 = min
+            ResolvedNode::Value(20.0), // 1 = max
+            ResolvedNode::Value(1.0),  // 2 = value
+            ResolvedNode::OpCode(OpCode::LerpClamped(LerpClamped {
+                min: 0,
+                max: 1,
+                value: 2,
+            })), // 3
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 3);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 20.0); // no clamping needed
+    }
+
+    #[test]
     fn test_unlerp_zero() {
         let nodes = vec![
             ResolvedNode::Value(10.0), // 0 = min
@@ -793,5 +959,85 @@ mod tests {
         let func = build_and_return_function(&nodes, 3);
         let result = func(&mut runtime_context as _);
         assert_eq!(result, 2.0);
+    }
+
+    #[test]
+    fn test_unlerp_clamped_within_range() {
+        let nodes = vec![
+            ResolvedNode::Value(0.0),  // 0 = min
+            ResolvedNode::Value(10.0), // 1 = max
+            ResolvedNode::Value(5.0),  // 2 = value
+            ResolvedNode::OpCode(OpCode::UnlerpClamped(UnlerpClamped {
+                min: 0,
+                max: 1,
+                value: 2,
+            })), // 3
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 3);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 0.5);
+    }
+
+    #[test]
+    fn test_unlerp_clamped_below_min() {
+        let nodes = vec![
+            ResolvedNode::Value(0.0),  // 0 = min
+            ResolvedNode::Value(10.0), // 1 = max
+            ResolvedNode::Value(-5.0), // 2 = value
+            ResolvedNode::OpCode(OpCode::UnlerpClamped(UnlerpClamped {
+                min: 0,
+                max: 1,
+                value: 2,
+            })), // 3
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 3);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 0.0);
+    }
+
+    #[test]
+    fn test_unlerp_clamped_above_max() {
+        let nodes = vec![
+            ResolvedNode::Value(0.0),  // 0 = min
+            ResolvedNode::Value(10.0), // 1 = max
+            ResolvedNode::Value(15.0), // 2 = value
+            ResolvedNode::OpCode(OpCode::UnlerpClamped(UnlerpClamped {
+                min: 0,
+                max: 1,
+                value: 2,
+            })), // 3
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 3);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 1.0);
+    }
+
+    #[test]
+    fn test_unlerp_clamped_min_equals_max() {
+        let nodes = vec![
+            ResolvedNode::Value(10.0), // 0 = min
+            ResolvedNode::Value(10.0), // 1 = max
+            ResolvedNode::Value(15.0), // 2 = value (irrelevant)
+            ResolvedNode::OpCode(OpCode::UnlerpClamped(UnlerpClamped {
+                min: 0,
+                max: 1,
+                value: 2,
+            })), // 3
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 3);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 0.0);
     }
 }
