@@ -192,6 +192,22 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
 
         final_result
     }
+
+    pub(crate) fn build_lerp_ir(&mut self, node: &Lerp) -> Value {
+        let min = self.build_node_ir(node.min);
+        let max = self.build_node_ir(node.max);
+        let value = self.build_node_ir(node.value);
+
+        let one = self.builder.ins().f32const(1.0);
+        let one_minus_value = self.builder.ins().fsub(one, value);
+
+        let min_mul_one_minus_value = self.builder.ins().fmul(min, one_minus_value);
+        let max_mul_value = self.builder.ins().fmul(max, value);
+
+        self.builder
+            .ins()
+            .fadd(min_mul_one_minus_value, max_mul_value)
+    }
 }
 
 #[cfg(test)]
@@ -586,5 +602,85 @@ mod tests {
         let func = build_and_return_function(&nodes, 3);
         let result = func(&mut runtime_context as _);
         assert_eq!(result, 5.0);
+    }
+
+    #[test]
+    fn test_lerp_zero() {
+        let nodes = vec![
+            ResolvedNode::Value(10.0), // 0 = min
+            ResolvedNode::Value(20.0), // 1 = max
+            ResolvedNode::Value(0.0),  // 2 = value
+            ResolvedNode::OpCode(OpCode::Lerp(Lerp {
+                min: 0,
+                max: 1,
+                value: 2,
+            })), // 3
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 3);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 10.0);
+    }
+
+    #[test]
+    fn test_lerp_one() {
+        let nodes = vec![
+            ResolvedNode::Value(10.0), // 0 = min
+            ResolvedNode::Value(20.0), // 1 = max
+            ResolvedNode::Value(1.0),  // 2 = value
+            ResolvedNode::OpCode(OpCode::Lerp(Lerp {
+                min: 0,
+                max: 1,
+                value: 2,
+            })), // 3
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 3);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 20.0);
+    }
+
+    #[test]
+    fn test_lerp_half() {
+        let nodes = vec![
+            ResolvedNode::Value(10.0), // 0 = min
+            ResolvedNode::Value(20.0), // 1 = max
+            ResolvedNode::Value(0.5),  // 2 = value
+            ResolvedNode::OpCode(OpCode::Lerp(Lerp {
+                min: 0,
+                max: 1,
+                value: 2,
+            })), // 3
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 3);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 15.0);
+    }
+
+    #[test]
+    fn test_lerp_past_one() {
+        let nodes = vec![
+            ResolvedNode::Value(10.0), // 0 = min
+            ResolvedNode::Value(20.0), // 1 = max
+            ResolvedNode::Value(1.5),  // 2 = value
+            ResolvedNode::OpCode(OpCode::Lerp(Lerp {
+                min: 0,
+                max: 1,
+                value: 2,
+            })), // 3
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 3);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 25.0);
     }
 }

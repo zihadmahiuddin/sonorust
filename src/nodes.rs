@@ -29,6 +29,7 @@ pub enum OpCode {
     Rem(Rem),
     Power(Power),
     Clamp(Clamp),
+    Lerp(Lerp),
 
     // Logical
     Equal(Equal),
