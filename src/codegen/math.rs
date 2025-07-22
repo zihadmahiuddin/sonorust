@@ -87,6 +87,43 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         self.builder.ins().fdiv(value_minus_min, max_minus_min)
     }
 
+    fn build_unlerp_clamped(&mut self, min: Value, max: Value, value: Value) -> Value {
+        let block_return_zero = self.builder.create_block();
+        let block_return_unlerp_clamped = self.builder.create_block();
+        let block_join = self.builder.create_block();
+        let block_join_param = self.builder.append_block_param(block_join, types::F32);
+
+        let zero = self.builder.ins().f32const(0.0);
+        let one = self.builder.ins().f32const(1.0);
+
+        let min_eq_max = self.builder.ins().fcmp(FloatCC::Equal, min, max);
+        self.builder.ins().brif(
+            min_eq_max,
+            block_return_zero,
+            [],
+            block_return_unlerp_clamped,
+            [],
+        );
+
+        self.builder.switch_to_block(block_return_zero);
+        self.builder
+            .ins()
+            .jump(block_join, &[BlockArg::Value(zero)]);
+
+        self.builder.switch_to_block(block_return_unlerp_clamped);
+        let lerped = self.build_unlerp(min, max, value);
+        let clamped = self.build_clamp(zero, one, lerped);
+        self.builder
+            .ins()
+            .jump(block_join, &[BlockArg::Value(clamped)]);
+
+        self.builder.switch_to_block(block_join);
+        self.builder.seal_block(block_join);
+        self.builder.seal_block(block_return_unlerp_clamped);
+        self.builder.seal_block(block_return_zero);
+        block_join_param
+    }
+
     pub(crate) fn build_abs_ir(&mut self, node: &Abs) -> Value {
         let value = self.build_node_ir(node.value);
         self.builder.ins().fabs(value)
@@ -246,44 +283,10 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     }
 
     pub(crate) fn build_unlerp_clamped_ir(&mut self, node: &UnlerpClamped) -> Value {
-        let block_return_zero = self.builder.create_block();
-        let block_return_unlerp_clamped = self.builder.create_block();
-        let block_join = self.builder.create_block();
-        let block_join_param = self.builder.append_block_param(block_join, types::F32);
-
-        let zero = self.builder.ins().f32const(0.0);
-        let one = self.builder.ins().f32const(1.0);
-
         let min = self.build_node_ir(node.min);
         let max = self.build_node_ir(node.max);
         let value = self.build_node_ir(node.value);
-
-        let min_eq_max = self.builder.ins().fcmp(FloatCC::Equal, min, max);
-        self.builder.ins().brif(
-            min_eq_max,
-            block_return_zero,
-            [],
-            block_return_unlerp_clamped,
-            [],
-        );
-
-        self.builder.switch_to_block(block_return_zero);
-        self.builder
-            .ins()
-            .jump(block_join, &[BlockArg::Value(zero)]);
-
-        self.builder.switch_to_block(block_return_unlerp_clamped);
-        let lerped = self.build_unlerp(min, max, value);
-        let clamped = self.build_clamp(zero, one, lerped);
-        self.builder
-            .ins()
-            .jump(block_join, &[BlockArg::Value(clamped)]);
-
-        self.builder.switch_to_block(block_join);
-        self.builder.seal_block(block_join);
-        self.builder.seal_block(block_return_unlerp_clamped);
-        self.builder.seal_block(block_return_zero);
-        block_join_param
+        self.build_unlerp_clamped(min, max, value)
     }
 
     pub(crate) fn build_min_ir(&mut self, node: &Min) -> Value {
@@ -338,6 +341,28 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         self.builder.seal_block(block_return_y);
         self.builder.seal_block(block_return_x);
         block_join_param
+    }
+
+    pub(crate) fn build_remap_ir(&mut self, node: &Remap) -> Value {
+        let from_min = self.build_node_ir(node.from_min);
+        let from_max = self.build_node_ir(node.from_max);
+        let to_min = self.build_node_ir(node.to_min);
+        let to_max = self.build_node_ir(node.to_max);
+        let value = self.build_node_ir(node.value);
+
+        let unlerped = self.build_unlerp(from_min, from_max, value);
+        self.build_lerp(to_min, to_max, unlerped)
+    }
+
+    pub(crate) fn build_remap_clamped_ir(&mut self, node: &RemapClamped) -> Value {
+        let from_min = self.build_node_ir(node.from_min);
+        let from_max = self.build_node_ir(node.from_max);
+        let to_min = self.build_node_ir(node.to_min);
+        let to_max = self.build_node_ir(node.to_max);
+        let value = self.build_node_ir(node.value);
+
+        let unlerped = self.build_unlerp_clamped(from_min, from_max, value);
+        self.build_lerp(to_min, to_max, unlerped)
     }
 }
 
@@ -1183,5 +1208,174 @@ mod tests {
         let func = build_and_return_function(&nodes, 2);
         let result = func(&mut runtime_context as _);
         assert_eq!(result, 7.0);
+    }
+
+    #[test]
+    fn test_remap_basic() {
+        let nodes = vec![
+            ResolvedNode::Value(0.0),   // 0 = from_min
+            ResolvedNode::Value(10.0),  // 1 = from_max
+            ResolvedNode::Value(0.0),   // 2 = to_min
+            ResolvedNode::Value(100.0), // 3 = to_max
+            ResolvedNode::Value(5.0),   // 4 = value
+            ResolvedNode::OpCode(OpCode::Remap(Remap {
+                from_min: 0,
+                from_max: 1,
+                to_min: 2,
+                to_max: 3,
+                value: 4,
+            })), // 5
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 5);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 50.0);
+    }
+
+    #[test]
+    fn test_remap_value_below_min() {
+        let nodes = vec![
+            ResolvedNode::Value(0.0),   // 0 = from_min
+            ResolvedNode::Value(10.0),  // 1 = from_max
+            ResolvedNode::Value(0.0),   // 2 = to_min
+            ResolvedNode::Value(100.0), // 3 = to_max
+            ResolvedNode::Value(-5.0),  // 4 = value
+            ResolvedNode::OpCode(OpCode::Remap(Remap {
+                from_min: 0,
+                from_max: 1,
+                to_min: 2,
+                to_max: 3,
+                value: 4,
+            })), // 5
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 5);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, -50.0);
+    }
+
+    #[test]
+    fn test_remap_from_min_equals_max() {
+        let nodes = vec![
+            ResolvedNode::Value(1.0), // 0 = from_min
+            ResolvedNode::Value(1.0), // 1 = from_max
+            ResolvedNode::Value(2.0), // 2 = to_min
+            ResolvedNode::Value(4.0), // 3 = to_max
+            ResolvedNode::Value(1.0), // 4 = value
+            ResolvedNode::OpCode(OpCode::Remap(Remap {
+                from_min: 0,
+                from_max: 1,
+                to_min: 2,
+                to_max: 3,
+                value: 4,
+            })), // 5
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 5);
+        let result = func(&mut runtime_context as _);
+        // Up to you how to handle div-by-zero, this test assumes you return 0.0
+        assert!(result.is_nan())
+    }
+
+    #[test]
+    fn test_remap_clamped_in_range() {
+        let nodes = vec![
+            ResolvedNode::Value(0.0),   // 0 = from_min
+            ResolvedNode::Value(10.0),  // 1 = from_max
+            ResolvedNode::Value(0.0),   // 2 = to_min
+            ResolvedNode::Value(100.0), // 3 = to_max
+            ResolvedNode::Value(5.0),   // 4 = value
+            ResolvedNode::OpCode(OpCode::RemapClamped(RemapClamped {
+                from_min: 0,
+                from_max: 1,
+                to_min: 2,
+                to_max: 3,
+                value: 4,
+            })), // 5
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 5);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 50.0);
+    }
+
+    #[test]
+    fn test_remap_clamped_below_min() {
+        let nodes = vec![
+            ResolvedNode::Value(0.0),
+            ResolvedNode::Value(10.0),
+            ResolvedNode::Value(0.0),
+            ResolvedNode::Value(100.0),
+            ResolvedNode::Value(-5.0),
+            ResolvedNode::OpCode(OpCode::RemapClamped(RemapClamped {
+                from_min: 0,
+                from_max: 1,
+                to_min: 2,
+                to_max: 3,
+                value: 4,
+            })),
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 5);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 0.0);
+    }
+
+    #[test]
+    fn test_remap_clamped_above_max() {
+        let nodes = vec![
+            ResolvedNode::Value(0.0),
+            ResolvedNode::Value(10.0),
+            ResolvedNode::Value(0.0),
+            ResolvedNode::Value(100.0),
+            ResolvedNode::Value(20.0),
+            ResolvedNode::OpCode(OpCode::RemapClamped(RemapClamped {
+                from_min: 0,
+                from_max: 1,
+                to_min: 2,
+                to_max: 3,
+                value: 4,
+            })),
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 5);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 100.0);
+    }
+
+    #[test]
+    fn test_remap_clamped_min_equals_max() {
+        let nodes = vec![
+            ResolvedNode::Value(1.0),
+            ResolvedNode::Value(1.0),
+            ResolvedNode::Value(10.0),
+            ResolvedNode::Value(20.0),
+            ResolvedNode::Value(1.0),
+            ResolvedNode::OpCode(OpCode::RemapClamped(RemapClamped {
+                from_min: 0,
+                from_max: 1,
+                to_min: 2,
+                to_max: 3,
+                value: 4,
+            })),
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 5);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 10.0);
     }
 }

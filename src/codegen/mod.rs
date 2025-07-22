@@ -151,6 +151,8 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
                 OpCode::UnlerpClamped(node) => self.build_unlerp_clamped_ir(node),
                 OpCode::Min(node) => self.build_min_ir(node),
                 OpCode::Max(node) => self.build_max_ir(node),
+                OpCode::Remap(node) => self.build_remap_ir(node),
+                OpCode::RemapClamped(node) => self.build_remap_clamped_ir(node),
                 // Logical
                 OpCode::Equal(node) => self.build_equal_ir(node),
                 OpCode::NotEqual(node) => self.build_not_equal_ir(node),
