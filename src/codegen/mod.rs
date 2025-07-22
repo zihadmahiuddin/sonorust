@@ -146,6 +146,7 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
                 OpCode::Power(node) => self.build_power_ir(node),
                 OpCode::Clamp(node) => self.build_clamp_ir(node),
                 OpCode::Lerp(node) => self.build_lerp_ir(node),
+                OpCode::Unlerp(node) => self.build_unlerp_ir(node),
                 // Logical
                 OpCode::Equal(node) => self.build_equal_ir(node),
                 OpCode::NotEqual(node) => self.build_not_equal_ir(node),

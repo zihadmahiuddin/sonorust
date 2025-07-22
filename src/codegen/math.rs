@@ -208,6 +208,17 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
             .ins()
             .fadd(min_mul_one_minus_value, max_mul_value)
     }
+
+    pub(crate) fn build_unlerp_ir(&mut self, node: &Unlerp) -> Value {
+        let min = self.build_node_ir(node.min);
+        let max = self.build_node_ir(node.max);
+        let value = self.build_node_ir(node.value);
+
+        let value_minus_min = self.builder.ins().fsub(value, min);
+        let max_minus_min = self.builder.ins().fsub(max, min);
+
+        self.builder.ins().fdiv(value_minus_min, max_minus_min)
+    }
 }
 
 #[cfg(test)]
@@ -682,5 +693,105 @@ mod tests {
         let func = build_and_return_function(&nodes, 3);
         let result = func(&mut runtime_context as _);
         assert_eq!(result, 25.0);
+    }
+
+    #[test]
+    fn test_unlerp_zero() {
+        let nodes = vec![
+            ResolvedNode::Value(10.0), // 0 = min
+            ResolvedNode::Value(20.0), // 1 = max
+            ResolvedNode::Value(10.0), // 2 = value
+            ResolvedNode::OpCode(OpCode::Unlerp(Unlerp {
+                min: 0,
+                max: 1,
+                value: 2,
+            })), // 3
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 3);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 0.0);
+    }
+
+    #[test]
+    fn test_unlerp_one() {
+        let nodes = vec![
+            ResolvedNode::Value(10.0), // 0 = min
+            ResolvedNode::Value(20.0), // 1 = max
+            ResolvedNode::Value(20.0), // 2 = value
+            ResolvedNode::OpCode(OpCode::Unlerp(Unlerp {
+                min: 0,
+                max: 1,
+                value: 2,
+            })), // 3
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 3);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 1.0);
+    }
+
+    #[test]
+    fn test_unlerp_half() {
+        let nodes = vec![
+            ResolvedNode::Value(0.0), // 0 = min
+            ResolvedNode::Value(2.0), // 1 = max
+            ResolvedNode::Value(1.0), // 2 = value
+            ResolvedNode::OpCode(OpCode::Unlerp(Unlerp {
+                min: 0,
+                max: 1,
+                value: 2,
+            })), // 3
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 3);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 0.5);
+    }
+
+    #[test]
+    fn test_unlerp_below_min() {
+        let nodes = vec![
+            ResolvedNode::Value(5.0),  // 0 = min
+            ResolvedNode::Value(10.0), // 1 = max
+            ResolvedNode::Value(0.0),  // 2 = value
+            ResolvedNode::OpCode(OpCode::Unlerp(Unlerp {
+                min: 0,
+                max: 1,
+                value: 2,
+            })), // 3
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 3);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, -1.0);
+    }
+
+    #[test]
+    fn test_unlerp_above_max() {
+        let nodes = vec![
+            ResolvedNode::Value(5.0),  // 0 = min
+            ResolvedNode::Value(10.0), // 1 = max
+            ResolvedNode::Value(15.0), // 2 = value
+            ResolvedNode::OpCode(OpCode::Unlerp(Unlerp {
+                min: 0,
+                max: 1,
+                value: 2,
+            })), // 3
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 3);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 2.0);
     }
 }
