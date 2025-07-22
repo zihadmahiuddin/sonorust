@@ -290,57 +290,15 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     }
 
     pub(crate) fn build_min_ir(&mut self, node: &Min) -> Value {
-        let block_return_x = self.builder.create_block();
-        let block_return_y = self.builder.create_block();
-        let block_join = self.builder.create_block();
-        let block_join_param = self.builder.append_block_param(block_join, types::F32);
-
         let x = self.build_node_ir(node.x);
         let y = self.build_node_ir(node.y);
-
-        let x_lt_y = self.builder.ins().fcmp(FloatCC::LessThan, x, y);
-        self.builder
-            .ins()
-            .brif(x_lt_y, block_return_x, [], block_return_y, []);
-
-        self.builder.switch_to_block(block_return_x);
-        self.builder.ins().jump(block_join, &[BlockArg::Value(x)]);
-
-        self.builder.switch_to_block(block_return_y);
-        self.builder.ins().jump(block_join, &[BlockArg::Value(y)]);
-
-        self.builder.switch_to_block(block_join);
-        self.builder.seal_block(block_join);
-        self.builder.seal_block(block_return_y);
-        self.builder.seal_block(block_return_x);
-        block_join_param
+        self.builder.ins().fmin(x, y)
     }
 
     pub(crate) fn build_max_ir(&mut self, node: &Max) -> Value {
-        let block_return_x = self.builder.create_block();
-        let block_return_y = self.builder.create_block();
-        let block_join = self.builder.create_block();
-        let block_join_param = self.builder.append_block_param(block_join, types::F32);
-
         let x = self.build_node_ir(node.x);
         let y = self.build_node_ir(node.y);
-
-        let x_gt_y = self.builder.ins().fcmp(FloatCC::GreaterThan, x, y);
-        self.builder
-            .ins()
-            .brif(x_gt_y, block_return_x, [], block_return_y, []);
-
-        self.builder.switch_to_block(block_return_x);
-        self.builder.ins().jump(block_join, &[BlockArg::Value(x)]);
-
-        self.builder.switch_to_block(block_return_y);
-        self.builder.ins().jump(block_join, &[BlockArg::Value(y)]);
-
-        self.builder.switch_to_block(block_join);
-        self.builder.seal_block(block_join);
-        self.builder.seal_block(block_return_y);
-        self.builder.seal_block(block_return_x);
-        block_join_param
+        self.builder.ins().fmax(x, y)
     }
 
     pub(crate) fn build_remap_ir(&mut self, node: &Remap) -> Value {
