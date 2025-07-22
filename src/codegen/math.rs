@@ -285,6 +285,60 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         self.builder.seal_block(block_return_zero);
         block_join_param
     }
+
+    pub(crate) fn build_min_ir(&mut self, node: &Min) -> Value {
+        let block_return_x = self.builder.create_block();
+        let block_return_y = self.builder.create_block();
+        let block_join = self.builder.create_block();
+        let block_join_param = self.builder.append_block_param(block_join, types::F32);
+
+        let x = self.build_node_ir(node.x);
+        let y = self.build_node_ir(node.y);
+
+        let x_lt_y = self.builder.ins().fcmp(FloatCC::LessThan, x, y);
+        self.builder
+            .ins()
+            .brif(x_lt_y, block_return_x, [], block_return_y, []);
+
+        self.builder.switch_to_block(block_return_x);
+        self.builder.ins().jump(block_join, &[BlockArg::Value(x)]);
+
+        self.builder.switch_to_block(block_return_y);
+        self.builder.ins().jump(block_join, &[BlockArg::Value(y)]);
+
+        self.builder.switch_to_block(block_join);
+        self.builder.seal_block(block_join);
+        self.builder.seal_block(block_return_y);
+        self.builder.seal_block(block_return_x);
+        block_join_param
+    }
+
+    pub(crate) fn build_max_ir(&mut self, node: &Max) -> Value {
+        let block_return_x = self.builder.create_block();
+        let block_return_y = self.builder.create_block();
+        let block_join = self.builder.create_block();
+        let block_join_param = self.builder.append_block_param(block_join, types::F32);
+
+        let x = self.build_node_ir(node.x);
+        let y = self.build_node_ir(node.y);
+
+        let x_gt_y = self.builder.ins().fcmp(FloatCC::GreaterThan, x, y);
+        self.builder
+            .ins()
+            .brif(x_gt_y, block_return_x, [], block_return_y, []);
+
+        self.builder.switch_to_block(block_return_x);
+        self.builder.ins().jump(block_join, &[BlockArg::Value(x)]);
+
+        self.builder.switch_to_block(block_return_y);
+        self.builder.ins().jump(block_join, &[BlockArg::Value(y)]);
+
+        self.builder.switch_to_block(block_join);
+        self.builder.seal_block(block_join);
+        self.builder.seal_block(block_return_y);
+        self.builder.seal_block(block_return_x);
+        block_join_param
+    }
 }
 
 #[cfg(test)]
@@ -1039,5 +1093,95 @@ mod tests {
         let func = build_and_return_function(&nodes, 3);
         let result = func(&mut runtime_context as _);
         assert_eq!(result, 0.0);
+    }
+
+    #[test]
+    fn test_min_left_smaller() {
+        let nodes = vec![
+            ResolvedNode::Value(2.0),                              // 0 = x
+            ResolvedNode::Value(5.0),                              // 1 = y
+            ResolvedNode::OpCode(OpCode::Min(Min { x: 0, y: 1 })), // 2
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 2);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 2.0);
+    }
+
+    #[test]
+    fn test_min_right_smaller() {
+        let nodes = vec![
+            ResolvedNode::Value(7.0),                              // 0 = x
+            ResolvedNode::Value(3.0),                              // 1 = y
+            ResolvedNode::OpCode(OpCode::Min(Min { x: 0, y: 1 })), // 2
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 2);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 3.0);
+    }
+
+    #[test]
+    fn test_min_equal() {
+        let nodes = vec![
+            ResolvedNode::Value(4.0),                              // 0 = x
+            ResolvedNode::Value(4.0),                              // 1 = y
+            ResolvedNode::OpCode(OpCode::Min(Min { x: 0, y: 1 })), // 2
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 2);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 4.0);
+    }
+
+    #[test]
+    fn test_max_left_greater() {
+        let nodes = vec![
+            ResolvedNode::Value(8.0),                              // 0 = x
+            ResolvedNode::Value(6.0),                              // 1 = y
+            ResolvedNode::OpCode(OpCode::Max(Max { x: 0, y: 1 })), // 2
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 2);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 8.0);
+    }
+
+    #[test]
+    fn test_max_right_greater() {
+        let nodes = vec![
+            ResolvedNode::Value(1.0),                              // 0 = x
+            ResolvedNode::Value(9.0),                              // 1 = y
+            ResolvedNode::OpCode(OpCode::Max(Max { x: 0, y: 1 })), // 2
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 2);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 9.0);
+    }
+
+    #[test]
+    fn test_max_equal() {
+        let nodes = vec![
+            ResolvedNode::Value(7.0),                              // 0 = x
+            ResolvedNode::Value(7.0),                              // 1 = y
+            ResolvedNode::OpCode(OpCode::Max(Max { x: 0, y: 1 })), // 2
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 2);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 7.0);
     }
 }

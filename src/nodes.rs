@@ -33,6 +33,8 @@ pub enum OpCode {
     LerpClamped(LerpClamped),
     Unlerp(Unlerp),
     UnlerpClamped(UnlerpClamped),
+    Min(Min),
+    Max(Max),
 
     // Logical
     Equal(Equal),
