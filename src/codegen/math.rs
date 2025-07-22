@@ -216,7 +216,7 @@ mod tests {
 
     #[test]
     #[should_panic]
-    fn test_power_single_passthrough() {
+    fn test_power_single_panic() {
         let nodes = vec![
             ResolvedNode::Value(5.0),                                       // 0
             ResolvedNode::OpCode(OpCode::Power(Power { inputs: vec![0] })), // 1 = 5
