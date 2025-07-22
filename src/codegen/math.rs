@@ -24,6 +24,27 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         self.builder.ins().fsub(a, mul)
     }
 
+    pub(crate) fn build_abs_ir(&mut self, node: &Abs) -> Value {
+        let value = self.build_node_ir(node.value);
+        self.builder.ins().fabs(value)
+    }
+
+    pub(crate) fn build_frac_ir(&mut self, node: &Frac) -> Value {
+        let value = self.build_node_ir(node.value);
+        let truncated = self.builder.ins().trunc(value);
+        self.builder.ins().fsub(value, truncated)
+    }
+
+    pub(crate) fn build_trunc_ir(&mut self, node: &Trunc) -> Value {
+        let value = self.build_node_ir(node.value);
+        self.builder.ins().trunc(value)
+    }
+
+    pub(crate) fn build_negate_ir(&mut self, node: &Negate) -> Value {
+        let value = self.build_node_ir(node.value);
+        self.builder.ins().fneg(value)
+    }
+
     pub(crate) fn build_add_ir(&mut self, node: &Add) -> Value {
         let mut result = self.builder.ins().f32const(0.0);
         for &input in &node.inputs {
@@ -70,6 +91,42 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         result
     }
 
+    pub(crate) fn build_mod_ir(&mut self, node: &Mod) -> Value {
+        assert!(node.inputs.len() >= 2, "Mod requires at least 2 inputs");
+
+        let mut iter = node.inputs.iter();
+        let first = self.build_node_ir(*iter.next().unwrap());
+        let second = self.build_node_ir(*iter.next().unwrap());
+
+        // Initial mod(a, b)
+        let mut acc = self.build_mod(first, second);
+
+        for &input in iter {
+            let next_val = self.build_node_ir(input);
+            acc = self.build_mod(acc, next_val);
+        }
+
+        acc
+    }
+
+    pub(crate) fn build_rem_ir(&mut self, node: &Rem) -> Value {
+        assert!(node.inputs.len() >= 2, "Rem requires at least 2 inputs");
+
+        let mut iter = node.inputs.iter();
+        let first = self.build_node_ir(*iter.next().unwrap());
+        let second = self.build_node_ir(*iter.next().unwrap());
+
+        // Initial rem(a, b)
+        let mut acc = self.build_rem(first, second);
+
+        for &input in iter {
+            let next_val = self.build_node_ir(input);
+            acc = self.build_rem(acc, next_val);
+        }
+
+        acc
+    }
+
     pub(crate) fn build_power_ir(&mut self, node: &Power) -> Value {
         assert!(node.inputs.len() >= 2, "Power requires at least 2 inputs");
 
@@ -96,6 +153,110 @@ mod tests {
         nodes::*,
         runtime::{basic::BasicMemory, context::RuntimeContext},
     };
+
+    #[test]
+    fn test_abs_negative() {
+        let nodes = vec![
+            ResolvedNode::Value(-3.5),                           // 0
+            ResolvedNode::OpCode(OpCode::Abs(Abs { value: 0 })), // 1
+        ];
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 3.5);
+    }
+
+    #[test]
+    fn test_abs_positive() {
+        let nodes = vec![
+            ResolvedNode::Value(3.5),                            // 0
+            ResolvedNode::OpCode(OpCode::Abs(Abs { value: 0 })), // 1
+        ];
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 3.5);
+    }
+
+    #[test]
+    fn test_frac_negative() {
+        let nodes = vec![
+            ResolvedNode::Value(-5.75),                            // 0
+            ResolvedNode::OpCode(OpCode::Frac(Frac { value: 0 })), // 1
+        ];
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, -0.75);
+    }
+
+    #[test]
+    fn test_frac_positive() {
+        let nodes = vec![
+            ResolvedNode::Value(5.75),                             // 0
+            ResolvedNode::OpCode(OpCode::Frac(Frac { value: 0 })), // 1
+        ];
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 0.75);
+    }
+
+    #[test]
+    fn test_trunc_negative() {
+        let nodes = vec![
+            ResolvedNode::Value(-4.8),                               // 0
+            ResolvedNode::OpCode(OpCode::Trunc(Trunc { value: 0 })), // 1
+        ];
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, -4.0);
+    }
+
+    #[test]
+    fn test_trunc_positive() {
+        let nodes = vec![
+            ResolvedNode::Value(4.8),                                // 0
+            ResolvedNode::OpCode(OpCode::Trunc(Trunc { value: 0 })), // 1
+        ];
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 4.0);
+    }
+
+    #[test]
+    fn test_negate_negative() {
+        let nodes = vec![
+            ResolvedNode::Value(-6.25),                                // 0
+            ResolvedNode::OpCode(OpCode::Negate(Negate { value: 0 })), // 1
+        ];
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 6.25);
+    }
+
+    #[test]
+    fn test_negate_positive() {
+        let nodes = vec![
+            ResolvedNode::Value(6.25),                                 // 0
+            ResolvedNode::OpCode(OpCode::Negate(Negate { value: 0 })), // 1
+        ];
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, -6.25);
+    }
 
     #[test]
     fn test_add() {
@@ -195,6 +356,42 @@ mod tests {
         let func = build_and_return_function(&nodes, 2);
         let result = func(&mut runtime_context as _);
         assert_eq!(result, 3.0);
+    }
+
+    #[test]
+    fn test_mod() {
+        let nodes = vec![
+            ResolvedNode::Value(-5.3),                                     // 0
+            ResolvedNode::Value(2.0),                                      // 1
+            ResolvedNode::OpCode(OpCode::Mod(Mod { inputs: vec![0, 1] })), // 2
+        ];
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 2);
+        let result = func(&mut runtime_context as _);
+        let expected = 0.7;
+        assert!(
+            (result - expected).abs() < 1e-6,
+            "got {result}, expected {expected}",
+        );
+    }
+
+    #[test]
+    fn test_rem() {
+        let nodes = vec![
+            ResolvedNode::Value(-5.3),                                     // 0
+            ResolvedNode::Value(2.0),                                      // 1
+            ResolvedNode::OpCode(OpCode::Rem(Rem { inputs: vec![0, 1] })), // 2
+        ];
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 2);
+        let result = func(&mut runtime_context as _);
+        let expected = -1.3;
+        assert!(
+            (result - expected).abs() < 1e-6,
+            "got {result}, expected {expected}",
+        );
     }
 
     #[test]

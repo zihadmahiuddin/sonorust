@@ -133,10 +133,16 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
                     self.build_switch_integer_with_default_ir(node)
                 }
                 // Math
+                OpCode::Abs(node) => self.build_abs_ir(node),
+                OpCode::Frac(node) => self.build_frac_ir(node),
+                OpCode::Trunc(node) => self.build_trunc_ir(node),
+                OpCode::Negate(node) => self.build_negate_ir(node),
                 OpCode::Add(node) => self.build_add_ir(node),
                 OpCode::Subtract(node) => self.build_subtract_ir(node),
                 OpCode::Multiply(node) => self.build_multiply_ir(node),
                 OpCode::Divide(node) => self.build_divide_ir(node),
+                OpCode::Mod(node) => self.build_mod_ir(node),
+                OpCode::Rem(node) => self.build_rem_ir(node),
                 OpCode::Power(node) => self.build_power_ir(node),
                 // Logical
                 OpCode::Equal(node) => self.build_equal_ir(node),

@@ -17,10 +17,16 @@ pub enum OpCode {
     SwitchIntegerWithDefault(SwitchIntegerWithDefault),
 
     // Math
+    Abs(Abs),
+    Frac(Frac),
+    Trunc(Trunc),
+    Negate(Negate),
     Add(Add),
     Subtract(Subtract),
     Multiply(Multiply),
     Divide(Divide),
+    Mod(Mod),
+    Rem(Rem),
     Power(Power),
 
     // Logical
