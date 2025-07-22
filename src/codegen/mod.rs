@@ -121,6 +121,20 @@ pub(crate) fn create_signature_for(name: &str, call_conv: CallConv) -> Signature
 
             sig.returns.push(AbiParam::new(types::F32));
         }
+        "random" => {
+            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
+            sig.params.push(AbiParam::new(types::F32)); // min
+            sig.params.push(AbiParam::new(types::F32)); // max
+
+            sig.returns.push(AbiParam::new(types::F32));
+        }
+        "random_integer" => {
+            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
+            sig.params.push(AbiParam::new(types::F32)); // min
+            sig.params.push(AbiParam::new(types::F32)); // max
+
+            sig.returns.push(AbiParam::new(types::F32));
+        }
         _ => panic!("Unknown external function: {name}"),
     }
     sig
@@ -250,6 +264,8 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
                 OpCode::Radian(node) => self.build_radian_ir(node),
                 OpCode::Log(node) => self.build_log_ir(node),
                 OpCode::Sign(node) => self.build_sign_ir(node),
+                OpCode::Random(node) => self.build_random_ir(node),
+                OpCode::RandomInteger(node) => self.build_random_integer_ir(node),
                 // Logical
                 OpCode::Equal(node) => self.build_equal_ir(node),
                 OpCode::NotEqual(node) => self.build_not_equal_ir(node),

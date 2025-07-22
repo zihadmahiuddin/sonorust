@@ -489,6 +489,22 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
 
         result
     }
+
+    pub(crate) fn build_random_ir(&mut self, node: &Random) -> Value {
+        let min = self.build_node_ir(node.min);
+        let max = self.build_node_ir(node.max);
+        let fn_ref = self.externals_func_refs["random"];
+        let fn_call = self.builder.ins().call(fn_ref, &[self.ctx_param, min, max]);
+        self.builder.inst_results(fn_call)[0]
+    }
+
+    pub(crate) fn build_random_integer_ir(&mut self, node: &RandomInteger) -> Value {
+        let min = self.build_node_ir(node.min);
+        let max = self.build_node_ir(node.max);
+        let fn_ref = self.externals_func_refs["random_integer"];
+        let fn_call = self.builder.ins().call(fn_ref, &[self.ctx_param, min, max]);
+        self.builder.inst_results(fn_call)[0]
+    }
 }
 
 #[cfg(test)]
@@ -2049,5 +2065,66 @@ mod tests {
         let func = build_and_return_function(&nodes, 1);
         let result = func(&mut ctx);
         assert!(result.is_nan());
+    }
+
+    #[test]
+    fn test_random_range_and_variance() {
+        let nodes = vec![
+            ResolvedNode::Value(5.0),                                        // min
+            ResolvedNode::Value(10.0),                                       // max
+            ResolvedNode::OpCode(OpCode::Random(Random { min: 0, max: 1 })), // random node
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 2);
+
+        let mut results = std::collections::HashSet::new();
+        for _ in 0..10 {
+            let result = func(&mut runtime_context as _);
+            assert!(
+                (5.0..=10.0).contains(&result),
+                "Random result {result} out of range [5.0, 10.0]",
+            );
+            results.insert(result.to_bits()); // use bit pattern to avoid NaN weirdness
+        }
+
+        assert!(
+            results.len() > 1,
+            "All random results were the same: {results:?}",
+        );
+    }
+
+    #[test]
+    fn test_random_integer_range_and_integral() {
+        let nodes = vec![
+            ResolvedNode::Value(1.0), // min inclusive
+            ResolvedNode::Value(5.0), // max exclusive
+            ResolvedNode::OpCode(OpCode::RandomInteger(RandomInteger { min: 0, max: 1 })), // random int node
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 2);
+
+        let mut results = std::collections::HashSet::new();
+        for _ in 0..10 {
+            let result = func(&mut runtime_context as _);
+            assert!(
+                (1.0..5.0).contains(&result),
+                "RandomInteger result {result} out of range [1.0, 5.0)",
+            );
+            assert_eq!(
+                result.fract(),
+                0.0,
+                "RandomInteger result {result} is not an integer",
+            );
+            results.insert(result.to_bits());
+        }
+
+        assert!(
+            results.len() > 1,
+            "All RandomInteger results were the same: {results:?}",
+        );
     }
 }

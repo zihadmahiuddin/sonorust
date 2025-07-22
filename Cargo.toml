@@ -5,4 +5,5 @@ edition = "2024"
 
 [dependencies]
 cranelift = { version = "0.121.1", features = ["jit", "module", "native"] }
+rand = "0.9.2"
 tracing = "0.1.41"

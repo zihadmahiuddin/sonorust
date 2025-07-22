@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use rand::Rng;
 use tracing::warn;
 
 pub trait MemoryAccess {
@@ -32,6 +33,8 @@ pub fn get_external_functions<'a>() -> ExternalFunctionsMap<'a> {
     externals_addrs.insert("degree", degree as ExternalFunction);
     externals_addrs.insert("radian", radian as ExternalFunction);
     externals_addrs.insert("log", log as ExternalFunction);
+    externals_addrs.insert("random", random as ExternalFunction);
+    externals_addrs.insert("random_integer", random_integer as ExternalFunction);
     externals_addrs
 }
 
@@ -125,4 +128,16 @@ extern "C" fn radian(_ctx: *mut RuntimeContext, value: f32) -> f32 {
 #[unsafe(no_mangle)]
 extern "C" fn log(_ctx: *mut RuntimeContext, value: f32) -> f32 {
     value.ln()
+}
+
+#[unsafe(no_mangle)]
+extern "C" fn random(_ctx: *mut RuntimeContext, min: f32, max: f32) -> f32 {
+    rand::rng().random_range(min..=max)
+}
+
+#[unsafe(no_mangle)]
+extern "C" fn random_integer(_ctx: *mut RuntimeContext, min: f32, max: f32) -> f32 {
+    let min = min.round() as i32;
+    let max = max.round() as i32;
+    rand::rng().random_range(min..max) as f32
 }

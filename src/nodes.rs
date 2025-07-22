@@ -54,6 +54,8 @@ pub enum OpCode {
     Radian(Radian),
     Log(Log),
     Sign(Sign),
+    Random(Random),
+    RandomInteger(RandomInteger),
 
     // Logical
     Equal(Equal),
