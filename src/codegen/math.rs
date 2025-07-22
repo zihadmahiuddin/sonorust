@@ -10,6 +10,20 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         self.builder.inst_results(fn_call)[0]
     }
 
+    pub(crate) fn build_mod(&mut self, a: Value, b: Value) -> Value {
+        let div = self.builder.ins().fdiv(a, b);
+        let div_floor = self.builder.ins().floor(div);
+        let mul = self.builder.ins().fmul(b, div_floor);
+        self.builder.ins().fsub(a, mul)
+    }
+
+    pub(crate) fn build_rem(&mut self, a: Value, b: Value) -> Value {
+        let div = self.builder.ins().fdiv(a, b);
+        let div_trunc = self.builder.ins().trunc(div);
+        let mul = self.builder.ins().fmul(b, div_trunc);
+        self.builder.ins().fsub(a, mul)
+    }
+
     pub(crate) fn build_add_ir(&mut self, node: &Add) -> Value {
         let mut result = self.builder.ins().f32const(0.0);
         for &input in &node.inputs {

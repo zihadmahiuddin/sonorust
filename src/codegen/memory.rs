@@ -286,12 +286,7 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
                 (block_id, index)
             },
             node.value,
-            |s, old_value, value| {
-                let div = s.builder.ins().fdiv(old_value, value);
-                let div_trunc = s.builder.ins().trunc(div);
-                let mul = s.builder.ins().fmul(value, div_trunc);
-                s.builder.ins().fsub(old_value, mul)
-            },
+            |s, old_value, value| s.build_rem(old_value, value),
         )
     }
 
@@ -299,12 +294,7 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         self.build_set_like_op(
             |s| s.build_pointed_addr(node.block_id, node.index, node.offset),
             node.value,
-            |s, old_value, value| {
-                let div = s.builder.ins().fdiv(old_value, value);
-                let div_trunc = s.builder.ins().trunc(div);
-                let mul = s.builder.ins().fmul(value, div_trunc);
-                s.builder.ins().fsub(old_value, mul)
-            },
+            |s, old_value, value| s.build_rem(old_value, value),
         )
     }
 
@@ -312,12 +302,7 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         self.build_set_like_op(
             |s| s.build_shifted_addr(node.block_id, node.x, node.y, node.s),
             node.value,
-            |s, old_value, value| {
-                let div = s.builder.ins().fdiv(old_value, value);
-                let div_trunc = s.builder.ins().trunc(div);
-                let mul = s.builder.ins().fmul(value, div_trunc);
-                s.builder.ins().fsub(old_value, mul)
-            },
+            |s, old_value, value| s.build_rem(old_value, value),
         )
     }
 
@@ -331,12 +316,7 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
                 (block_id, index)
             },
             node.value,
-            |s, old_value, value| {
-                let div = s.builder.ins().fdiv(old_value, value);
-                let div_floor = s.builder.ins().floor(div);
-                let mul = s.builder.ins().fmul(value, div_floor);
-                s.builder.ins().fsub(old_value, mul)
-            },
+            |s, old_value, value| s.build_mod(old_value, value),
         )
     }
 
@@ -344,12 +324,7 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         self.build_set_like_op(
             |s| s.build_pointed_addr(node.block_id, node.index, node.offset),
             node.value,
-            |s, old_value, value| {
-                let div = s.builder.ins().fdiv(old_value, value);
-                let div_floor = s.builder.ins().floor(div);
-                let mul = s.builder.ins().fmul(value, div_floor);
-                s.builder.ins().fsub(old_value, mul)
-            },
+            |s, old_value, value| s.build_mod(old_value, value),
         )
     }
 
@@ -357,12 +332,7 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         self.build_set_like_op(
             |s| s.build_shifted_addr(node.block_id, node.x, node.y, node.s),
             node.value,
-            |s, old_value, value| {
-                let div = s.builder.ins().fdiv(old_value, value);
-                let div_floor = s.builder.ins().floor(div);
-                let mul = s.builder.ins().fmul(value, div_floor);
-                s.builder.ins().fsub(old_value, mul)
-            },
+            |s, old_value, value| s.build_mod(old_value, value),
         )
     }
 }
