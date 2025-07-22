@@ -37,6 +37,9 @@ pub enum OpCode {
     Max(Max),
     Remap(Remap),
     RemapClamped(RemapClamped),
+    Round(Round),
+    Floor(Floor),
+    Ceil(Ceil),
 
     // Logical
     Equal(Equal),

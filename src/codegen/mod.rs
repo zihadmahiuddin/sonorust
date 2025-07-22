@@ -153,6 +153,9 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
                 OpCode::Max(node) => self.build_max_ir(node),
                 OpCode::Remap(node) => self.build_remap_ir(node),
                 OpCode::RemapClamped(node) => self.build_remap_clamped_ir(node),
+                OpCode::Round(node) => self.build_round_ir(node),
+                OpCode::Floor(node) => self.build_floor_ir(node),
+                OpCode::Ceil(node) => self.build_ceil_ir(node),
                 // Logical
                 OpCode::Equal(node) => self.build_equal_ir(node),
                 OpCode::NotEqual(node) => self.build_not_equal_ir(node),

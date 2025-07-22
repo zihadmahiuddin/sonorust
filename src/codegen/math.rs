@@ -322,6 +322,21 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         let unlerped = self.build_unlerp_clamped(from_min, from_max, value);
         self.build_lerp(to_min, to_max, unlerped)
     }
+
+    pub(crate) fn build_round_ir(&mut self, node: &Round) -> Value {
+        let value = self.build_node_ir(node.value);
+        self.builder.ins().nearest(value)
+    }
+
+    pub(crate) fn build_floor_ir(&mut self, node: &Floor) -> Value {
+        let value = self.build_node_ir(node.value);
+        self.builder.ins().floor(value)
+    }
+
+    pub(crate) fn build_ceil_ir(&mut self, node: &Ceil) -> Value {
+        let value = self.build_node_ir(node.value);
+        self.builder.ins().ceil(value)
+    }
 }
 
 #[cfg(test)]
@@ -1335,5 +1350,96 @@ mod tests {
         let func = build_and_return_function(&nodes, 5);
         let result = func(&mut runtime_context as _);
         assert_eq!(result, 10.0);
+    }
+
+    #[test]
+    fn test_round_half_up_even() {
+        let nodes = vec![
+            ResolvedNode::Value(2.5),                                // 0
+            ResolvedNode::OpCode(OpCode::Round(Round { value: 0 })), // 1
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        assert_eq!(func(&mut runtime_context), 2.0); // ties to even
+    }
+
+    #[test]
+    fn test_round_half_up_odd() {
+        let nodes = vec![
+            ResolvedNode::Value(3.5),                                // 0
+            ResolvedNode::OpCode(OpCode::Round(Round { value: 0 })), // 1
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        assert_eq!(func(&mut runtime_context), 4.0);
+    }
+
+    #[test]
+    fn test_round_negative_half() {
+        let nodes = vec![
+            ResolvedNode::Value(-1.5),                               // 0
+            ResolvedNode::OpCode(OpCode::Round(Round { value: 0 })), // 1
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        assert_eq!(func(&mut runtime_context), -2.0);
+    }
+
+    #[test]
+    fn test_floor_positive() {
+        let nodes = vec![
+            ResolvedNode::Value(3.7),                                // 0
+            ResolvedNode::OpCode(OpCode::Floor(Floor { value: 0 })), // 1
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        assert_eq!(func(&mut runtime_context), 3.0);
+    }
+
+    #[test]
+    fn test_floor_negative() {
+        let nodes = vec![
+            ResolvedNode::Value(-1.2),                               // 0
+            ResolvedNode::OpCode(OpCode::Floor(Floor { value: 0 })), // 1
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        assert_eq!(func(&mut runtime_context), -2.0);
+    }
+
+    #[test]
+    fn test_ceil_positive() {
+        let nodes = vec![
+            ResolvedNode::Value(2.1),                              // 0
+            ResolvedNode::OpCode(OpCode::Ceil(Ceil { value: 0 })), // 1
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        assert_eq!(func(&mut runtime_context), 3.0);
+    }
+
+    #[test]
+    fn test_ceil_negative() {
+        let nodes = vec![
+            ResolvedNode::Value(-3.9),                             // 0
+            ResolvedNode::OpCode(OpCode::Ceil(Ceil { value: 0 })), // 1
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        assert_eq!(func(&mut runtime_context), -3.0);
     }
 }
