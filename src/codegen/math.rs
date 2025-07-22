@@ -1,3 +1,4 @@
+use cranelift::codegen::ir::BlockArg;
 use cranelift::prelude::*;
 
 use crate::codegen::CodegenContext;
@@ -143,6 +144,53 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         }
 
         acc
+    }
+
+    pub(crate) fn build_clamp_ir(&mut self, node: &Clamp) -> Value {
+        let min = self.build_node_ir(node.min);
+        let max = self.build_node_ir(node.max);
+        let value = self.build_node_ir(node.value);
+
+        let block_result = self.builder.create_block();
+        let final_result = self.builder.append_block_param(block_result, types::F32);
+
+        let block_min = self.builder.create_block();
+        let block_max = self.builder.create_block();
+        let block_value = self.builder.create_block();
+
+        let lt_min = self.builder.ins().fcmp(FloatCC::LessThan, value, min);
+        self.builder
+            .ins()
+            .brif(lt_min, block_min, &[], block_max, &[]);
+
+        self.builder.switch_to_block(block_min);
+        self.builder
+            .ins()
+            .jump(block_result, &[BlockArg::Value(min)]);
+
+        self.builder.switch_to_block(block_max);
+        let gt_max = self.builder.ins().fcmp(FloatCC::GreaterThan, value, max);
+        self.builder.ins().brif(
+            gt_max,
+            block_result,
+            &[BlockArg::Value(max)],
+            block_value,
+            &[],
+        );
+
+        self.builder.switch_to_block(block_value);
+        self.builder
+            .ins()
+            .jump(block_result, &[BlockArg::Value(value)]);
+
+        self.builder.switch_to_block(block_result);
+
+        self.builder.seal_block(block_result);
+        self.builder.seal_block(block_min);
+        self.builder.seal_block(block_max);
+        self.builder.seal_block(block_value);
+
+        final_result
     }
 }
 
@@ -478,5 +526,65 @@ mod tests {
         let func = build_and_return_function(&nodes, 2);
         let result = func(&mut runtime_context as _);
         assert!((result - 0.25).abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_clamp_within_bounds() {
+        let nodes = vec![
+            ResolvedNode::Value(2.0), // 0 = min
+            ResolvedNode::Value(5.0), // 1 = max
+            ResolvedNode::Value(3.5), // 2 = value
+            ResolvedNode::OpCode(OpCode::Clamp(Clamp {
+                min: 0,
+                max: 1,
+                value: 2,
+            })), // 3
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 3);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 3.5);
+    }
+
+    #[test]
+    fn test_clamp_below_min() {
+        let nodes = vec![
+            ResolvedNode::Value(2.0), // 0 = min
+            ResolvedNode::Value(5.0), // 1 = max
+            ResolvedNode::Value(1.0), // 2 = value
+            ResolvedNode::OpCode(OpCode::Clamp(Clamp {
+                min: 0,
+                max: 1,
+                value: 2,
+            })), // 3
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 3);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 2.0);
+    }
+
+    #[test]
+    fn test_clamp_above_max() {
+        let nodes = vec![
+            ResolvedNode::Value(2.0), // 0 = min
+            ResolvedNode::Value(5.0), // 1 = max
+            ResolvedNode::Value(6.0), // 2 = value
+            ResolvedNode::OpCode(OpCode::Clamp(Clamp {
+                min: 0,
+                max: 1,
+                value: 2,
+            })), // 3
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 3);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 5.0);
     }
 }
