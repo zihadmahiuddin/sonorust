@@ -18,6 +18,7 @@ pub fn get_external_functions<'a>() -> ExternalFunctionsMap<'a> {
     let mut externals_addrs = ExternalFunctionsMap::new();
     externals_addrs.insert("read_mem", read_mem as ExternalFunction);
     externals_addrs.insert("write_mem", write_mem as ExternalFunction);
+    externals_addrs.insert("pow", pow as ExternalFunction);
     externals_addrs
 }
 
@@ -41,4 +42,9 @@ extern "C" fn write_mem(ctx: *mut RuntimeContext, block_id: i64, index: i64, val
         warn!("Failed to write to block {block_id} index {index}");
         0.0
     }
+}
+
+#[unsafe(no_mangle)]
+extern "C" fn pow(_ctx: *mut RuntimeContext, a: f32, b: f32) -> f32 {
+    a.powf(b)
 }

@@ -12,6 +12,13 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         last_val
     }
 
+    pub(crate) fn build_execute0_ir(&mut self, node: &Execute0) -> Value {
+        self.build_execute_ir(&Execute {
+            nodes: node.nodes.clone(),
+        });
+        self.builder.ins().f32const(0.0)
+    }
+
     fn with_terminated_reset<T>(&mut self, f: impl FnOnce(&mut Self) -> T) -> (T, bool) {
         let prev = self.current_block_terminated;
         self.current_block_terminated = false;
@@ -274,6 +281,24 @@ mod tests {
         let func = build_and_return_function(&nodes, 4);
         let result = func(&mut runtime_context as _);
         assert_eq!(result, 100.0);
+    }
+
+    #[test]
+    fn test_execute_0() {
+        let nodes = vec![
+            ResolvedNode::Value(1.0),
+            ResolvedNode::Value(2.0),
+            ResolvedNode::OpCode(OpCode::Add(Add { inputs: vec![0, 1] })), // = 3.0
+            ResolvedNode::Value(100.0),
+            ResolvedNode::OpCode(OpCode::Execute0(Execute0 { nodes: vec![2, 3] })), // should return 100.0
+        ];
+
+        let mut runtime_context = RuntimeContext {
+            memory: &BasicMemory::default(),
+        };
+        let func = build_and_return_function(&nodes, 4);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 0.0);
     }
 
     #[test]
