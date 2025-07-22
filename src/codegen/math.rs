@@ -337,6 +337,48 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         let value = self.build_node_ir(node.value);
         self.builder.ins().ceil(value)
     }
+
+    pub(crate) fn build_sin_ir(&mut self, node: &Sin) -> Value {
+        let value = self.build_node_ir(node.value);
+        let fn_ref = self.externals_func_refs["sin"];
+        let fn_call = self.builder.ins().call(fn_ref, &[self.ctx_param, value]);
+        self.builder.inst_results(fn_call)[0]
+    }
+
+    pub(crate) fn build_cos_ir(&mut self, node: &Cos) -> Value {
+        let value = self.build_node_ir(node.value);
+        let fn_ref = self.externals_func_refs["cos"];
+        let fn_call = self.builder.ins().call(fn_ref, &[self.ctx_param, value]);
+        self.builder.inst_results(fn_call)[0]
+    }
+
+    pub(crate) fn build_tan_ir(&mut self, node: &Tan) -> Value {
+        let value = self.build_node_ir(node.value);
+        let fn_ref = self.externals_func_refs["tan"];
+        let fn_call = self.builder.ins().call(fn_ref, &[self.ctx_param, value]);
+        self.builder.inst_results(fn_call)[0]
+    }
+
+    pub(crate) fn build_sinh_ir(&mut self, node: &Sinh) -> Value {
+        let value = self.build_node_ir(node.value);
+        let fn_ref = self.externals_func_refs["sinh"];
+        let fn_call = self.builder.ins().call(fn_ref, &[self.ctx_param, value]);
+        self.builder.inst_results(fn_call)[0]
+    }
+
+    pub(crate) fn build_cosh_ir(&mut self, node: &Cosh) -> Value {
+        let value = self.build_node_ir(node.value);
+        let fn_ref = self.externals_func_refs["cosh"];
+        let fn_call = self.builder.ins().call(fn_ref, &[self.ctx_param, value]);
+        self.builder.inst_results(fn_call)[0]
+    }
+
+    pub(crate) fn build_tanh_ir(&mut self, node: &Tanh) -> Value {
+        let value = self.build_node_ir(node.value);
+        let fn_ref = self.externals_func_refs["tanh"];
+        let fn_call = self.builder.ins().call(fn_ref, &[self.ctx_param, value]);
+        self.builder.inst_results(fn_call)[0]
+    }
 }
 
 #[cfg(test)]
@@ -1441,5 +1483,137 @@ mod tests {
         let mut runtime_context = RuntimeContext { memory: &memory };
         let func = build_and_return_function(&nodes, 1);
         assert_eq!(func(&mut runtime_context), -3.0);
+    }
+
+    #[test]
+    fn test_sin() {
+        let pi = std::f32::consts::PI;
+        let inputs = [0.0, pi / 2.0, pi, -pi / 2.0];
+        let expected = [0.0, 1.0, 0.0, -1.0];
+
+        for (&x, &y) in inputs.iter().zip(expected.iter()) {
+            let nodes = vec![
+                ResolvedNode::Value(x),
+                ResolvedNode::OpCode(OpCode::Sin(Sin { value: 0 })),
+            ];
+            let memory = BasicMemory::default();
+            let mut ctx = RuntimeContext { memory: &memory };
+            let func = build_and_return_function(&nodes, 1);
+            let result = func(&mut ctx as _);
+            assert!(
+                (result - y).abs() < 1e-6,
+                "sin({x}) = {result}, expected {y}",
+            );
+        }
+    }
+
+    #[test]
+    fn test_cos() {
+        let pi = std::f32::consts::PI;
+        let inputs = [0.0, pi / 2.0, pi, -pi / 2.0];
+        let expected = [1.0, 0.0, -1.0, 0.0];
+
+        for (&x, &y) in inputs.iter().zip(expected.iter()) {
+            let nodes = vec![
+                ResolvedNode::Value(x),
+                ResolvedNode::OpCode(OpCode::Cos(Cos { value: 0 })),
+            ];
+            let memory = BasicMemory::default();
+            let mut ctx = RuntimeContext { memory: &memory };
+            let func = build_and_return_function(&nodes, 1);
+            let result = func(&mut ctx as _);
+            assert!(
+                (result - y).abs() < 1e-6,
+                "cos({x}) = {result}, expected {y}",
+            );
+        }
+    }
+
+    #[test]
+    fn test_tan() {
+        let pi = std::f32::consts::PI;
+        let inputs = [0.0, pi / 4.0, -pi / 4.0];
+        let expected = [0.0, 1.0, -1.0];
+
+        for (&x, &y) in inputs.iter().zip(expected.iter()) {
+            let nodes = vec![
+                ResolvedNode::Value(x),
+                ResolvedNode::OpCode(OpCode::Tan(Tan { value: 0 })),
+            ];
+            let memory = BasicMemory::default();
+            let mut ctx = RuntimeContext { memory: &memory };
+            let func = build_and_return_function(&nodes, 1);
+            let result = func(&mut ctx as _);
+            assert!(
+                (result - y).abs() < 1e-6,
+                "tan({x}) = {result}, expected {y}",
+            );
+        }
+    }
+
+    #[test]
+    fn test_sinh() {
+        let inputs = [0.0, 1.0, -1.0];
+        #[allow(clippy::excessive_precision)]
+        let expected = [0.0, 1.1752011936, -1.1752011936];
+
+        for (&x, &y) in inputs.iter().zip(expected.iter()) {
+            let nodes = vec![
+                ResolvedNode::Value(x),
+                ResolvedNode::OpCode(OpCode::Sinh(Sinh { value: 0 })),
+            ];
+            let memory = BasicMemory::default();
+            let mut ctx = RuntimeContext { memory: &memory };
+            let func = build_and_return_function(&nodes, 1);
+            let result = func(&mut ctx as _);
+            assert!(
+                (result - y).abs() < 1e-6,
+                "sinh({x}) = {result}, expected {y}",
+            );
+        }
+    }
+
+    #[test]
+    fn test_cosh() {
+        let inputs = [0.0, 1.0, -1.0];
+        #[allow(clippy::excessive_precision)]
+        let expected = [1.0, 1.5430806348, 1.5430806348];
+
+        for (&x, &y) in inputs.iter().zip(expected.iter()) {
+            let nodes = vec![
+                ResolvedNode::Value(x),
+                ResolvedNode::OpCode(OpCode::Cosh(Cosh { value: 0 })),
+            ];
+            let memory = BasicMemory::default();
+            let mut ctx = RuntimeContext { memory: &memory };
+            let func = build_and_return_function(&nodes, 1);
+            let result = func(&mut ctx as _);
+            assert!(
+                (result - y).abs() < 1e-6,
+                "cosh({x}) = {result}, expected {y}",
+            );
+        }
+    }
+
+    #[test]
+    fn test_tanh() {
+        let inputs = [0.0, 1.0, -1.0];
+        #[allow(clippy::excessive_precision)]
+        let expected = [0.0, 0.7615941559, -0.7615941559];
+
+        for (&x, &y) in inputs.iter().zip(expected.iter()) {
+            let nodes = vec![
+                ResolvedNode::Value(x),
+                ResolvedNode::OpCode(OpCode::Tanh(Tanh { value: 0 })),
+            ];
+            let memory = BasicMemory::default();
+            let mut ctx = RuntimeContext { memory: &memory };
+            let func = build_and_return_function(&nodes, 1);
+            let result = func(&mut ctx as _);
+            assert!(
+                (result - y).abs() < 1e-6,
+                "tanh({x}) = {result}, expected {y}",
+            );
+        }
     }
 }

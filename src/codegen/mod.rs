@@ -41,6 +41,42 @@ pub(crate) fn create_signature_for(name: &str, call_conv: CallConv) -> Signature
 
             sig.returns.push(AbiParam::new(types::F32));
         }
+        "sin" => {
+            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
+            sig.params.push(AbiParam::new(types::F32)); // value
+
+            sig.returns.push(AbiParam::new(types::F32));
+        }
+        "cos" => {
+            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
+            sig.params.push(AbiParam::new(types::F32)); // value
+
+            sig.returns.push(AbiParam::new(types::F32));
+        }
+        "tan" => {
+            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
+            sig.params.push(AbiParam::new(types::F32)); // value
+
+            sig.returns.push(AbiParam::new(types::F32));
+        }
+        "sinh" => {
+            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
+            sig.params.push(AbiParam::new(types::F32)); // value
+
+            sig.returns.push(AbiParam::new(types::F32));
+        }
+        "cosh" => {
+            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
+            sig.params.push(AbiParam::new(types::F32)); // value
+
+            sig.returns.push(AbiParam::new(types::F32));
+        }
+        "tanh" => {
+            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
+            sig.params.push(AbiParam::new(types::F32)); // value
+
+            sig.returns.push(AbiParam::new(types::F32));
+        }
         _ => panic!("Unknown external function: {name}"),
     }
     sig
@@ -156,6 +192,12 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
                 OpCode::Round(node) => self.build_round_ir(node),
                 OpCode::Floor(node) => self.build_floor_ir(node),
                 OpCode::Ceil(node) => self.build_ceil_ir(node),
+                OpCode::Sin(node) => self.build_sin_ir(node),
+                OpCode::Cos(node) => self.build_cos_ir(node),
+                OpCode::Tan(node) => self.build_tan_ir(node),
+                OpCode::Sinh(node) => self.build_sinh_ir(node),
+                OpCode::Cosh(node) => self.build_cosh_ir(node),
+                OpCode::Tanh(node) => self.build_tanh_ir(node),
                 // Logical
                 OpCode::Equal(node) => self.build_equal_ir(node),
                 OpCode::NotEqual(node) => self.build_not_equal_ir(node),

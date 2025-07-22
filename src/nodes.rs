@@ -40,6 +40,12 @@ pub enum OpCode {
     Round(Round),
     Floor(Floor),
     Ceil(Ceil),
+    Sin(Sin),
+    Sinh(Sinh),
+    Cos(Cos),
+    Cosh(Cosh),
+    Tan(Tan),
+    Tanh(Tanh),
 
     // Logical
     Equal(Equal),
