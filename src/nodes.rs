@@ -1,6 +1,6 @@
 #[derive(Debug)]
 pub enum ResolvedNode {
-    Value(f64),
+    Value(f32),
     OpCode(OpCode),
 }
 

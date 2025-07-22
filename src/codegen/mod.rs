@@ -112,7 +112,7 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     // Helper to build arbitrary nodes recursively
     pub fn build_node_ir(&mut self, node_index: usize) -> Value {
         match &self.nodes[node_index] {
-            ResolvedNode::Value(value) => self.builder.ins().f32const(*value as f32),
+            ResolvedNode::Value(value) => self.builder.ins().f32const(*value),
             ResolvedNode::OpCode(opcode) => match opcode {
                 OpCode::Add(node) => self.build_add_ir(node),
                 OpCode::Subtract(node) => self.build_subtract_ir(node),
