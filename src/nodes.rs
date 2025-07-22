@@ -50,6 +50,10 @@ pub enum OpCode {
     Arccos(Arccos),
     Arctan(Arctan),
     Arctan2(Arctan2),
+    Degree(Degree),
+    Radian(Radian),
+    Log(Log),
+    Sign(Sign),
 
     // Logical
     Equal(Equal),

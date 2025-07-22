@@ -18,6 +18,7 @@ use crate::nodes::{OpCode, ResolvedNode};
 
 pub(crate) fn create_signature_for(name: &str, call_conv: CallConv) -> Signature {
     let mut sig = Signature::new(call_conv);
+    // TODO: typesafe?
     match name {
         "read_mem" => {
             sig.params.push(AbiParam::new(types::I64)); // ctx ptr
@@ -99,6 +100,24 @@ pub(crate) fn create_signature_for(name: &str, call_conv: CallConv) -> Signature
             sig.params.push(AbiParam::new(types::I64)); // ctx ptr
             sig.params.push(AbiParam::new(types::F32)); // a
             sig.params.push(AbiParam::new(types::F32)); // b
+
+            sig.returns.push(AbiParam::new(types::F32));
+        }
+        "degree" => {
+            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
+            sig.params.push(AbiParam::new(types::F32)); // value
+
+            sig.returns.push(AbiParam::new(types::F32));
+        }
+        "radian" => {
+            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
+            sig.params.push(AbiParam::new(types::F32)); // value
+
+            sig.returns.push(AbiParam::new(types::F32));
+        }
+        "log" => {
+            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
+            sig.params.push(AbiParam::new(types::F32)); // value
 
             sig.returns.push(AbiParam::new(types::F32));
         }
@@ -227,6 +246,10 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
                 OpCode::Arccos(node) => self.build_arccos_ir(node),
                 OpCode::Arctan(node) => self.build_arctan_ir(node),
                 OpCode::Arctan2(node) => self.build_arctan2_ir(node),
+                OpCode::Degree(node) => self.build_degree_ir(node),
+                OpCode::Radian(node) => self.build_radian_ir(node),
+                OpCode::Log(node) => self.build_log_ir(node),
+                OpCode::Sign(node) => self.build_sign_ir(node),
                 // Logical
                 OpCode::Equal(node) => self.build_equal_ir(node),
                 OpCode::NotEqual(node) => self.build_not_equal_ir(node),

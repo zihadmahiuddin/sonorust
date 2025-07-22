@@ -408,6 +408,87 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         let fn_call = self.builder.ins().call(fn_ref, &[self.ctx_param, x, y]);
         self.builder.inst_results(fn_call)[0]
     }
+
+    pub(crate) fn build_degree_ir(&mut self, node: &Degree) -> Value {
+        let value = self.build_node_ir(node.value);
+        let fn_ref = self.externals_func_refs["degree"];
+        let fn_call = self.builder.ins().call(fn_ref, &[self.ctx_param, value]);
+        self.builder.inst_results(fn_call)[0]
+    }
+
+    pub(crate) fn build_radian_ir(&mut self, node: &Radian) -> Value {
+        let value = self.build_node_ir(node.value);
+        let fn_ref = self.externals_func_refs["radian"];
+        let fn_call = self.builder.ins().call(fn_ref, &[self.ctx_param, value]);
+        self.builder.inst_results(fn_call)[0]
+    }
+
+    pub(crate) fn build_log_ir(&mut self, node: &Log) -> Value {
+        let value = self.build_node_ir(node.value);
+        let fn_ref = self.externals_func_refs["log"];
+        let fn_call = self.builder.ins().call(fn_ref, &[self.ctx_param, value]);
+        self.builder.inst_results(fn_call)[0]
+    }
+
+    pub(crate) fn build_sign_ir(&mut self, node: &Sign) -> Value {
+        let value = self.build_node_ir(node.value);
+
+        let zero = self.builder.ins().f32const(0.0);
+        let one = self.builder.ins().f32const(1.0);
+        let neg_one = self.builder.ins().f32const(-1.0);
+
+        let block_nan = self.builder.create_block();
+        let block_pos = self.builder.create_block();
+        let block_neg = self.builder.create_block();
+        let block_zero = self.builder.create_block();
+        let block_merge = self.builder.create_block();
+        let result = self.builder.append_block_param(block_merge, types::F32);
+
+        let is_nan = self.builder.ins().fcmp(FloatCC::NotEqual, value, value);
+        self.builder
+            .ins()
+            .brif(is_nan, block_nan, &[], block_pos, &[]);
+
+        self.builder.switch_to_block(block_nan);
+        let nan_val = self.builder.ins().f32const(f32::NAN);
+        self.builder
+            .ins()
+            .jump(block_merge, &[BlockArg::Value(nan_val)]);
+
+        self.builder.switch_to_block(block_pos);
+        let gt_zero = self.builder.ins().fcmp(FloatCC::GreaterThan, value, zero);
+        self.builder.ins().brif(
+            gt_zero,
+            block_merge,
+            &[BlockArg::Value(one)],
+            block_neg,
+            &[],
+        );
+
+        self.builder.switch_to_block(block_neg);
+        let lt_zero = self.builder.ins().fcmp(FloatCC::LessThan, value, zero);
+        self.builder.ins().brif(
+            lt_zero,
+            block_merge,
+            &[BlockArg::Value(neg_one)],
+            block_zero,
+            &[],
+        );
+
+        self.builder.switch_to_block(block_zero);
+        self.builder
+            .ins()
+            .jump(block_merge, &[BlockArg::Value(zero)]);
+
+        self.builder.switch_to_block(block_merge);
+        self.builder.seal_block(block_nan);
+        self.builder.seal_block(block_pos);
+        self.builder.seal_block(block_neg);
+        self.builder.seal_block(block_zero);
+        self.builder.seal_block(block_merge);
+
+        result
+    }
 }
 
 #[cfg(test)]
@@ -1762,5 +1843,211 @@ mod tests {
                 "atan2({y}, {x}) = {result}, expected {expected}",
             );
         }
+    }
+
+    #[test]
+    fn test_degree_pi() {
+        let nodes = vec![
+            ResolvedNode::Value(std::f32::consts::PI), // 0
+            ResolvedNode::OpCode(OpCode::Degree(Degree { value: 0 })), // 1
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut runtime_context as _);
+        assert!((result - 180.0).abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_degree_zero() {
+        let nodes = vec![
+            ResolvedNode::Value(0.0),                                  // 0
+            ResolvedNode::OpCode(OpCode::Degree(Degree { value: 0 })), // 1
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 0.0);
+    }
+
+    #[test]
+    fn test_degree_negative() {
+        let nodes = vec![
+            ResolvedNode::Value(-std::f32::consts::PI / 2.0), // 0
+            ResolvedNode::OpCode(OpCode::Degree(Degree { value: 0 })), // 1
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut runtime_context as _);
+        assert!((result + 90.0).abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_radian_180() {
+        let nodes = vec![
+            ResolvedNode::Value(180.0),                                // 0
+            ResolvedNode::OpCode(OpCode::Radian(Radian { value: 0 })), // 1
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut runtime_context as _);
+        assert!((result - std::f32::consts::PI).abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_radian_zero() {
+        let nodes = vec![
+            ResolvedNode::Value(0.0),                                  // 0
+            ResolvedNode::OpCode(OpCode::Radian(Radian { value: 0 })), // 1
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 0.0);
+    }
+
+    #[test]
+    fn test_radian_negative() {
+        let nodes = vec![
+            ResolvedNode::Value(-90.0),                                // 0
+            ResolvedNode::OpCode(OpCode::Radian(Radian { value: 0 })), // 1
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut runtime_context as _);
+        assert!((result + std::f32::consts::FRAC_PI_2).abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_log_regular_value() {
+        let nodes = vec![
+            ResolvedNode::Value(10.0),                           // 0 = value
+            ResolvedNode::OpCode(OpCode::Log(Log { value: 0 })), // 1
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut runtime_context as _);
+        assert!((result - 10f32.ln()).abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_log_of_1() {
+        let nodes = vec![
+            ResolvedNode::Value(1.0),                            // 0 = value
+            ResolvedNode::OpCode(OpCode::Log(Log { value: 0 })), // 1
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut runtime_context as _);
+        assert_eq!(result, 0.0);
+    }
+
+    #[test]
+    fn test_log_of_e() {
+        let nodes = vec![
+            ResolvedNode::Value(std::f32::consts::E), // 0 = value
+            ResolvedNode::OpCode(OpCode::Log(Log { value: 0 })), // 1
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut runtime_context as _);
+        assert!((result - 1.0).abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_log_of_zero() {
+        let nodes = vec![
+            ResolvedNode::Value(0.0),                            // 0 = value
+            ResolvedNode::OpCode(OpCode::Log(Log { value: 0 })), // 1
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut runtime_context as _);
+        assert!(result.is_infinite() && result.is_sign_negative());
+    }
+
+    #[test]
+    fn test_log_of_negative() {
+        let nodes = vec![
+            ResolvedNode::Value(-1.0),                           // 0 = value
+            ResolvedNode::OpCode(OpCode::Log(Log { value: 0 })), // 1
+        ];
+
+        let memory = BasicMemory::default();
+        let mut runtime_context = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut runtime_context as _);
+        assert!(result.is_nan());
+    }
+
+    #[test]
+    fn test_sign_positive() {
+        let nodes = vec![
+            ResolvedNode::Value(42.0),                             // 0
+            ResolvedNode::OpCode(OpCode::Sign(Sign { value: 0 })), // 1
+        ];
+        let memory = BasicMemory::default();
+        let mut ctx = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut ctx);
+        assert_eq!(result, 1.0);
+    }
+
+    #[test]
+    fn test_sign_negative() {
+        let nodes = vec![
+            ResolvedNode::Value(-std::f32::consts::PI),            // 0
+            ResolvedNode::OpCode(OpCode::Sign(Sign { value: 0 })), // 1
+        ];
+        let memory = BasicMemory::default();
+        let mut ctx = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut ctx);
+        assert_eq!(result, -1.0);
+    }
+
+    #[test]
+    fn test_sign_zero() {
+        let nodes = vec![
+            ResolvedNode::Value(0.0),                              // 0
+            ResolvedNode::OpCode(OpCode::Sign(Sign { value: 0 })), // 1
+        ];
+        let memory = BasicMemory::default();
+        let mut ctx = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut ctx);
+        assert_eq!(result, 0.0);
+    }
+
+    #[test]
+    fn test_sign_nan() {
+        let nodes = vec![
+            ResolvedNode::Value(f32::NAN),                         // 0
+            ResolvedNode::OpCode(OpCode::Sign(Sign { value: 0 })), // 1
+        ];
+        let memory = BasicMemory::default();
+        let mut ctx = RuntimeContext { memory: &memory };
+        let func = build_and_return_function(&nodes, 1);
+        let result = func(&mut ctx);
+        assert!(result.is_nan());
     }
 }

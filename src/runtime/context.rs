@@ -29,6 +29,9 @@ pub fn get_external_functions<'a>() -> ExternalFunctionsMap<'a> {
     externals_addrs.insert("arccos", arccos as ExternalFunction);
     externals_addrs.insert("arctan", arctan as ExternalFunction);
     externals_addrs.insert("arctan2", arctan2 as ExternalFunction);
+    externals_addrs.insert("degree", degree as ExternalFunction);
+    externals_addrs.insert("radian", radian as ExternalFunction);
+    externals_addrs.insert("log", log as ExternalFunction);
     externals_addrs
 }
 
@@ -107,4 +110,19 @@ extern "C" fn arctan(_ctx: *mut RuntimeContext, value: f32) -> f32 {
 #[unsafe(no_mangle)]
 extern "C" fn arctan2(_ctx: *mut RuntimeContext, a: f32, b: f32) -> f32 {
     b.atan2(a)
+}
+
+#[unsafe(no_mangle)]
+extern "C" fn degree(_ctx: *mut RuntimeContext, value: f32) -> f32 {
+    value.to_degrees()
+}
+
+#[unsafe(no_mangle)]
+extern "C" fn radian(_ctx: *mut RuntimeContext, value: f32) -> f32 {
+    value.to_radians()
+}
+
+#[unsafe(no_mangle)]
+extern "C" fn log(_ctx: *mut RuntimeContext, value: f32) -> f32 {
+    value.ln()
 }
