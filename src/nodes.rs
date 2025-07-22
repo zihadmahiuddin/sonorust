@@ -46,6 +46,10 @@ pub enum OpCode {
     Cosh(Cosh),
     Tan(Tan),
     Tanh(Tanh),
+    Arcsin(Arcsin),
+    Arccos(Arccos),
+    Arctan(Arctan),
+    Arctan2(Arctan2),
 
     // Logical
     Equal(Equal),

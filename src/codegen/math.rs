@@ -379,6 +379,35 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         let fn_call = self.builder.ins().call(fn_ref, &[self.ctx_param, value]);
         self.builder.inst_results(fn_call)[0]
     }
+
+    pub(crate) fn build_arcsin_ir(&mut self, node: &Arcsin) -> Value {
+        let value = self.build_node_ir(node.value);
+        let fn_ref = self.externals_func_refs["arcsin"];
+        let fn_call = self.builder.ins().call(fn_ref, &[self.ctx_param, value]);
+        self.builder.inst_results(fn_call)[0]
+    }
+
+    pub(crate) fn build_arccos_ir(&mut self, node: &Arccos) -> Value {
+        let value = self.build_node_ir(node.value);
+        let fn_ref = self.externals_func_refs["arccos"];
+        let fn_call = self.builder.ins().call(fn_ref, &[self.ctx_param, value]);
+        self.builder.inst_results(fn_call)[0]
+    }
+
+    pub(crate) fn build_arctan_ir(&mut self, node: &Arctan) -> Value {
+        let value = self.build_node_ir(node.value);
+        let fn_ref = self.externals_func_refs["arctan"];
+        let fn_call = self.builder.ins().call(fn_ref, &[self.ctx_param, value]);
+        self.builder.inst_results(fn_call)[0]
+    }
+
+    pub(crate) fn build_arctan2_ir(&mut self, node: &Arctan2) -> Value {
+        let x = self.build_node_ir(node.x);
+        let y = self.build_node_ir(node.y);
+        let fn_ref = self.externals_func_refs["arctan2"];
+        let fn_call = self.builder.ins().call(fn_ref, &[self.ctx_param, x, y]);
+        self.builder.inst_results(fn_call)[0]
+    }
 }
 
 #[cfg(test)]
@@ -1613,6 +1642,124 @@ mod tests {
             assert!(
                 (result - y).abs() < 1e-6,
                 "tanh({x}) = {result}, expected {y}",
+            );
+        }
+    }
+
+    #[test]
+    fn test_asin() {
+        let inputs = [-1.0, -0.5, 0.0, 0.5, 1.0];
+        let expected = [
+            -std::f32::consts::FRAC_PI_2,
+            -std::f32::consts::FRAC_PI_6,
+            0.0,
+            std::f32::consts::FRAC_PI_6,
+            std::f32::consts::FRAC_PI_2,
+        ];
+
+        for (&x, &y) in inputs.iter().zip(expected.iter()) {
+            let nodes = vec![
+                ResolvedNode::Value(x),
+                ResolvedNode::OpCode(OpCode::Arcsin(Arcsin { value: 0 })),
+            ];
+            let memory = BasicMemory::default();
+            let mut ctx = RuntimeContext { memory: &memory };
+            let func = build_and_return_function(&nodes, 1);
+            let result = func(&mut ctx as _);
+            assert!(
+                (result - y).abs() < 1e-6,
+                "asin({x}) = {result}, expected {y}",
+            );
+        }
+    }
+
+    #[test]
+    fn test_acos() {
+        let inputs = [-1.0, -0.5, 0.0, 0.5, 1.0];
+        let expected = [
+            std::f32::consts::PI,
+            #[allow(clippy::excessive_precision)]
+            2.0943951024, // 2π/3
+            std::f32::consts::FRAC_PI_2,
+            std::f32::consts::FRAC_PI_3,
+            0.0,
+        ];
+
+        for (&x, &y) in inputs.iter().zip(expected.iter()) {
+            let nodes = vec![
+                ResolvedNode::Value(x),
+                ResolvedNode::OpCode(OpCode::Arccos(Arccos { value: 0 })),
+            ];
+            let memory = BasicMemory::default();
+            let mut ctx = RuntimeContext { memory: &memory };
+            let func = build_and_return_function(&nodes, 1);
+            let result = func(&mut ctx as _);
+            assert!(
+                (result - y).abs() < 1e-6,
+                "acos({x}) = {result}, expected {y}",
+            );
+        }
+    }
+
+    #[test]
+    fn test_atan() {
+        let inputs = [-1.0, -0.5, 0.0, 0.5, 1.0];
+        let expected = [
+            -std::f32::consts::FRAC_PI_4,
+            #[allow(clippy::excessive_precision)]
+            -0.4636476090,
+            0.0,
+            #[allow(clippy::excessive_precision)]
+            0.4636476090,
+            std::f32::consts::FRAC_PI_4,
+        ];
+
+        for (&x, &y) in inputs.iter().zip(expected.iter()) {
+            let nodes = vec![
+                ResolvedNode::Value(x),
+                ResolvedNode::OpCode(OpCode::Arctan(Arctan { value: 0 })),
+            ];
+            let memory = BasicMemory::default();
+            let mut ctx = RuntimeContext { memory: &memory };
+            let func = build_and_return_function(&nodes, 1);
+            let result = func(&mut ctx as _);
+            assert!(
+                (result - y).abs() < 1e-6,
+                "atan({x}) = {result}, expected {y}",
+            );
+        }
+    }
+
+    #[test]
+    fn test_atan2() {
+        let pairs = [
+            (0.0, 1.0),  // 0
+            (1.0, 0.0),  // π/2
+            (0.0, -1.0), // π
+            (-1.0, 0.0), // -π/2
+            (1.0, 1.0),  // π/4
+        ];
+        let expected = [
+            0.0,
+            std::f32::consts::FRAC_PI_2,
+            std::f32::consts::PI,
+            -std::f32::consts::FRAC_PI_2,
+            std::f32::consts::FRAC_PI_4,
+        ];
+
+        for ((y, x), expected) in pairs.iter().zip(expected.iter()) {
+            let nodes = vec![
+                ResolvedNode::Value(*y),
+                ResolvedNode::Value(*x),
+                ResolvedNode::OpCode(OpCode::Arctan2(Arctan2 { y: 0, x: 1 })),
+            ];
+            let memory = BasicMemory::default();
+            let mut ctx = RuntimeContext { memory: &memory };
+            let func = build_and_return_function(&nodes, 2);
+            let result = func(&mut ctx as _);
+            assert!(
+                (result - expected).abs() < 1e-6,
+                "atan2({y}, {x}) = {result}, expected {expected}",
             );
         }
     }

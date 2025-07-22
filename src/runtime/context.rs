@@ -25,6 +25,10 @@ pub fn get_external_functions<'a>() -> ExternalFunctionsMap<'a> {
     externals_addrs.insert("sinh", sinh as ExternalFunction);
     externals_addrs.insert("cosh", cosh as ExternalFunction);
     externals_addrs.insert("tanh", tanh as ExternalFunction);
+    externals_addrs.insert("arcsin", arcsin as ExternalFunction);
+    externals_addrs.insert("arccos", arccos as ExternalFunction);
+    externals_addrs.insert("arctan", arctan as ExternalFunction);
+    externals_addrs.insert("arctan2", arctan2 as ExternalFunction);
     externals_addrs
 }
 
@@ -83,4 +87,24 @@ extern "C" fn cosh(_ctx: *mut RuntimeContext, value: f32) -> f32 {
 #[unsafe(no_mangle)]
 extern "C" fn tanh(_ctx: *mut RuntimeContext, value: f32) -> f32 {
     value.tanh()
+}
+
+#[unsafe(no_mangle)]
+extern "C" fn arcsin(_ctx: *mut RuntimeContext, value: f32) -> f32 {
+    value.asin()
+}
+
+#[unsafe(no_mangle)]
+extern "C" fn arccos(_ctx: *mut RuntimeContext, value: f32) -> f32 {
+    value.acos()
+}
+
+#[unsafe(no_mangle)]
+extern "C" fn arctan(_ctx: *mut RuntimeContext, value: f32) -> f32 {
+    value.atan()
+}
+
+#[unsafe(no_mangle)]
+extern "C" fn arctan2(_ctx: *mut RuntimeContext, a: f32, b: f32) -> f32 {
+    b.atan2(a)
 }

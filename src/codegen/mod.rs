@@ -77,6 +77,31 @@ pub(crate) fn create_signature_for(name: &str, call_conv: CallConv) -> Signature
 
             sig.returns.push(AbiParam::new(types::F32));
         }
+        "arcsin" => {
+            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
+            sig.params.push(AbiParam::new(types::F32)); // value
+
+            sig.returns.push(AbiParam::new(types::F32));
+        }
+        "arccos" => {
+            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
+            sig.params.push(AbiParam::new(types::F32)); // value
+
+            sig.returns.push(AbiParam::new(types::F32));
+        }
+        "arctan" => {
+            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
+            sig.params.push(AbiParam::new(types::F32)); // value
+
+            sig.returns.push(AbiParam::new(types::F32));
+        }
+        "arctan2" => {
+            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
+            sig.params.push(AbiParam::new(types::F32)); // a
+            sig.params.push(AbiParam::new(types::F32)); // b
+
+            sig.returns.push(AbiParam::new(types::F32));
+        }
         _ => panic!("Unknown external function: {name}"),
     }
     sig
@@ -198,6 +223,10 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
                 OpCode::Sinh(node) => self.build_sinh_ir(node),
                 OpCode::Cosh(node) => self.build_cosh_ir(node),
                 OpCode::Tanh(node) => self.build_tanh_ir(node),
+                OpCode::Arcsin(node) => self.build_arcsin_ir(node),
+                OpCode::Arccos(node) => self.build_arccos_ir(node),
+                OpCode::Arctan(node) => self.build_arctan_ir(node),
+                OpCode::Arctan2(node) => self.build_arctan2_ir(node),
                 // Logical
                 OpCode::Equal(node) => self.build_equal_ir(node),
                 OpCode::NotEqual(node) => self.build_not_equal_ir(node),
