@@ -2,6 +2,8 @@ use std::{cell::RefCell, collections::HashMap};
 
 use crate::runtime::context::MemoryAccess;
 
+use tracing::warn;
+
 pub struct BasicMemory {
     pub read_only: HashMap<u64, Vec<f32>>,
     pub writable: HashMap<u64, RefCell<Vec<f32>>>,
@@ -37,10 +39,15 @@ impl MemoryAccess for BasicMemory {
 
     fn write(&self, block_id: u64, index: usize, value: f32) -> Option<f32> {
         if let Some(block) = self.writable.get(&block_id) {
-            block
+            if let Some(old_value) = block
                 .try_borrow_mut()
                 .expect("only 1 usage at a time")
-                .insert(index, value);
+                .get_mut(index)
+            {
+                *old_value = value;
+            } else {
+                warn!("Failed to write to block {block_id} index {index}")
+            }
             Some(value)
         } else {
             None
