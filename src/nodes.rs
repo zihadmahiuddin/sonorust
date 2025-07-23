@@ -96,6 +96,7 @@ pub enum OpCode {
     SetRem(SetRem),
     SetRemPointed(SetRemPointed),
     SetRemShifted(SetRemShifted),
+    Copy(Copy),
 }
 
 // Control Flow

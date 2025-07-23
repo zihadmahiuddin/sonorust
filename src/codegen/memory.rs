@@ -335,6 +335,39 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
             |s, old_value, value| s.build_mod(old_value, value),
         )
     }
+
+    pub(crate) fn build_copy_ir(&mut self, node: &Copy) -> Value {
+        let src_block_id_f32 = self.build_node_ir(node.src_block_id);
+        let src_block_id = self
+            .builder
+            .ins()
+            .fcvt_to_sint(types::I64, src_block_id_f32);
+        let src_index_f32 = self.build_node_ir(node.src_index);
+        let src_index = self.builder.ins().fcvt_to_sint(types::I64, src_index_f32);
+        let dst_block_id_f32 = self.build_node_ir(node.dst_block_id);
+        let dst_block_id = self
+            .builder
+            .ins()
+            .fcvt_to_sint(types::I64, dst_block_id_f32);
+        let dst_index_f32 = self.build_node_ir(node.dst_index);
+        let dst_index = self.builder.ins().fcvt_to_sint(types::I64, dst_index_f32);
+        let count_f32 = self.build_node_ir(node.count);
+        let count = self.builder.ins().fcvt_to_sint(types::I64, count_f32);
+
+        let fn_ref = self.externals_func_refs["copy_mem"];
+        let fn_call = self.builder.ins().call(
+            fn_ref,
+            &[
+                self.ctx_param,
+                src_block_id,
+                src_index,
+                dst_block_id,
+                dst_index,
+                count,
+            ],
+        );
+        self.builder.inst_results(fn_call)[0]
+    }
 }
 
 #[cfg(test)]
@@ -1031,5 +1064,127 @@ mod tests {
 
         assert_eq!(result, 1.0);
         assert_eq!(Some(1.0), memory.read(0, 14));
+    }
+
+    #[test]
+    fn test_copy_basic() {
+        let nodes = vec![
+            ResolvedNode::Value(0.0), // src_block_id
+            ResolvedNode::Value(0.0), // src_index
+            ResolvedNode::Value(1.0), // dst_block_id
+            ResolvedNode::Value(1.0), // dst_index
+            ResolvedNode::Value(3.0), // count
+            ResolvedNode::OpCode(OpCode::Copy(Copy {
+                src_block_id: 0,
+                src_index: 1,
+                dst_block_id: 2,
+                dst_index: 3,
+                count: 4,
+            })),
+        ];
+
+        let mut memory = BasicMemory::default();
+        memory
+            .writable
+            .insert(0, RefCell::new(vec![11.0, 22.0, 33.0, 0.0, 0.0]));
+        memory.writable.insert(1, RefCell::new(vec![0.0; 5]));
+
+        let func = build_and_return_function(&nodes, 5);
+        let result = func(&mut RuntimeContext { memory: &memory });
+
+        assert_eq!(result, 0.0);
+        assert_eq!(memory.read(1, 1), Some(11.0));
+        assert_eq!(memory.read(1, 2), Some(22.0));
+        assert_eq!(memory.read(1, 3), Some(33.0));
+    }
+
+    #[test]
+    fn test_copy_overlap_forward() {
+        let nodes = vec![
+            ResolvedNode::Value(0.0),
+            ResolvedNode::Value(0.0),
+            ResolvedNode::Value(0.0),
+            ResolvedNode::Value(1.0),
+            ResolvedNode::Value(3.0),
+            ResolvedNode::OpCode(OpCode::Copy(Copy {
+                src_block_id: 0,
+                src_index: 1,
+                dst_block_id: 2,
+                dst_index: 3,
+                count: 4,
+            })),
+        ];
+
+        let mut memory = BasicMemory::default();
+        memory
+            .writable
+            .insert(0, RefCell::new(vec![1.0, 2.0, 3.0, 4.0, 5.0]));
+
+        let func = build_and_return_function(&nodes, 5);
+        let result = func(&mut RuntimeContext { memory: &memory });
+
+        assert_eq!(result, 0.0);
+        assert_eq!(memory.read(0, 1), Some(1.0));
+        assert_eq!(memory.read(0, 2), Some(2.0));
+        assert_eq!(memory.read(0, 3), Some(3.0));
+        assert_eq!(memory.read(0, 4), Some(5.0));
+    }
+
+    #[test]
+    fn test_copy_overlap_backward() {
+        let nodes = vec![
+            ResolvedNode::Value(0.0),
+            ResolvedNode::Value(2.0),
+            ResolvedNode::Value(0.0),
+            ResolvedNode::Value(0.0),
+            ResolvedNode::Value(3.0),
+            ResolvedNode::OpCode(OpCode::Copy(Copy {
+                src_block_id: 0,
+                src_index: 1,
+                dst_block_id: 2,
+                dst_index: 3,
+                count: 4,
+            })),
+        ];
+
+        let mut memory = BasicMemory::default();
+        memory
+            .writable
+            .insert(0, RefCell::new(vec![10.0, 11.0, 12.0, 13.0, 14.0]));
+
+        let func = build_and_return_function(&nodes, 5);
+        let result = func(&mut RuntimeContext { memory: &memory });
+
+        assert_eq!(result, 0.0);
+        assert_eq!(memory.read(0, 0), Some(12.0));
+        assert_eq!(memory.read(0, 1), Some(13.0));
+        assert_eq!(memory.read(0, 2), Some(14.0));
+    }
+    #[test]
+    fn test_copy_zero_count() {
+        let nodes = vec![
+            ResolvedNode::Value(0.0),
+            ResolvedNode::Value(0.0),
+            ResolvedNode::Value(1.0),
+            ResolvedNode::Value(0.0),
+            ResolvedNode::Value(0.0),
+            ResolvedNode::OpCode(OpCode::Copy(Copy {
+                src_block_id: 0,
+                src_index: 1,
+                dst_block_id: 2,
+                dst_index: 3,
+                count: 4,
+            })),
+        ];
+
+        let mut memory = BasicMemory::default();
+        memory.writable.insert(0, RefCell::new(vec![5.0]));
+        memory.writable.insert(1, RefCell::new(vec![9.0]));
+
+        let func = build_and_return_function(&nodes, 5);
+        let result = func(&mut RuntimeContext { memory: &memory });
+
+        assert_eq!(result, 0.0);
+        assert_eq!(memory.read(1, 0), Some(9.0));
     }
 }

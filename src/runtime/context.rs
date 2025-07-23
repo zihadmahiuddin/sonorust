@@ -19,6 +19,7 @@ pub fn get_external_functions<'a>() -> ExternalFunctionsMap<'a> {
     let mut externals_addrs = ExternalFunctionsMap::new();
     externals_addrs.insert("read_mem", read_mem as ExternalFunction);
     externals_addrs.insert("write_mem", write_mem as ExternalFunction);
+    externals_addrs.insert("copy_mem", copy_mem as ExternalFunction);
     externals_addrs.insert("pow", pow as ExternalFunction);
     externals_addrs.insert("sin", sin as ExternalFunction);
     externals_addrs.insert("cos", cos as ExternalFunction);
@@ -58,6 +59,59 @@ extern "C" fn write_mem(ctx: *mut RuntimeContext, block_id: i64, index: i64, val
         warn!("Failed to write to block {block_id} index {index}");
         0.0
     }
+}
+
+#[unsafe(no_mangle)]
+extern "C" fn copy_mem(
+    ctx: *mut RuntimeContext,
+    src_block_id: i64,
+    src_index: i64,
+    dst_block_id: i64,
+    dst_index: i64,
+    count: i64,
+) -> f32 {
+    if count < 0 {
+        warn!("Copy with negative count: {count}");
+        return 0.0;
+    }
+
+    let src_block_id = src_block_id as u64;
+    let dst_block_id = dst_block_id as u64;
+    let src_index = src_index as usize;
+    let dst_index = dst_index as usize;
+    let count = count as usize;
+
+    let ctx = unsafe { &mut *ctx };
+
+    let mut temp = Vec::with_capacity(count);
+    for i in 0..count {
+        match ctx.memory.read(src_block_id, src_index + i) {
+            Some(v) => temp.push(v),
+            None => {
+                warn!(
+                    "Failed to read from block {src_block_id} index {}",
+                    src_index + i
+                );
+                break;
+            }
+        }
+    }
+
+    for (i, value) in temp.into_iter().enumerate() {
+        if ctx
+            .memory
+            .write(dst_block_id, dst_index + i, value)
+            .is_none()
+        {
+            warn!(
+                "Failed to write to block {dst_block_id} index {}",
+                dst_index + i
+            );
+            break;
+        }
+    }
+
+    0.0
 }
 
 #[unsafe(no_mangle)]

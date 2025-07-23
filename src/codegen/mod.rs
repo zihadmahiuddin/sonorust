@@ -35,6 +35,16 @@ pub(crate) fn create_signature_for(name: &str, call_conv: CallConv) -> Signature
 
             sig.returns.push(AbiParam::new(types::F32));
         }
+        "copy_mem" => {
+            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
+            sig.params.push(AbiParam::new(types::I64)); // src_block_id
+            sig.params.push(AbiParam::new(types::I64)); // src_index
+            sig.params.push(AbiParam::new(types::I64)); // dst_block_id
+            sig.params.push(AbiParam::new(types::I64)); // dst_index
+            sig.params.push(AbiParam::new(types::I64)); // count
+
+            sig.returns.push(AbiParam::new(types::F32));
+        }
         "pow" => {
             sig.params.push(AbiParam::new(types::I64)); // ctx ptr
             sig.params.push(AbiParam::new(types::F32)); // a
@@ -304,6 +314,7 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
                 OpCode::SetMod(node) => self.build_set_mod_ir(node),
                 OpCode::SetModPointed(node) => self.build_set_mod_pointed_ir(node),
                 OpCode::SetModShifted(node) => self.build_set_mod_shifted_ir(node),
+                OpCode::Copy(node) => self.build_copy_ir(node),
             },
         }
     }
