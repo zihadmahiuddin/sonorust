@@ -262,7 +262,7 @@ mod tests {
     use crate::{
         codegen::jit::build_and_return_function,
         nodes::*,
-        runtime::{basic::BasicMemory, context::RuntimeContext},
+        runtime::{basic::BasicRuntimeContext, context::MemoryAccess},
     };
 
     #[test]
@@ -275,11 +275,9 @@ mod tests {
             ResolvedNode::OpCode(OpCode::Execute(Execute { nodes: vec![2, 3] })), // should return 100.0
         ];
 
-        let mut runtime_context = RuntimeContext {
-            memory: &BasicMemory::default(),
-        };
+        let mut runtime_context = BasicRuntimeContext::default();
         let func = build_and_return_function(&nodes, 4);
-        let result = func(&mut runtime_context as _);
+        let result = func(&mut runtime_context.as_ctx() as _);
         assert_eq!(result, 100.0);
     }
 
@@ -293,11 +291,9 @@ mod tests {
             ResolvedNode::OpCode(OpCode::Execute0(Execute0 { nodes: vec![2, 3] })), // should return 100.0
         ];
 
-        let mut runtime_context = RuntimeContext {
-            memory: &BasicMemory::default(),
-        };
+        let mut runtime_context = BasicRuntimeContext::default();
         let func = build_and_return_function(&nodes, 4);
-        let result = func(&mut runtime_context as _);
+        let result = func(&mut runtime_context.as_ctx() as _);
         assert_eq!(result, 0.0);
     }
 
@@ -311,11 +307,9 @@ mod tests {
             ResolvedNode::OpCode(OpCode::Multiply(Multiply { inputs: vec![2, 3] })), // 4 = 15.0
             ResolvedNode::OpCode(OpCode::Execute(Execute { nodes: vec![2, 4] })),    // returns 15.0
         ];
-        let mut runtime_context = RuntimeContext {
-            memory: &BasicMemory::default(),
-        };
+        let mut runtime_context = BasicRuntimeContext::default();
         let func = build_and_return_function(&nodes, 5);
-        let result = func(&mut runtime_context as _);
+        let result = func(&mut runtime_context.as_ctx() as _);
         assert_eq!(result, 15.0);
     }
 
@@ -331,11 +325,9 @@ mod tests {
                 alternate: 2,
             })),
         ];
-        let mut runtime_context = RuntimeContext {
-            memory: &BasicMemory::default(),
-        };
+        let mut runtime_context = BasicRuntimeContext::default();
         let func = build_and_return_function(&nodes, 3);
-        let result = func(&mut runtime_context as _);
+        let result = func(&mut runtime_context.as_ctx() as _);
         assert_eq!(result, 42.0);
     }
 
@@ -351,11 +343,9 @@ mod tests {
                 alternate: 2,
             })),
         ];
-        let mut runtime_context = RuntimeContext {
-            memory: &BasicMemory::default(),
-        };
+        let mut runtime_context = BasicRuntimeContext::default();
         let func = build_and_return_function(&nodes, 3);
-        let result = func(&mut runtime_context as _);
+        let result = func(&mut runtime_context.as_ctx() as _);
         assert_eq!(result, 99.0);
     }
 
@@ -373,11 +363,9 @@ mod tests {
                 alternate: 4,
             })),
         ];
-        let mut runtime_context = RuntimeContext {
-            memory: &BasicMemory::default(),
-        };
+        let mut runtime_context = BasicRuntimeContext::default();
         let func = build_and_return_function(&nodes, 5);
-        let result = func(&mut runtime_context as _);
+        let result = func(&mut runtime_context.as_ctx() as _);
         assert_eq!(result, 5.0);
     }
 
@@ -395,11 +383,9 @@ mod tests {
                 alternate: 3,
             })),
         ];
-        let mut runtime_context = RuntimeContext {
-            memory: &BasicMemory::default(),
-        };
+        let mut runtime_context = BasicRuntimeContext::default();
         let func = build_and_return_function(&nodes, 5);
-        let result = func(&mut runtime_context as _);
+        let result = func(&mut runtime_context.as_ctx() as _);
         assert_eq!(result, 6.0);
     }
 
@@ -421,11 +407,9 @@ mod tests {
                 alternate: 2,
             })), // outer If = 11.0
         ];
-        let mut runtime_context = RuntimeContext {
-            memory: &BasicMemory::default(),
-        };
+        let mut runtime_context = BasicRuntimeContext::default();
         let func = build_and_return_function(&nodes, 5);
-        let result = func(&mut runtime_context as _);
+        let result = func(&mut runtime_context.as_ctx() as _);
         assert_eq!(result, 11.0);
     }
 
@@ -436,13 +420,12 @@ mod tests {
             ResolvedNode::OpCode(OpCode::Block(Block { body: 0 })), // 1
         ];
 
-        let mut runtime_context = RuntimeContext {
-            memory: &BasicMemory::default(),
-        };
+        let mut runtime_context = BasicRuntimeContext::default();
         let func = build_and_return_function(&nodes, 1);
-        let result = func(&mut runtime_context as _);
+        let result = func(&mut runtime_context.as_ctx() as _);
         assert_eq!(result, 42.0);
     }
+
     #[test]
     fn test_block_returns_from_break() {
         let nodes = vec![
@@ -452,13 +435,12 @@ mod tests {
             ResolvedNode::OpCode(OpCode::Block(Block { body: 2 })), // 3
         ];
 
-        let mut runtime_context = RuntimeContext {
-            memory: &BasicMemory::default(),
-        };
+        let mut runtime_context = BasicRuntimeContext::default();
         let func = build_and_return_function(&nodes, 3);
-        let result = func(&mut runtime_context as _);
+        let result = func(&mut runtime_context.as_ctx() as _);
         assert_eq!(result, 99.0);
     }
+
     #[test]
     fn test_block_with_if_breaks() {
         let nodes = vec![
@@ -475,11 +457,9 @@ mod tests {
             ResolvedNode::OpCode(OpCode::Block(Block { body: 5 })), // 6
         ];
 
-        let mut runtime_context = RuntimeContext {
-            memory: &BasicMemory::default(),
-        };
+        let mut runtime_context = BasicRuntimeContext::default();
         let func = build_and_return_function(&nodes, 6);
-        let result = func(&mut runtime_context as _);
+        let result = func(&mut runtime_context.as_ctx() as _);
         assert_eq!(result, 55.5);
     }
 
@@ -493,11 +473,9 @@ mod tests {
             ResolvedNode::OpCode(OpCode::Block(Block { body: 3 })), // 4
         ];
 
-        let mut runtime_context = RuntimeContext {
-            memory: &BasicMemory::default(),
-        };
+        let mut runtime_context = BasicRuntimeContext::default();
         let func = build_and_return_function(&nodes, 4);
-        let result = func(&mut runtime_context as _);
+        let result = func(&mut runtime_context.as_ctx() as _);
         assert_eq!(result, 123.0);
     }
 
@@ -524,11 +502,9 @@ mod tests {
             })),
         ];
 
-        let mut runtime_context = RuntimeContext {
-            memory: &BasicMemory::default(),
-        };
+        let mut runtime_context = BasicRuntimeContext::default();
         let func = build_and_return_function(&nodes, 5);
-        let result = func(&mut runtime_context as _);
+        let result = func(&mut runtime_context.as_ctx() as _);
         assert_eq!(result, 42.0);
     }
 
@@ -559,14 +535,13 @@ mod tests {
             ResolvedNode::OpCode(OpCode::While(While { test: 3, body: 9 })), // 10: while
         ];
 
-        let mut runtime_context = RuntimeContext {
-            memory: &BasicMemory::default(),
-        };
+        let mut runtime_context = BasicRuntimeContext::default();
         let func = build_and_return_function(&nodes, 10);
-        let result = func(&mut runtime_context as _);
+        let result = func(&mut runtime_context.as_ctx() as _);
         assert_eq!(result, 0.0);
         assert_eq!(runtime_context.memory.read(0, 0), Some(42.0));
     }
+
     #[test]
     fn test_switch_integer() {
         let nodes = vec![
@@ -582,27 +557,25 @@ mod tests {
                 consequents: vec![2, 3],
             })), // 4
         ];
-        let mut runtime_context = RuntimeContext {
-            memory: &BasicMemory::default(),
-        };
+        let mut runtime_context = BasicRuntimeContext::default();
 
         // matches case 0
         let func = build_and_return_function(&nodes, 4);
-        let result = func(&mut runtime_context as _);
+        let result = func(&mut runtime_context.as_ctx() as _);
         assert_eq!(result, 10.0);
 
         runtime_context.memory.write(0, 0, 1.0);
 
         // matches case 1
         let func = build_and_return_function(&nodes, 4);
-        let result = func(&mut runtime_context as _);
+        let result = func(&mut runtime_context.as_ctx() as _);
         assert_eq!(result, 20.0);
 
         runtime_context.memory.write(0, 0, 5.0);
 
         // no match → default
         let func = build_and_return_function(&nodes, 4);
-        let result = func(&mut runtime_context as _);
+        let result = func(&mut runtime_context.as_ctx() as _);
         assert_eq!(result, 0.0);
     }
 
@@ -623,27 +596,25 @@ mod tests {
                 default_consequent: 4,
             })), // 5
         ];
-        let mut runtime_context = RuntimeContext {
-            memory: &BasicMemory::default(),
-        };
+        let mut runtime_context = BasicRuntimeContext::default();
 
         // matches case 0
         let func = build_and_return_function(&nodes, 5);
-        let result = func(&mut runtime_context as _);
+        let result = func(&mut runtime_context.as_ctx() as _);
         assert_eq!(result, 10.0);
 
         runtime_context.memory.write(0, 0, 1.0);
 
         // matches case 1
         let func = build_and_return_function(&nodes, 5);
-        let result = func(&mut runtime_context as _);
+        let result = func(&mut runtime_context.as_ctx() as _);
         assert_eq!(result, 20.0);
 
         runtime_context.memory.write(0, 0, 5.0);
 
         // no match → default
         let func = build_and_return_function(&nodes, 5);
-        let result = func(&mut runtime_context as _);
+        let result = func(&mut runtime_context.as_ctx() as _);
         assert_eq!(result, 99.0);
     }
 }
