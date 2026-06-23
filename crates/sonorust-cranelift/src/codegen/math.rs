@@ -439,60 +439,16 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         let zero = crate::ir_value_cranelift_const(self.builder.ins(), 0.0);
         let one = crate::ir_value_cranelift_const(self.builder.ins(), 1.0);
         let neg_one = crate::ir_value_cranelift_const(self.builder.ins(), -1.0);
+        let nan_val = crate::ir_value_cranelift_const(self.builder.ins(), f32::NAN);
 
-        let block_nan = self.builder.create_block();
-        let block_pos = self.builder.create_block();
-        let block_neg = self.builder.create_block();
-        let block_zero = self.builder.create_block();
-        let block_merge = self.builder.create_block();
-        let result = self
-            .builder
-            .append_block_param(block_merge, crate::IR_VALUE_CRANELIFT_TYPE);
+        let gt_zero = self.builder.ins().fcmp(FloatCC::GreaterThan, value, zero);
+        let lt_zero = self.builder.ins().fcmp(FloatCC::LessThan, value, zero);
+
+        let sign_or_zero = self.builder.ins().select(lt_zero, neg_one, zero);
+        let normal_result = self.builder.ins().select(gt_zero, one, sign_or_zero);
 
         let is_nan = self.builder.ins().fcmp(FloatCC::NotEqual, value, value);
-        self.builder
-            .ins()
-            .brif(is_nan, block_nan, &[], block_pos, &[]);
-
-        self.builder.switch_to_block(block_nan);
-        let nan_val = crate::ir_value_cranelift_const(self.builder.ins(), f32::NAN);
-        self.builder
-            .ins()
-            .jump(block_merge, &[BlockArg::Value(nan_val)]);
-
-        self.builder.switch_to_block(block_pos);
-        let gt_zero = self.builder.ins().fcmp(FloatCC::GreaterThan, value, zero);
-        self.builder.ins().brif(
-            gt_zero,
-            block_merge,
-            &[BlockArg::Value(one)],
-            block_neg,
-            &[],
-        );
-
-        self.builder.switch_to_block(block_neg);
-        let lt_zero = self.builder.ins().fcmp(FloatCC::LessThan, value, zero);
-        self.builder.ins().brif(
-            lt_zero,
-            block_merge,
-            &[BlockArg::Value(neg_one)],
-            block_zero,
-            &[],
-        );
-
-        self.builder.switch_to_block(block_zero);
-        self.builder
-            .ins()
-            .jump(block_merge, &[BlockArg::Value(zero)]);
-
-        self.builder.switch_to_block(block_merge);
-        self.builder.seal_block(block_nan);
-        self.builder.seal_block(block_pos);
-        self.builder.seal_block(block_neg);
-        self.builder.seal_block(block_zero);
-        self.builder.seal_block(block_merge);
-
-        result
+        self.builder.ins().select(is_nan, nan_val, normal_result)
     }
 
     pub(crate) fn build_random_ir(&mut self, node: &Random) -> Value {
