@@ -1,5 +1,4 @@
 pub mod control_flow;
-pub mod jit;
 pub mod logical;
 pub mod math;
 pub mod memory;
@@ -7,171 +6,11 @@ pub mod memory;
 use std::collections::HashMap;
 
 use cranelift::{
-    codegen::ir::{FuncRef, Function},
-    prelude::{
-        AbiParam, Block, FunctionBuilder, FunctionBuilderContext, InstBuilder, Signature, Value,
-        isa::CallConv, types,
-    },
+    codegen::ir::FuncRef,
+    prelude::{Block, FunctionBuilder, Value},
 };
 
 use sonorust_ir::nodes::{OpCode, ResolvedNode};
-
-pub(crate) fn create_signature_for(name: &str, call_conv: CallConv) -> Signature {
-    let mut sig = Signature::new(call_conv);
-    // TODO: typesafe?
-    match name {
-        "read_mem" => {
-            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::I64)); // block_id
-            sig.params.push(AbiParam::new(types::I64)); // index
-
-            sig.returns.push(AbiParam::new(types::F32));
-        }
-        "write_mem" => {
-            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::I64)); // block_id
-            sig.params.push(AbiParam::new(types::I64)); // index
-            sig.params.push(AbiParam::new(types::F32)); // value
-
-            sig.returns.push(AbiParam::new(types::F32));
-        }
-        "copy_mem" => {
-            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::I64)); // src_block_id
-            sig.params.push(AbiParam::new(types::I64)); // src_index
-            sig.params.push(AbiParam::new(types::I64)); // dst_block_id
-            sig.params.push(AbiParam::new(types::I64)); // dst_index
-            sig.params.push(AbiParam::new(types::I64)); // count
-
-            sig.returns.push(AbiParam::new(types::F32));
-        }
-        "pow" => {
-            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // a
-            sig.params.push(AbiParam::new(types::F32)); // b
-
-            sig.returns.push(AbiParam::new(types::F32));
-        }
-        "sin" => {
-            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
-
-            sig.returns.push(AbiParam::new(types::F32));
-        }
-        "cos" => {
-            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
-
-            sig.returns.push(AbiParam::new(types::F32));
-        }
-        "tan" => {
-            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
-
-            sig.returns.push(AbiParam::new(types::F32));
-        }
-        "sinh" => {
-            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
-
-            sig.returns.push(AbiParam::new(types::F32));
-        }
-        "cosh" => {
-            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
-
-            sig.returns.push(AbiParam::new(types::F32));
-        }
-        "tanh" => {
-            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
-
-            sig.returns.push(AbiParam::new(types::F32));
-        }
-        "arcsin" => {
-            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
-
-            sig.returns.push(AbiParam::new(types::F32));
-        }
-        "arccos" => {
-            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
-
-            sig.returns.push(AbiParam::new(types::F32));
-        }
-        "arctan" => {
-            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
-
-            sig.returns.push(AbiParam::new(types::F32));
-        }
-        "arctan2" => {
-            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // a
-            sig.params.push(AbiParam::new(types::F32)); // b
-
-            sig.returns.push(AbiParam::new(types::F32));
-        }
-        "degree" => {
-            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
-
-            sig.returns.push(AbiParam::new(types::F32));
-        }
-        "radian" => {
-            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
-
-            sig.returns.push(AbiParam::new(types::F32));
-        }
-        "log" => {
-            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
-
-            sig.returns.push(AbiParam::new(types::F32));
-        }
-        "random" => {
-            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // min
-            sig.params.push(AbiParam::new(types::F32)); // max
-
-            sig.returns.push(AbiParam::new(types::F32));
-        }
-        "random_integer" => {
-            sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // min
-            sig.params.push(AbiParam::new(types::F32)); // max
-
-            sig.returns.push(AbiParam::new(types::F32));
-        }
-        _ => panic!("Unknown external function: {name}"),
-    }
-    sig
-}
-
-pub fn build_cranelift_function(
-    func: &mut Function,
-    externals_func_refs: &HashMap<&str, FuncRef>,
-    nodes: &[ResolvedNode],
-    root_index: usize,
-) {
-    let mut ctx = FunctionBuilderContext::new();
-    let mut builder = FunctionBuilder::new(func, &mut ctx);
-
-    let entry_block = builder.create_block();
-    builder.append_block_params_for_function_params(entry_block);
-    builder.switch_to_block(entry_block);
-    builder.ensure_inserted_block();
-    let ctx_param = builder.block_params(entry_block)[0];
-
-    let mut codegen_context =
-        CodegenContext::new(&mut builder, externals_func_refs, ctx_param, nodes);
-    let result = codegen_context.build_node_ir(root_index);
-    builder.ins().return_(&[result]);
-    builder.seal_block(entry_block);
-    builder.finalize();
-}
 
 #[derive(Debug, Clone)]
 pub enum BlockKind {
@@ -223,7 +62,9 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     // Helper to build arbitrary nodes recursively
     pub fn build_node_ir(&mut self, node_index: usize) -> Value {
         match &self.nodes[node_index] {
-            ResolvedNode::Value(value) => self.builder.ins().f32const(*value),
+            ResolvedNode::Value(value) => {
+                crate::ir_value_cranelift_const(self.builder.ins(), *value)
+            }
             ResolvedNode::OpCode(opcode) => match opcode {
                 // Control Flow
                 OpCode::Execute(node) => self.build_execute_ir(node),

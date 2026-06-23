@@ -375,10 +375,9 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
 mod tests {
     use std::cell::RefCell;
 
-    use crate::codegen::jit::build_and_return_function;
-
     use sonorust_ir::nodes::*;
-    use sonorust_runtime::{basic::BasicRuntimeContext, context::MemoryAccess};
+    use sonorust_runtime::{SonorustIRExecutor, basic::BasicRuntimeContext, context::MemoryAccess};
+    use crate::CraneliftJitExecutor;
 
     #[test]
     fn test_get() {
@@ -392,8 +391,7 @@ mod tests {
 
         let mut runtime_context = BasicRuntimeContext::default();
         runtime_context.memory.write(0, 0, 7.0);
-        let func = build_and_return_function(&nodes, 1);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 7.0);
     }
 
@@ -419,8 +417,7 @@ mod tests {
         runtime_context.memory.write(0, 1, 5.0);
         runtime_context.memory.write(3, 7, 123.45);
 
-        let func = build_and_return_function(&nodes, 3);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 123.45);
     }
@@ -447,8 +444,7 @@ mod tests {
             .insert(0, RefCell::new(vec![0.0; 4096]));
         runtime_context.memory.write(0, 2 + 3 * 4, 999.99); // index = 14
 
-        let func = build_and_return_function(&nodes, 4);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 999.99);
     }
@@ -466,8 +462,7 @@ mod tests {
         ];
 
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 2);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 7.0);
         assert_eq!(Some(result), runtime_context.memory.read(0, 0));
     }
@@ -495,8 +490,7 @@ mod tests {
         runtime_context.memory.write(0, 0, 3.0);
         runtime_context.memory.write(0, 1, 5.0);
 
-        let func = build_and_return_function(&nodes, 4);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 123.45);
         assert_eq!(Some(result), runtime_context.memory.read(3, 7));
@@ -525,8 +519,7 @@ mod tests {
             .writable
             .insert(0, RefCell::new(vec![0.0; 4096]));
 
-        let func = build_and_return_function(&nodes, 5);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
 
         let index = 2 + 3 * 4; // 14
         assert_eq!(result, 123.45);
@@ -553,8 +546,7 @@ mod tests {
             .insert(0, RefCell::new(vec![0.0; 4096]));
         runtime_context.memory.write(0, 5, 7.0);
 
-        let func = build_and_return_function(&nodes, 3);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 10.0);
         assert_eq!(Some(10.0), runtime_context.memory.read(0, 5));
@@ -584,8 +576,7 @@ mod tests {
         runtime_context.memory.write(0, 1, 5.0);
         runtime_context.memory.write(3, 7, 7.0);
 
-        let func = build_and_return_function(&nodes, 4);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 10.0);
         assert_eq!(Some(10.0), runtime_context.memory.read(3, 7));
@@ -615,8 +606,7 @@ mod tests {
             .insert(0, RefCell::new(vec![0.0; 4096]));
         runtime_context.memory.write(0, 14, 10.0); // 2 + 3*4 = 14
 
-        let func = build_and_return_function(&nodes, 5);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 15.0);
         assert_eq!(Some(15.0), runtime_context.memory.read(0, 14));
@@ -641,8 +631,7 @@ mod tests {
             .writable
             .insert(0, RefCell::new(vec![10.0; 4096]));
 
-        let func = build_and_return_function(&nodes, 3);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 7.0);
         assert_eq!(Some(7.0), runtime_context.memory.read(0, 5));
@@ -672,8 +661,7 @@ mod tests {
         runtime_context.memory.write(0, 1, 5.0);
         runtime_context.memory.write(3, 7, 10.0);
 
-        let func = build_and_return_function(&nodes, 4);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 7.0);
         assert_eq!(Some(7.0), runtime_context.memory.read(3, 7));
@@ -703,8 +691,7 @@ mod tests {
             .insert(0, RefCell::new(vec![10.0; 4096]));
         runtime_context.memory.write(0, 14, 10.0); // 2 + 3*4 = 14
 
-        let func = build_and_return_function(&nodes, 5);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 7.0);
         assert_eq!(Some(7.0), runtime_context.memory.read(0, 14));
@@ -729,8 +716,7 @@ mod tests {
             .writable
             .insert(0, RefCell::new(vec![10.0; 4096]));
 
-        let func = build_and_return_function(&nodes, 3);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 20.0);
         assert_eq!(Some(20.0), runtime_context.memory.read(0, 5));
@@ -760,8 +746,7 @@ mod tests {
         runtime_context.memory.write(0, 1, 5.0);
         runtime_context.memory.write(3, 7, 10.0);
 
-        let func = build_and_return_function(&nodes, 4);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 20.0);
         assert_eq!(Some(20.0), runtime_context.memory.read(3, 7));
@@ -791,8 +776,7 @@ mod tests {
             .insert(0, RefCell::new(vec![10.0; 4096]));
         runtime_context.memory.write(0, 14, 10.0); // 2 + 3*4 = 14
 
-        let func = build_and_return_function(&nodes, 5);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 20.0);
         assert_eq!(Some(20.0), runtime_context.memory.read(0, 14));
@@ -817,8 +801,7 @@ mod tests {
             .writable
             .insert(0, RefCell::new(vec![20.0; 4096]));
 
-        let func = build_and_return_function(&nodes, 3);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 2.0);
         assert_eq!(Some(2.0), runtime_context.memory.read(0, 5));
@@ -848,8 +831,7 @@ mod tests {
         runtime_context.memory.write(0, 1, 5.0);
         runtime_context.memory.write(3, 7, 20.0);
 
-        let func = build_and_return_function(&nodes, 4);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 10.0);
         assert_eq!(Some(10.0), runtime_context.memory.read(3, 7));
@@ -879,8 +861,7 @@ mod tests {
             .insert(0, RefCell::new(vec![40.0; 4096]));
         runtime_context.memory.write(0, 14, 40.0); // 2 + 3*4 = 14
 
-        let func = build_and_return_function(&nodes, 5);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 20.0);
         assert_eq!(Some(20.0), runtime_context.memory.read(0, 14));
@@ -905,8 +886,7 @@ mod tests {
             .writable
             .insert(0, RefCell::new(vec![2.0; 4096]));
 
-        let func = build_and_return_function(&nodes, 3);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 8.0);
         assert_eq!(Some(8.0), runtime_context.memory.read(0, 5));
@@ -936,8 +916,7 @@ mod tests {
         runtime_context.memory.write(0, 1, 5.0);
         runtime_context.memory.write(3, 7, 2.0);
 
-        let func = build_and_return_function(&nodes, 4);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 8.0);
         assert_eq!(Some(8.0), runtime_context.memory.read(3, 7));
@@ -967,8 +946,7 @@ mod tests {
             .insert(0, RefCell::new(vec![2.0; 4096]));
         runtime_context.memory.write(0, 14, 2.0); // 2 + 3*4 = 14
 
-        let func = build_and_return_function(&nodes, 5);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 8.0);
         assert_eq!(Some(8.0), runtime_context.memory.read(0, 14));
@@ -993,8 +971,7 @@ mod tests {
             .writable
             .insert(0, RefCell::new(vec![10.0; 4096]));
 
-        let func = build_and_return_function(&nodes, 3);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 1.0);
         assert_eq!(Some(1.0), runtime_context.memory.read(0, 5));
@@ -1024,8 +1001,7 @@ mod tests {
         runtime_context.memory.write(0, 1, 5.0);
         runtime_context.memory.write(3, 7, 10.0);
 
-        let func = build_and_return_function(&nodes, 4);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 1.0);
         assert_eq!(Some(1.0), runtime_context.memory.read(3, 7));
@@ -1055,8 +1031,7 @@ mod tests {
             .insert(0, RefCell::new(vec![10.0; 4096]));
         runtime_context.memory.write(0, 14, 10.0); // 2 + 3*4 = 14
 
-        let func = build_and_return_function(&nodes, 5);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 1.0);
         assert_eq!(Some(1.0), runtime_context.memory.read(0, 14));
@@ -1081,8 +1056,7 @@ mod tests {
             .writable
             .insert(0, RefCell::new(vec![10.0; 4096]));
 
-        let func = build_and_return_function(&nodes, 3);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 1.0);
         assert_eq!(Some(1.0), runtime_context.memory.read(0, 5));
@@ -1112,8 +1086,7 @@ mod tests {
         runtime_context.memory.write(0, 1, 5.0);
         runtime_context.memory.write(3, 7, 10.0);
 
-        let func = build_and_return_function(&nodes, 4);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 1.0);
         assert_eq!(Some(1.0), runtime_context.memory.read(3, 7));
@@ -1143,8 +1116,7 @@ mod tests {
             .insert(0, RefCell::new(vec![10.0; 4096]));
         runtime_context.memory.write(0, 14, 10.0); // 2 + 3*4 = 14
 
-        let func = build_and_return_function(&nodes, 5);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 1.0);
         assert_eq!(Some(1.0), runtime_context.memory.read(0, 14));
@@ -1177,8 +1149,7 @@ mod tests {
             .writable
             .insert(1, RefCell::new(vec![0.0; 5]));
 
-        let func = build_and_return_function(&nodes, 5);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 0.0);
         assert_eq!(runtime_context.memory.read(1, 1), Some(11.0));
@@ -1209,8 +1180,7 @@ mod tests {
             .writable
             .insert(0, RefCell::new(vec![1.0, 2.0, 3.0, 4.0, 5.0]));
 
-        let func = build_and_return_function(&nodes, 5);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 0.0);
         assert_eq!(runtime_context.memory.read(0, 1), Some(1.0));
@@ -1242,8 +1212,7 @@ mod tests {
             .writable
             .insert(0, RefCell::new(vec![10.0, 11.0, 12.0, 13.0, 14.0]));
 
-        let func = build_and_return_function(&nodes, 5);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 0.0);
         assert_eq!(runtime_context.memory.read(0, 0), Some(12.0));
@@ -1277,8 +1246,7 @@ mod tests {
             .writable
             .insert(1, RefCell::new(vec![9.0]));
 
-        let func = build_and_return_function(&nodes, 5);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
 
         assert_eq!(result, 0.0);
         assert_eq!(runtime_context.memory.read(1, 0), Some(9.0));

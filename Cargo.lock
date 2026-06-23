@@ -442,6 +442,7 @@ name = "sonorust-runtime"
 version = "0.1.0"
 dependencies = [
  "rand",
+ "sonorust-ir",
  "tracing",
 ]
 

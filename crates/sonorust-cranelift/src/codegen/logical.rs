@@ -11,7 +11,7 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         let compare_result = self.builder.ins().fcmp(cond, lhs, rhs);
         self.builder
             .ins()
-            .fcvt_from_sint(types::F32, compare_result)
+            .fcvt_from_sint(crate::IR_VALUE_CRANELIFT_TYPE, compare_result)
     }
 
     pub(crate) fn build_equal_ir(&mut self, node: &Equal) -> Value {
@@ -40,9 +40,9 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
 
     pub(crate) fn build_not_ir(&mut self, node: &Not) -> Value {
         let input = self.build_node_ir(node.value);
-        let zero = self.builder.ins().f32const(0.0);
+        let zero = crate::ir_value_cranelift_const(self.builder.ins(), 0.0);
         let cmp = self.builder.ins().fcmp(FloatCC::Equal, input, zero);
-        self.builder.ins().fcvt_from_sint(types::F32, cmp)
+        self.builder.ins().fcvt_from_sint(crate::IR_VALUE_CRANELIFT_TYPE, cmp)
     }
 
     pub(crate) fn build_and_ir(&mut self, node: &And) -> Value {
@@ -52,9 +52,9 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         );
 
         let result_block = self.builder.create_block();
-        let result_param = self.builder.append_block_param(result_block, types::F32);
+        let result_param = self.builder.append_block_param(result_block, crate::IR_VALUE_CRANELIFT_TYPE);
 
-        let zero = self.builder.ins().f32const(0.0);
+        let zero = crate::ir_value_cranelift_const(self.builder.ins(), 0.0);
 
         let mut done = false;
         for (i, arg) in node.inputs.iter().enumerate() {
@@ -98,9 +98,9 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         assert!(!node.inputs.is_empty(), "Or requires at least one argument");
 
         let result_block = self.builder.create_block();
-        let result_param = self.builder.append_block_param(result_block, types::F32);
+        let result_param = self.builder.append_block_param(result_block, crate::IR_VALUE_CRANELIFT_TYPE);
 
-        let zero = self.builder.ins().f32const(0.0);
+        let zero = crate::ir_value_cranelift_const(self.builder.ins(), 0.0);
 
         let mut done = false;
         for (i, arg) in node.inputs.iter().enumerate() {
@@ -139,12 +139,9 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
 
 #[cfg(test)]
 mod tests {
-    use core::f32;
-
-    use crate::codegen::jit::build_and_return_function;
-
     use sonorust_ir::nodes::*;
-    use sonorust_runtime::basic::BasicRuntimeContext;
+    use sonorust_runtime::{SonorustIRExecutor, basic::BasicRuntimeContext};
+    use crate::CraneliftJitExecutor;
 
     #[test]
     fn test_not_equal_true() {
@@ -154,8 +151,7 @@ mod tests {
             ResolvedNode::OpCode(OpCode::NotEqual(NotEqual { lhs: 0, rhs: 1 })), // 2
         ];
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 2);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 1.0);
     }
 
@@ -167,8 +163,7 @@ mod tests {
             ResolvedNode::OpCode(OpCode::NotEqual(NotEqual { lhs: 0, rhs: 1 })), // 2
         ];
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 2);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 0.0);
     }
 
@@ -180,8 +175,7 @@ mod tests {
             ResolvedNode::OpCode(OpCode::Equal(Equal { lhs: 0, rhs: 1 })), // 2
         ];
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 2);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 1.0);
     }
 
@@ -193,8 +187,7 @@ mod tests {
             ResolvedNode::OpCode(OpCode::Equal(Equal { lhs: 0, rhs: 1 })), // 2
         ];
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 2);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 0.0);
     }
 
@@ -206,8 +199,7 @@ mod tests {
             ResolvedNode::OpCode(OpCode::Greater(Greater { lhs: 0, rhs: 1 })), // 2
         ];
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 2);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 1.0);
     }
 
@@ -219,8 +211,7 @@ mod tests {
             ResolvedNode::OpCode(OpCode::Greater(Greater { lhs: 0, rhs: 1 })),
         ];
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 2);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 0.0);
     }
 
@@ -232,8 +223,7 @@ mod tests {
             ResolvedNode::OpCode(OpCode::GreaterOr(GreaterOr { lhs: 0, rhs: 1 })),
         ];
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 2);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 1.0);
     }
 
@@ -245,8 +235,7 @@ mod tests {
             ResolvedNode::OpCode(OpCode::GreaterOr(GreaterOr { lhs: 0, rhs: 1 })),
         ];
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 2);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 1.0);
     }
 
@@ -258,8 +247,7 @@ mod tests {
             ResolvedNode::OpCode(OpCode::GreaterOr(GreaterOr { lhs: 0, rhs: 1 })),
         ];
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 2);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 0.0);
     }
 
@@ -271,8 +259,7 @@ mod tests {
             ResolvedNode::OpCode(OpCode::Less(Less { lhs: 0, rhs: 1 })),
         ];
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 2);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 1.0);
     }
 
@@ -284,8 +271,7 @@ mod tests {
             ResolvedNode::OpCode(OpCode::Less(Less { lhs: 0, rhs: 1 })),
         ];
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 2);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 0.0);
     }
 
@@ -297,8 +283,7 @@ mod tests {
             ResolvedNode::OpCode(OpCode::LessOr(LessOr { lhs: 0, rhs: 1 })),
         ];
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 2);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 1.0);
     }
 
@@ -310,8 +295,7 @@ mod tests {
             ResolvedNode::OpCode(OpCode::LessOr(LessOr { lhs: 0, rhs: 1 })),
         ];
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 2);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 1.0);
     }
 
@@ -323,8 +307,7 @@ mod tests {
             ResolvedNode::OpCode(OpCode::LessOr(LessOr { lhs: 0, rhs: 1 })),
         ];
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 2);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 0.0);
     }
 
@@ -335,20 +318,18 @@ mod tests {
             ResolvedNode::OpCode(OpCode::Not(Not { value: 0 })), // 1
         ];
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 1);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 1.0);
     }
 
     #[test]
     fn test_not_nonzero() {
         let nodes = vec![
-            ResolvedNode::Value(f32::consts::PI),                // 0
+            ResolvedNode::Value(std::f32::consts::PI),                // 0
             ResolvedNode::OpCode(OpCode::Not(Not { value: 0 })), // 1
         ];
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 1);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 0.0);
     }
 
@@ -360,8 +341,7 @@ mod tests {
             ResolvedNode::OpCode(OpCode::And(And { inputs: vec![0, 1] })), // 2
         ];
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 2);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 2.0); // Last input returned
     }
 
@@ -373,8 +353,7 @@ mod tests {
             ResolvedNode::OpCode(OpCode::And(And { inputs: vec![0, 1] })), // 2
         ];
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 2);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 0.0);
     }
 
@@ -386,8 +365,7 @@ mod tests {
             ResolvedNode::OpCode(OpCode::And(And { inputs: vec![0, 1] })), // 2
         ];
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 2);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 0.0);
     }
 
@@ -399,8 +377,7 @@ mod tests {
             ResolvedNode::OpCode(OpCode::Or(Or { inputs: vec![0, 1] })), // 2
         ];
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 2);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 0.0);
     }
 
@@ -412,8 +389,7 @@ mod tests {
             ResolvedNode::OpCode(OpCode::Or(Or { inputs: vec![0, 1] })), // 2
         ];
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 2);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 5.0);
     }
 
@@ -425,8 +401,7 @@ mod tests {
             ResolvedNode::OpCode(OpCode::Or(Or { inputs: vec![0, 1] })), // 2
         ];
         let mut runtime_context = BasicRuntimeContext::default();
-        let func = build_and_return_function(&nodes, 2);
-        let result = func(&mut runtime_context.as_ctx() as _);
+        let result = CraneliftJitExecutor::default().execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(result, 8.0);
     }
 }

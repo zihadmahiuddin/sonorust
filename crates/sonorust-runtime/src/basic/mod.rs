@@ -2,6 +2,7 @@ use std::{cell::RefCell, collections::HashMap};
 
 use crate::context::{MemoryAccess, RuntimeContext};
 
+use sonorust_ir::IRValue;
 use tracing::warn;
 
 #[derive(Default)]
@@ -20,8 +21,8 @@ impl<'a> BasicRuntimeContext {
 }
 
 pub struct BasicMemory {
-    pub read_only: HashMap<u64, Vec<f32>>,
-    pub writable: HashMap<u64, RefCell<Vec<f32>>>,
+    pub read_only: HashMap<u64, Vec<IRValue>>,
+    pub writable: HashMap<u64, RefCell<Vec<IRValue>>>,
 }
 
 impl Default for BasicMemory {
@@ -38,7 +39,7 @@ impl Default for BasicMemory {
 }
 
 impl MemoryAccess for BasicMemory {
-    fn read(&self, block_id: u64, index: usize) -> Option<f32> {
+    fn read(&self, block_id: u64, index: usize) -> Option<IRValue> {
         if let Some(block) = self.writable.get(&block_id) {
             block
                 .try_borrow()
@@ -52,7 +53,7 @@ impl MemoryAccess for BasicMemory {
         }
     }
 
-    fn write(&self, block_id: u64, index: usize, value: f32) -> Option<f32> {
+    fn write(&self, block_id: u64, index: usize, value: IRValue) -> Option<IRValue> {
         if let Some(block) = self.writable.get(&block_id) {
             if let Some(old_value) = block
                 .try_borrow_mut()

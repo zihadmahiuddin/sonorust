@@ -1,11 +1,12 @@
 use std::collections::HashMap;
 
 use rand::Rng;
+use sonorust_ir::IRValue;
 use tracing::warn;
 
 pub trait MemoryAccess {
-    fn read(&self, block_id: u64, index: usize) -> Option<f32>;
-    fn write(&self, block_id: u64, index: usize, value: f32) -> Option<f32>;
+    fn read(&self, block_id: u64, index: usize) -> Option<IRValue>;
+    fn write(&self, block_id: u64, index: usize, value: IRValue) -> Option<IRValue>;
 }
 
 pub struct RuntimeContext<'a> {
@@ -40,7 +41,7 @@ pub fn get_external_functions<'a>() -> ExternalFunctionsMap<'a> {
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn read_mem(ctx: *mut RuntimeContext, block_id: i64, index: i64) -> f32 {
+extern "C" fn read_mem(ctx: *mut RuntimeContext, block_id: i64, index: i64) -> IRValue {
     let ctx = unsafe { &mut *ctx };
     if let Some(value) = ctx.memory.read(block_id as u64, index as usize) {
         value
@@ -51,7 +52,12 @@ extern "C" fn read_mem(ctx: *mut RuntimeContext, block_id: i64, index: i64) -> f
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn write_mem(ctx: *mut RuntimeContext, block_id: i64, index: i64, value: f32) -> f32 {
+extern "C" fn write_mem(
+    ctx: *mut RuntimeContext,
+    block_id: i64,
+    index: i64,
+    value: IRValue,
+) -> IRValue {
     let ctx = unsafe { &mut *ctx };
     if let Some(value) = ctx.memory.write(block_id as u64, index as usize, value) {
         value
@@ -69,7 +75,7 @@ extern "C" fn copy_mem(
     dst_block_id: i64,
     dst_index: i64,
     count: i64,
-) -> f32 {
+) -> IRValue {
     if count < 0 {
         warn!("Copy with negative count: {count}");
         return 0.0;
@@ -115,83 +121,83 @@ extern "C" fn copy_mem(
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn pow(_ctx: *mut RuntimeContext, a: f32, b: f32) -> f32 {
+extern "C" fn pow(_ctx: *mut RuntimeContext, a: IRValue, b: IRValue) -> IRValue {
     a.powf(b)
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn sin(_ctx: *mut RuntimeContext, value: f32) -> f32 {
+extern "C" fn sin(_ctx: *mut RuntimeContext, value: IRValue) -> IRValue {
     value.sin()
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn cos(_ctx: *mut RuntimeContext, value: f32) -> f32 {
+extern "C" fn cos(_ctx: *mut RuntimeContext, value: IRValue) -> IRValue {
     value.cos()
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn tan(_ctx: *mut RuntimeContext, value: f32) -> f32 {
+extern "C" fn tan(_ctx: *mut RuntimeContext, value: IRValue) -> IRValue {
     value.tan()
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn sinh(_ctx: *mut RuntimeContext, value: f32) -> f32 {
+extern "C" fn sinh(_ctx: *mut RuntimeContext, value: IRValue) -> IRValue {
     value.sinh()
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn cosh(_ctx: *mut RuntimeContext, value: f32) -> f32 {
+extern "C" fn cosh(_ctx: *mut RuntimeContext, value: IRValue) -> IRValue {
     value.cosh()
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn tanh(_ctx: *mut RuntimeContext, value: f32) -> f32 {
+extern "C" fn tanh(_ctx: *mut RuntimeContext, value: IRValue) -> IRValue {
     value.tanh()
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn arcsin(_ctx: *mut RuntimeContext, value: f32) -> f32 {
+extern "C" fn arcsin(_ctx: *mut RuntimeContext, value: IRValue) -> IRValue {
     value.asin()
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn arccos(_ctx: *mut RuntimeContext, value: f32) -> f32 {
+extern "C" fn arccos(_ctx: *mut RuntimeContext, value: IRValue) -> IRValue {
     value.acos()
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn arctan(_ctx: *mut RuntimeContext, value: f32) -> f32 {
+extern "C" fn arctan(_ctx: *mut RuntimeContext, value: IRValue) -> IRValue {
     value.atan()
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn arctan2(_ctx: *mut RuntimeContext, a: f32, b: f32) -> f32 {
+extern "C" fn arctan2(_ctx: *mut RuntimeContext, a: IRValue, b: IRValue) -> IRValue {
     b.atan2(a)
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn degree(_ctx: *mut RuntimeContext, value: f32) -> f32 {
+extern "C" fn degree(_ctx: *mut RuntimeContext, value: IRValue) -> IRValue {
     value.to_degrees()
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn radian(_ctx: *mut RuntimeContext, value: f32) -> f32 {
+extern "C" fn radian(_ctx: *mut RuntimeContext, value: IRValue) -> IRValue {
     value.to_radians()
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn log(_ctx: *mut RuntimeContext, value: f32) -> f32 {
+extern "C" fn log(_ctx: *mut RuntimeContext, value: IRValue) -> IRValue {
     value.ln()
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn random(_ctx: *mut RuntimeContext, min: f32, max: f32) -> f32 {
+extern "C" fn random(_ctx: *mut RuntimeContext, min: IRValue, max: IRValue) -> IRValue {
     rand::rng().random_range(min..=max)
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn random_integer(_ctx: *mut RuntimeContext, min: f32, max: f32) -> f32 {
+extern "C" fn random_integer(_ctx: *mut RuntimeContext, min: IRValue, max: IRValue) -> IRValue {
     let min = min.round() as i32;
     let max = max.round() as i32;
-    rand::rng().random_range(min..max) as f32
+    rand::rng().random_range(min..max) as IRValue
 }
