@@ -312,7 +312,11 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         let value = self.build_node_ir(node.value);
 
         let unlerped = self.build_unlerp(from_min, from_max, value);
-        self.build_lerp(to_min, to_max, unlerped)
+        let remapped_val = self.build_lerp(to_min, to_max, unlerped);
+
+        let is_equal = self.builder.ins().fcmp(FloatCC::Equal, from_min, from_max);
+
+        self.builder.ins().select(is_equal, to_min, remapped_val)
     }
 
     pub(crate) fn build_remap_clamped_ir(&mut self, node: &RemapClamped) -> Value {
@@ -323,7 +327,11 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         let value = self.build_node_ir(node.value);
 
         let unlerped = self.build_unlerp_clamped(from_min, from_max, value);
-        self.build_lerp(to_min, to_max, unlerped)
+        let remapped_val = self.build_lerp(to_min, to_max, unlerped);
+
+        let is_equal = self.builder.ins().fcmp(FloatCC::Equal, from_min, from_max);
+
+        self.builder.ins().select(is_equal, to_min, remapped_val)
     }
 
     pub(crate) fn build_round_ir(&mut self, node: &Round) -> Value {
