@@ -13,6 +13,47 @@ pub struct RuntimeContext<'a> {
     pub memory: &'a dyn MemoryAccess,
 }
 
+impl<'a> RuntimeContext<'a> {
+    pub fn copy_memory(
+        &mut self,
+        src_block_id: u64,
+        src_index: usize,
+        dst_block_id: u64,
+        dst_index: usize,
+        count: usize,
+    ) -> IRValue {
+        let mut temp = Vec::with_capacity(count);
+        for i in 0..count {
+            match self.memory.read(src_block_id, src_index + i) {
+                Some(v) => temp.push(v),
+                None => {
+                    warn!(
+                        "Failed to read from block {src_block_id} index {}",
+                        src_index + i
+                    );
+                    break;
+                }
+            }
+        }
+
+        for (i, value) in temp.into_iter().enumerate() {
+            if self
+                .memory
+                .write(dst_block_id, dst_index + i, value)
+                .is_none()
+            {
+                warn!(
+                    "Failed to write to block {dst_block_id} index {}",
+                    dst_index + i
+                );
+                break;
+            }
+        }
+
+        0.0
+    }
+}
+
 pub type ExternalFunction = *const u8;
 pub type ExternalFunctionsMap<'a> = HashMap<&'a str, *const u8>;
 
@@ -89,35 +130,7 @@ extern "C" fn copy_mem(
 
     let ctx = unsafe { &mut *ctx };
 
-    let mut temp = Vec::with_capacity(count);
-    for i in 0..count {
-        match ctx.memory.read(src_block_id, src_index + i) {
-            Some(v) => temp.push(v),
-            None => {
-                warn!(
-                    "Failed to read from block {src_block_id} index {}",
-                    src_index + i
-                );
-                break;
-            }
-        }
-    }
-
-    for (i, value) in temp.into_iter().enumerate() {
-        if ctx
-            .memory
-            .write(dst_block_id, dst_index + i, value)
-            .is_none()
-        {
-            warn!(
-                "Failed to write to block {dst_block_id} index {}",
-                dst_index + i
-            );
-            break;
-        }
-    }
-
-    0.0
+    ctx.copy_memory(src_block_id, src_index, dst_block_id, dst_index, count)
 }
 
 #[unsafe(no_mangle)]
