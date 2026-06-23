@@ -7,3 +7,6 @@ edition = "2024"
 cranelift = { version = "0.121.1", features = ["jit", "module", "native"] }
 sonorust-ir = { workspace = true }
 sonorust-runtime = { workspace = true }
+
+[dev-dependencies]
+sonorust-tests = { workspace = true }

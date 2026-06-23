@@ -431,6 +431,7 @@ dependencies = [
  "cranelift",
  "sonorust-ir",
  "sonorust-runtime",
+ "sonorust-tests",
 ]
 
 [[package]]
@@ -444,6 +445,15 @@ dependencies = [
  "rand",
  "sonorust-ir",
  "tracing",
+]
+
+[[package]]
+name = "sonorust-tests"
+version = "0.1.0"
+dependencies = [
+ "sonorust-cranelift",
+ "sonorust-ir",
+ "sonorust-runtime",
 ]
 
 [[package]]

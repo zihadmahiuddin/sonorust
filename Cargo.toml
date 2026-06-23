@@ -1,8 +1,9 @@
 [workspace]
 resolver = "2"
-members = ["crates/sonorust-cranelift", "crates/sonorust-ir", "crates/sonorust-runtime"]
+members = ["crates/sonorust-cranelift", "crates/sonorust-ir", "crates/sonorust-runtime", "crates/sonorust-tests"]
 
 [workspace.dependencies]
 sonorust-ir = { path = "./crates/sonorust-ir" }
 sonorust-cranelift = { path = "./crates/sonorust-cranelift" }
 sonorust-runtime = { path = "./crates/sonorust-runtime" }
+sonorust-tests = { path = "./crates/sonorust-tests" }

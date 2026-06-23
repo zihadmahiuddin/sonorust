@@ -1,0 +1,9 @@
+[package]
+name = "sonorust-tests"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+sonorust-cranelift = { workspace = true }
+sonorust-ir = { workspace = true }
+sonorust-runtime = { workspace = true }
