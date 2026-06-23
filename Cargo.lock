@@ -431,7 +431,6 @@ dependencies = [
  "cranelift",
  "sonorust-ir",
  "sonorust-runtime",
- "sonorust-tests",
 ]
 
 [[package]]
