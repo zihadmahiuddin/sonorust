@@ -1,6 +1,7 @@
-use crate::{codegen::CodegenContext, nodes::*};
+use crate::codegen::CodegenContext;
 
 use cranelift::prelude::*;
+use sonorust_ir::nodes::*;
 
 impl<'s, 'b> CodegenContext<'s, 'b> {
     fn build_read_mem(&mut self, block_id: Value, index: Value) -> Value {
@@ -374,11 +375,10 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
 mod tests {
     use std::cell::RefCell;
 
-    use crate::{
-        codegen::jit::build_and_return_function,
-        nodes::*,
-        runtime::{basic::BasicRuntimeContext, context::MemoryAccess},
-    };
+    use crate::codegen::jit::build_and_return_function;
+
+    use sonorust_ir::nodes::*;
+    use sonorust_runtime::{basic::BasicRuntimeContext, context::MemoryAccess};
 
     #[test]
     fn test_get() {

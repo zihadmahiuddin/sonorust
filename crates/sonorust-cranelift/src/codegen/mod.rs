@@ -14,7 +14,7 @@ use cranelift::{
     },
 };
 
-use crate::nodes::{OpCode, ResolvedNode};
+use sonorust_ir::nodes::{OpCode, ResolvedNode};
 
 pub(crate) fn create_signature_for(name: &str, call_conv: CallConv) -> Signature {
     let mut sig = Signature::new(call_conv);

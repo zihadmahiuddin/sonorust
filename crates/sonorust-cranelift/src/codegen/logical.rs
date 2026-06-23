@@ -2,7 +2,7 @@ use cranelift::codegen::ir::BlockArg;
 use cranelift::prelude::*;
 
 use crate::codegen::CodegenContext;
-use crate::nodes::*;
+use sonorust_ir::nodes::*;
 
 impl<'s, 'b> CodegenContext<'s, 'b> {
     fn build_comparison_ir(&mut self, cond: FloatCC, lhs: usize, rhs: usize) -> Value {
@@ -141,9 +141,10 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
 mod tests {
     use core::f32;
 
-    use crate::{
-        codegen::jit::build_and_return_function, nodes::*, runtime::basic::BasicRuntimeContext,
-    };
+    use crate::codegen::jit::build_and_return_function;
+
+    use sonorust_ir::nodes::*;
+    use sonorust_runtime::basic::BasicRuntimeContext;
 
     #[test]
     fn test_not_equal_true() {

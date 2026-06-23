@@ -1,25 +1,25 @@
 use std::{cell::RefCell, collections::HashMap};
 
-use crate::runtime::context::{MemoryAccess, RuntimeContext};
+use crate::context::{MemoryAccess, RuntimeContext};
 
 use tracing::warn;
 
 #[derive(Default)]
 #[allow(dead_code)] // used in tests
-pub(crate) struct BasicRuntimeContext {
-    pub(crate) memory: BasicMemory,
+pub struct BasicRuntimeContext {
+    pub memory: BasicMemory,
 }
 
 impl<'a> BasicRuntimeContext {
     #[allow(dead_code)] // used in tests
-    pub(crate) fn as_ctx(&'a mut self) -> RuntimeContext<'a> {
+    pub fn as_ctx(&'a mut self) -> RuntimeContext<'a> {
         RuntimeContext {
             memory: &self.memory,
         }
     }
 }
 
-pub(crate) struct BasicMemory {
+pub struct BasicMemory {
     pub read_only: HashMap<u64, Vec<f32>>,
     pub writable: HashMap<u64, RefCell<Vec<f32>>>,
 }

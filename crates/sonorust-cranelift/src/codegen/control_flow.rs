@@ -1,7 +1,7 @@
 use cranelift::{codegen::ir::BlockArg, frontend::Switch, prelude::*};
 
 use crate::codegen::{BlockKind, CodegenContext};
-use crate::nodes::{self, *};
+use sonorust_ir::nodes::{self, *};
 
 impl<'s, 'b> CodegenContext<'s, 'b> {
     pub(crate) fn build_execute_ir(&mut self, node: &Execute) -> Value {
@@ -259,11 +259,9 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{
-        codegen::jit::build_and_return_function,
-        nodes::*,
-        runtime::{basic::BasicRuntimeContext, context::MemoryAccess},
-    };
+    use crate::codegen::jit::build_and_return_function;
+    use sonorust_ir::nodes::*;
+    use sonorust_runtime::{basic::BasicRuntimeContext, context::MemoryAccess};
 
     #[test]
     fn test_execute() {

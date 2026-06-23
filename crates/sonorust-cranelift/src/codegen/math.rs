@@ -2,7 +2,7 @@ use cranelift::codegen::ir::BlockArg;
 use cranelift::prelude::*;
 
 use crate::codegen::CodegenContext;
-use crate::nodes::*;
+use sonorust_ir::nodes::*;
 
 impl<'s, 'b> CodegenContext<'s, 'b> {
     pub(crate) fn build_power(&mut self, a: Value, b: Value) -> Value {
@@ -509,9 +509,10 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{
-        codegen::jit::build_and_return_function, nodes::*, runtime::basic::BasicRuntimeContext,
-    };
+    use crate::codegen::jit::build_and_return_function;
+
+    use sonorust_ir::nodes::*;
+    use sonorust_runtime::basic::BasicRuntimeContext;
 
     #[test]
     fn test_abs_negative() {

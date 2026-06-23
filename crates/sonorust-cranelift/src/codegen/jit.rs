@@ -2,15 +2,15 @@ use std::collections::HashMap;
 
 use crate::codegen::build_cranelift_function;
 use crate::codegen::create_signature_for;
-use crate::nodes::*;
-use crate::runtime::context::RuntimeContext;
-use crate::runtime::context::get_external_functions;
 use cranelift::{
     codegen::ir::{Function, UserFuncName},
     jit::{JITBuilder, JITModule},
     module::{Linkage, Module},
     prelude::*,
 };
+use sonorust_ir::nodes::*;
+use sonorust_runtime::context::RuntimeContext;
+use sonorust_runtime::context::get_external_functions;
 
 pub fn build_and_return_function(
     nodes: &[ResolvedNode],
