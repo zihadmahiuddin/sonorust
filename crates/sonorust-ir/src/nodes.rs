@@ -15,6 +15,8 @@ pub enum OpCode {
     Break(Break),
     If(If),
     While(While),
+    Switch(Switch),
+    SwitchWithDefault(SwitchWithDefault),
     SwitchInteger(SwitchInteger),
     SwitchIntegerWithDefault(SwitchIntegerWithDefault),
 

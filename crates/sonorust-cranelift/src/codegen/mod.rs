@@ -73,6 +73,8 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
                 OpCode::Break(node) => self.build_break_ir(node),
                 OpCode::If(node) => self.build_if_ir(node),
                 OpCode::While(node) => self.build_while_ir(node),
+                OpCode::Switch(node) => self.build_switch_ir(node),
+                OpCode::SwitchWithDefault(node) => self.build_switch_with_default_ir(node),
                 OpCode::SwitchInteger(node) => self.build_switch_integer_ir(node),
                 OpCode::SwitchIntegerWithDefault(node) => {
                     self.build_switch_integer_with_default_ir(node)

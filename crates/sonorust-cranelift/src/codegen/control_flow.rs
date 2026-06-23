@@ -172,6 +172,151 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         self.builder.block_params(loop_exit)[0]
     }
 
+    pub(crate) fn build_switch_ir(&mut self, node: &sonorust_ir::nodes::Switch) -> Value {
+        let discriminant = self.build_node_ir(node.discriminant);
+
+        let default_block = self.builder.create_block();
+        let join_block = self.builder.create_block();
+        let join_param = self
+            .builder
+            .append_block_param(join_block, crate::IR_VALUE_CRANELIFT_TYPE);
+
+        let num_cases = node.tests_and_consequents.len() / 2;
+
+        let mut case_blocks = Vec::new();
+        for _ in 0..num_cases {
+            case_blocks.push(self.builder.create_block());
+        }
+
+        if node.tests_and_consequents.is_empty() {
+            self.builder.ins().jump(default_block, &[]);
+            self.builder.seal_block(default_block);
+        } else {
+            for (i, chunk) in node.tests_and_consequents.chunks_exact(2).enumerate() {
+                let test_node = chunk[0];
+
+                let test_val = self.build_node_ir(test_node);
+                let is_equal = self
+                    .builder
+                    .ins()
+                    .fcmp(FloatCC::Equal, discriminant, test_val);
+
+                let next_check_block = if i + 1 < num_cases {
+                    self.builder.create_block()
+                } else {
+                    default_block
+                };
+
+                self.builder
+                    .ins()
+                    .brif(is_equal, case_blocks[i], &[], next_check_block, &[]);
+                self.builder.seal_block(case_blocks[i]);
+
+                if i + 1 < num_cases {
+                    self.builder.switch_to_block(next_check_block);
+                    self.builder.seal_block(next_check_block);
+                }
+            }
+            self.builder.seal_block(default_block);
+        }
+
+        for (i, chunk) in node.tests_and_consequents.chunks_exact(2).enumerate() {
+            let consequent_node = chunk[1];
+            let case_block = case_blocks[i];
+
+            self.builder.switch_to_block(case_block);
+            let (val, broken) = self.with_terminated_reset(|s| s.build_node_ir(consequent_node));
+            if !broken {
+                self.builder.ins().jump(join_block, &[BlockArg::Value(val)]);
+            }
+        }
+
+        self.builder.switch_to_block(default_block);
+        let zero = crate::ir_value_cranelift_const(self.builder.ins(), 0.0);
+        self.builder
+            .ins()
+            .jump(join_block, &[BlockArg::Value(zero)]);
+
+        self.builder.switch_to_block(join_block);
+        self.builder.seal_block(join_block);
+
+        join_param
+    }
+
+    pub(crate) fn build_switch_with_default_ir(&mut self, node: &SwitchWithDefault) -> Value {
+        let discriminant = self.build_node_ir(node.discriminant);
+
+        let default_block = self.builder.create_block();
+        let join_block = self.builder.create_block();
+        let join_param = self
+            .builder
+            .append_block_param(join_block, crate::IR_VALUE_CRANELIFT_TYPE);
+
+        let num_cases = node.tests_and_consequents.len() / 2;
+
+        let mut case_blocks = Vec::new();
+        for _ in 0..num_cases {
+            case_blocks.push(self.builder.create_block());
+        }
+
+        if node.tests_and_consequents.is_empty() {
+            self.builder.ins().jump(default_block, &[]);
+            self.builder.seal_block(default_block);
+        } else {
+            for (i, chunk) in node.tests_and_consequents.chunks_exact(2).enumerate() {
+                let test_node = chunk[0];
+
+                let test_val = self.build_node_ir(test_node);
+                let is_equal = self
+                    .builder
+                    .ins()
+                    .fcmp(FloatCC::Equal, discriminant, test_val);
+
+                let next_check_block = if i + 1 < num_cases {
+                    self.builder.create_block()
+                } else {
+                    default_block
+                };
+
+                self.builder
+                    .ins()
+                    .brif(is_equal, case_blocks[i], &[], next_check_block, &[]);
+                self.builder.seal_block(case_blocks[i]);
+
+                if i + 1 < num_cases {
+                    self.builder.switch_to_block(next_check_block);
+                    self.builder.seal_block(next_check_block);
+                }
+            }
+            self.builder.seal_block(default_block);
+        }
+
+        for (i, chunk) in node.tests_and_consequents.chunks_exact(2).enumerate() {
+            let consequent_node = chunk[1];
+            let case_block = case_blocks[i];
+
+            self.builder.switch_to_block(case_block);
+            let (val, broken) = self.with_terminated_reset(|s| s.build_node_ir(consequent_node));
+            if !broken {
+                self.builder.ins().jump(join_block, &[BlockArg::Value(val)]);
+            }
+        }
+
+        self.builder.switch_to_block(default_block);
+        let (default_val, default_broken) =
+            self.with_terminated_reset(|s| s.build_node_ir(node.default_consequent));
+        if !default_broken {
+            self.builder
+                .ins()
+                .jump(join_block, &[BlockArg::Value(default_val)]);
+        }
+
+        self.builder.switch_to_block(join_block);
+        self.builder.seal_block(join_block);
+
+        join_param
+    }
+
     pub(crate) fn build_switch_integer_ir(&mut self, node: &SwitchInteger) -> Value {
         let test_value_f32 = self.build_node_ir(node.discriminant);
         let test_value_i64 = self.builder.ins().fcvt_to_sint(types::I64, test_value_f32);

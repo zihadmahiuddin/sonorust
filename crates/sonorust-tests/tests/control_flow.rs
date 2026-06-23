@@ -375,6 +375,92 @@ fn test_while_without_break() {
 }
 
 #[test]
+fn test_switch() {
+    let nodes = vec![
+        ResolvedNode::Value(0.0), // 0 - literal 0
+        ResolvedNode::OpCode(OpCode::Get(Get {
+            block_id: 0,
+            index: 0,
+        })), // 1
+        ResolvedNode::Value(10.0), // 2 - condition of case 0
+        ResolvedNode::Value(20.0), // 3 - body of case 0
+        ResolvedNode::OpCode(OpCode::Switch(Switch {
+            discriminant: 1,
+            tests_and_consequents: vec![2, 3],
+        })), // 4
+    ];
+
+    let executors = get_available_executors();
+    for (executor_name, mut executor) in executors {
+        let mut runtime_context = BasicRuntimeContext::default();
+
+        runtime_context.memory.write(0, 0, 10.0);
+
+        // matches case 0
+        let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
+        assert_eq!(
+            result, 20.0,
+            "Assertion failed for executor: {}",
+            executor_name
+        );
+
+        runtime_context.memory.write(0, 0, 5.0);
+
+        // no match → default
+        let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
+        assert_eq!(
+            result, 0.0,
+            "Assertion failed for executor: {}",
+            executor_name
+        );
+    }
+}
+
+#[test]
+fn test_switch_with_default() {
+    let nodes = vec![
+        ResolvedNode::Value(0.0), // 0 - literal 0
+        ResolvedNode::OpCode(OpCode::Get(Get {
+            block_id: 0,
+            index: 0,
+        })), // 1
+        ResolvedNode::Value(10.0), // 2 - condition of case 0
+        ResolvedNode::Value(20.0), // 3 - body of case 0
+        ResolvedNode::Value(99.0), // 4 - default
+        ResolvedNode::OpCode(OpCode::SwitchWithDefault(SwitchWithDefault {
+            discriminant: 1,
+            tests_and_consequents: vec![2, 3],
+            default_consequent: 4,
+        })), // 5
+    ];
+
+    let executors = get_available_executors();
+    for (executor_name, mut executor) in executors {
+        let mut runtime_context = BasicRuntimeContext::default();
+
+        runtime_context.memory.write(0, 0, 10.0);
+
+        // matches case 0
+        let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
+        assert_eq!(
+            result, 20.0,
+            "Assertion failed for executor: {}",
+            executor_name
+        );
+
+        runtime_context.memory.write(0, 0, 5.0);
+
+        // no match → default
+        let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
+        assert_eq!(
+            result, 99.0,
+            "Assertion failed for executor: {}",
+            executor_name
+        );
+    }
+}
+
+#[test]
 fn test_switch_integer() {
     let nodes = vec![
         ResolvedNode::Value(0.0), // 0 - literal 0
