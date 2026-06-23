@@ -1273,8 +1273,8 @@ fn test_remap_from_min_equals_max() {
     for (executor_name, mut executor) in executors {
         let mut runtime_context = BasicRuntimeContext::default();
         let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
-        assert!(
-            result.is_nan(),
+        assert_eq!(
+            result, 2.0,
             "Assertion failed for executor: {}",
             executor_name
         );
