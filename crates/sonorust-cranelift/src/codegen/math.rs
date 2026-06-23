@@ -232,21 +232,20 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     }
 
     pub(crate) fn build_power_ir(&mut self, node: &Power) -> Value {
-        assert!(node.inputs.len() >= 2, "Power requires at least 2 inputs");
-
-        let mut iter = node.inputs.iter();
-        let first = self.build_node_ir(*iter.next().unwrap());
-        let second = self.build_node_ir(*iter.next().unwrap());
-
-        // Initial pow(ctx, a, b)
-        let mut acc = self.build_power(first, second);
-
-        for &input in iter {
-            let exponent = self.build_node_ir(input);
-            acc = self.build_power(acc, exponent);
+        if node.inputs.is_empty() {
+            return crate::ir_value_cranelift_const(self.builder.ins(), 0.0);
         }
 
-        acc
+        let values: Vec<Value> = node
+            .inputs
+            .iter()
+            .map(|&input| self.build_node_ir(input))
+            .collect();
+
+        let mut iter = values.into_iter();
+        let first = iter.next().unwrap();
+
+        iter.fold(first, |acc, exponent| self.build_power(acc, exponent))
     }
 
     pub(crate) fn build_clamp_ir(&mut self, node: &Clamp) -> Value {
