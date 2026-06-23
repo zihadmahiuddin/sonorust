@@ -318,6 +318,27 @@ fn test_mod() {
 }
 
 #[test]
+fn test_mod_negative_operand() {
+    let nodes = vec![
+        ResolvedNode::Value(17.0),                                     // 0
+        ResolvedNode::Value(-12.0),                                    // 1
+        ResolvedNode::OpCode(OpCode::Mod(Mod { inputs: vec![0, 1] })), // 2
+    ];
+
+    let executors = get_available_executors();
+    for (executor_name, mut executor) in executors {
+        let mut runtime_context = BasicRuntimeContext::default();
+        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+
+        let expected = -7.0;
+        assert!(
+            (result - expected).abs() < 1e-6,
+            "Assertion failed for executor: {executor_name}, got {result}, expected {expected}",
+        );
+    }
+}
+
+#[test]
 fn test_rem() {
     let nodes = vec![
         ResolvedNode::Value(-5.3),                                     // 0
@@ -331,6 +352,27 @@ fn test_rem() {
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
 
         let expected = -1.3;
+        assert!(
+            (result - expected).abs() < 1e-6,
+            "Assertion failed for executor: {executor_name}, got {result}, expected {expected}",
+        );
+    }
+}
+
+#[test]
+fn test_rem_negative_operand() {
+    let nodes = vec![
+        ResolvedNode::Value(17.0),                                     // 0
+        ResolvedNode::Value(-12.0),                                    // 1
+        ResolvedNode::OpCode(OpCode::Rem(Rem { inputs: vec![0, 1] })), // 2
+    ];
+
+    let executors = get_available_executors();
+    for (executor_name, mut executor) in executors {
+        let mut runtime_context = BasicRuntimeContext::default();
+        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+
+        let expected = 5.0;
         assert!(
             (result - expected).abs() < 1e-6,
             "Assertion failed for executor: {executor_name}, got {result}, expected {expected}",
