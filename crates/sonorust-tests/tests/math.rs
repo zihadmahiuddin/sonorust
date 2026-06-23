@@ -381,6 +381,43 @@ fn test_rem_negative_operand() {
 }
 
 #[test]
+fn test_power_no_args_zero() {
+    let nodes = vec![ResolvedNode::OpCode(OpCode::Power(Power {
+        inputs: vec![],
+    }))];
+
+    let executors = get_available_executors();
+    for (executor_name, mut executor) in executors {
+        let mut runtime_context = BasicRuntimeContext::default();
+        let result = executor.execute(&nodes, 0, &mut runtime_context.as_ctx() as _);
+
+        assert_eq!(
+            result, 0.0,
+            "Assertion failed for executor: {executor_name}, failed to panic as expected",
+        );
+    }
+}
+
+#[test]
+fn test_power_single_arg() {
+    let nodes = vec![
+        ResolvedNode::Value(5.0),                                       // 0
+        ResolvedNode::OpCode(OpCode::Power(Power { inputs: vec![0] })), // 1 = 5
+    ];
+
+    let executors = get_available_executors();
+    for (executor_name, mut executor) in executors {
+        let mut runtime_context = BasicRuntimeContext::default();
+        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+
+        assert_eq!(
+            result, 5.0,
+            "Assertion failed for executor: {executor_name}, failed to panic as expected",
+        );
+    }
+}
+
+#[test]
 fn test_power_two_args() {
     let nodes = vec![
         ResolvedNode::Value(2.0),                                          // 0
@@ -421,27 +458,6 @@ fn test_power_three_args() {
         assert!(
             (result - expected).abs() < 1e-6,
             "Assertion failed for executor: {executor_name}, got {result}, expected {expected}",
-        );
-    }
-}
-
-#[test]
-fn test_power_single_panic() {
-    let nodes = vec![
-        ResolvedNode::Value(5.0),                                       // 0
-        ResolvedNode::OpCode(OpCode::Power(Power { inputs: vec![0] })), // 1 = 5
-    ];
-
-    let executors = get_available_executors();
-    for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
-        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-            executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _)
-        }));
-
-        assert!(
-            result.is_err(),
-            "Assertion failed for executor: {executor_name}, failed to panic as expected",
         );
     }
 }
