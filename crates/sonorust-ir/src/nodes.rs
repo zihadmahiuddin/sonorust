@@ -144,12 +144,12 @@ pub struct JumpLoop {
 #[derive(Debug)]
 pub struct Switch {
     pub discriminant: usize,
-    pub consequents: Vec<usize>,
+    pub tests_and_consequents: Vec<usize>,
 }
 #[derive(Debug)]
 pub struct SwitchWithDefault {
     pub discriminant: usize,
-    pub consequents: Vec<usize>,
+    pub tests_and_consequents: Vec<usize>,
     pub default_consequent: usize,
 }
 #[derive(Debug)]
