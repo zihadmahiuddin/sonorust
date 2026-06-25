@@ -7,8 +7,8 @@ use sonorust_tests::get_available_executors;
 #[test]
 fn test_get() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),
-        ResolvedNode::OpCode(OpCode::Get(Get {
+        IRNode::Value(0.0),
+        IRNode::OpCode(OpCode::Get(Get {
             block_id: 0,
             index: 0,
         })),
@@ -30,10 +30,10 @@ fn test_get() {
 #[test]
 fn test_get_pointed() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // 0: block_id
-        ResolvedNode::Value(0.0), // 1: index
-        ResolvedNode::Value(2.0), // 2: offset
-        ResolvedNode::OpCode(OpCode::GetPointed(GetPointed {
+        IRNode::Value(0.0), // 0: block_id
+        IRNode::Value(0.0), // 1: index
+        IRNode::Value(2.0), // 2: offset
+        IRNode::OpCode(OpCode::GetPointed(GetPointed {
             block_id: 0,
             index: 1,
             offset: 2,
@@ -63,11 +63,11 @@ fn test_get_pointed() {
 #[test]
 fn test_get_shifted() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // 0: block_id
-        ResolvedNode::Value(2.0), // 1: x
-        ResolvedNode::Value(3.0), // 2: y
-        ResolvedNode::Value(4.0), // 3: s
-        ResolvedNode::OpCode(OpCode::GetShifted(GetShifted {
+        IRNode::Value(0.0), // 0: block_id
+        IRNode::Value(2.0), // 1: x
+        IRNode::Value(3.0), // 2: y
+        IRNode::Value(4.0), // 3: s
+        IRNode::OpCode(OpCode::GetShifted(GetShifted {
             block_id: 0,
             x: 1,
             y: 2,
@@ -96,9 +96,9 @@ fn test_get_shifted() {
 #[test]
 fn test_set() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),
-        ResolvedNode::Value(7.0),
-        ResolvedNode::OpCode(OpCode::Set(Set {
+        IRNode::Value(0.0),
+        IRNode::Value(7.0),
+        IRNode::OpCode(OpCode::Set(Set {
             block_id: 0,
             index: 0,
             value: 1,
@@ -120,11 +120,11 @@ fn test_set() {
 #[test]
 fn test_set_pointed() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),    // 0: block_id
-        ResolvedNode::Value(0.0),    // 1: index
-        ResolvedNode::Value(2.0),    // 2: offset
-        ResolvedNode::Value(123.45), // 3: value
-        ResolvedNode::OpCode(OpCode::SetPointed(SetPointed {
+        IRNode::Value(0.0),    // 0: block_id
+        IRNode::Value(0.0),    // 1: index
+        IRNode::Value(2.0),    // 2: offset
+        IRNode::Value(123.45), // 3: value
+        IRNode::OpCode(OpCode::SetPointed(SetPointed {
             block_id: 0,
             index: 1,
             offset: 2,
@@ -160,12 +160,12 @@ fn test_set_pointed() {
 #[test]
 fn test_set_shifted() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),    // 0: block_id
-        ResolvedNode::Value(2.0),    // 1: x
-        ResolvedNode::Value(3.0),    // 2: y
-        ResolvedNode::Value(4.0),    // 3: s
-        ResolvedNode::Value(123.45), // 4: value
-        ResolvedNode::OpCode(OpCode::SetShifted(SetShifted {
+        IRNode::Value(0.0),    // 0: block_id
+        IRNode::Value(2.0),    // 1: x
+        IRNode::Value(3.0),    // 2: y
+        IRNode::Value(4.0),    // 3: s
+        IRNode::Value(123.45), // 4: value
+        IRNode::OpCode(OpCode::SetShifted(SetShifted {
             block_id: 0,
             x: 1,
             y: 2,
@@ -202,10 +202,10 @@ fn test_set_shifted() {
 #[test]
 fn test_set_add() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // block_id
-        ResolvedNode::Value(5.0), // index
-        ResolvedNode::Value(3.0), // value
-        ResolvedNode::OpCode(OpCode::SetAdd(SetAdd {
+        IRNode::Value(0.0), // block_id
+        IRNode::Value(5.0), // index
+        IRNode::Value(3.0), // value
+        IRNode::OpCode(OpCode::SetAdd(SetAdd {
             block_id: 0,
             index: 1,
             value: 2,
@@ -240,11 +240,11 @@ fn test_set_add() {
 #[test]
 fn test_set_add_pointed() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // block_id
-        ResolvedNode::Value(0.0), // index
-        ResolvedNode::Value(2.0), // offset
-        ResolvedNode::Value(3.0), // value
-        ResolvedNode::OpCode(OpCode::SetAddPointed(SetAddPointed {
+        IRNode::Value(0.0), // block_id
+        IRNode::Value(0.0), // index
+        IRNode::Value(2.0), // offset
+        IRNode::Value(3.0), // value
+        IRNode::OpCode(OpCode::SetAddPointed(SetAddPointed {
             block_id: 0,
             index: 1,
             offset: 2,
@@ -283,12 +283,12 @@ fn test_set_add_pointed() {
 #[test]
 fn test_set_add_shifted() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // block_id
-        ResolvedNode::Value(2.0), // x
-        ResolvedNode::Value(3.0), // y
-        ResolvedNode::Value(4.0), // s
-        ResolvedNode::Value(5.0), // value
-        ResolvedNode::OpCode(OpCode::SetAddShifted(SetAddShifted {
+        IRNode::Value(0.0), // block_id
+        IRNode::Value(2.0), // x
+        IRNode::Value(3.0), // y
+        IRNode::Value(4.0), // s
+        IRNode::Value(5.0), // value
+        IRNode::OpCode(OpCode::SetAddShifted(SetAddShifted {
             block_id: 0,
             x: 1,
             y: 2,
@@ -325,10 +325,10 @@ fn test_set_add_shifted() {
 #[test]
 fn test_set_subtract() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // block_id
-        ResolvedNode::Value(5.0), // index
-        ResolvedNode::Value(3.0), // value (subtract)
-        ResolvedNode::OpCode(OpCode::SetSubtract(SetSubtract {
+        IRNode::Value(0.0), // block_id
+        IRNode::Value(5.0), // index
+        IRNode::Value(3.0), // value (subtract)
+        IRNode::OpCode(OpCode::SetSubtract(SetSubtract {
             block_id: 0,
             index: 1,
             value: 2,
@@ -362,11 +362,11 @@ fn test_set_subtract() {
 #[test]
 fn test_set_subtract_pointed() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // block_id
-        ResolvedNode::Value(0.0), // index
-        ResolvedNode::Value(2.0), // offset
-        ResolvedNode::Value(3.0), // value (subtract)
-        ResolvedNode::OpCode(OpCode::SetSubtractPointed(SetSubtractPointed {
+        IRNode::Value(0.0), // block_id
+        IRNode::Value(0.0), // index
+        IRNode::Value(2.0), // offset
+        IRNode::Value(3.0), // value (subtract)
+        IRNode::OpCode(OpCode::SetSubtractPointed(SetSubtractPointed {
             block_id: 0,
             index: 1,
             offset: 2,
@@ -404,12 +404,12 @@ fn test_set_subtract_pointed() {
 #[test]
 fn test_set_subtract_shifted() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // block_id
-        ResolvedNode::Value(2.0), // x
-        ResolvedNode::Value(3.0), // y
-        ResolvedNode::Value(4.0), // s
-        ResolvedNode::Value(3.0), // value (subtract)
-        ResolvedNode::OpCode(OpCode::SetSubtractShifted(SetSubtractShifted {
+        IRNode::Value(0.0), // block_id
+        IRNode::Value(2.0), // x
+        IRNode::Value(3.0), // y
+        IRNode::Value(4.0), // s
+        IRNode::Value(3.0), // value (subtract)
+        IRNode::OpCode(OpCode::SetSubtractShifted(SetSubtractShifted {
             block_id: 0,
             x: 1,
             y: 2,
@@ -446,10 +446,10 @@ fn test_set_subtract_shifted() {
 #[test]
 fn test_set_multiply() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // block_id
-        ResolvedNode::Value(5.0), // index
-        ResolvedNode::Value(2.0), // value (multiplier)
-        ResolvedNode::OpCode(OpCode::SetMultiply(SetMultiply {
+        IRNode::Value(0.0), // block_id
+        IRNode::Value(5.0), // index
+        IRNode::Value(2.0), // value (multiplier)
+        IRNode::OpCode(OpCode::SetMultiply(SetMultiply {
             block_id: 0,
             index: 1,
             value: 2,
@@ -483,11 +483,11 @@ fn test_set_multiply() {
 #[test]
 fn test_set_multiply_pointed() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // block_id
-        ResolvedNode::Value(0.0), // index
-        ResolvedNode::Value(2.0), // offset
-        ResolvedNode::Value(2.0), // value (multiplier)
-        ResolvedNode::OpCode(OpCode::SetMultiplyPointed(SetMultiplyPointed {
+        IRNode::Value(0.0), // block_id
+        IRNode::Value(0.0), // index
+        IRNode::Value(2.0), // offset
+        IRNode::Value(2.0), // value (multiplier)
+        IRNode::OpCode(OpCode::SetMultiplyPointed(SetMultiplyPointed {
             block_id: 0,
             index: 1,
             offset: 2,
@@ -525,12 +525,12 @@ fn test_set_multiply_pointed() {
 #[test]
 fn test_set_multiply_shifted() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // block_id
-        ResolvedNode::Value(2.0), // x
-        ResolvedNode::Value(3.0), // y
-        ResolvedNode::Value(4.0), // s
-        ResolvedNode::Value(2.0), // value (multiplier)
-        ResolvedNode::OpCode(OpCode::SetMultiplyShifted(SetMultiplyShifted {
+        IRNode::Value(0.0), // block_id
+        IRNode::Value(2.0), // x
+        IRNode::Value(3.0), // y
+        IRNode::Value(4.0), // s
+        IRNode::Value(2.0), // value (multiplier)
+        IRNode::OpCode(OpCode::SetMultiplyShifted(SetMultiplyShifted {
             block_id: 0,
             x: 1,
             y: 2,
@@ -567,10 +567,10 @@ fn test_set_multiply_shifted() {
 #[test]
 fn test_set_divide() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),  // block_id
-        ResolvedNode::Value(5.0),  // index
-        ResolvedNode::Value(10.0), // value (divisor)
-        ResolvedNode::OpCode(OpCode::SetDivide(SetDivide {
+        IRNode::Value(0.0),  // block_id
+        IRNode::Value(5.0),  // index
+        IRNode::Value(10.0), // value (divisor)
+        IRNode::OpCode(OpCode::SetDivide(SetDivide {
             block_id: 0,
             index: 1,
             value: 2,
@@ -604,11 +604,11 @@ fn test_set_divide() {
 #[test]
 fn test_set_divide_pointed() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // block_id
-        ResolvedNode::Value(0.0), // index
-        ResolvedNode::Value(2.0), // offset
-        ResolvedNode::Value(2.0), // value (divisor)
-        ResolvedNode::OpCode(OpCode::SetDividePointed(SetDividePointed {
+        IRNode::Value(0.0), // block_id
+        IRNode::Value(0.0), // index
+        IRNode::Value(2.0), // offset
+        IRNode::Value(2.0), // value (divisor)
+        IRNode::OpCode(OpCode::SetDividePointed(SetDividePointed {
             block_id: 0,
             index: 1,
             offset: 2,
@@ -646,12 +646,12 @@ fn test_set_divide_pointed() {
 #[test]
 fn test_set_divide_shifted() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // block_id
-        ResolvedNode::Value(2.0), // x
-        ResolvedNode::Value(3.0), // y
-        ResolvedNode::Value(4.0), // s
-        ResolvedNode::Value(2.0), // value (divisor)
-        ResolvedNode::OpCode(OpCode::SetDivideShifted(SetDivideShifted {
+        IRNode::Value(0.0), // block_id
+        IRNode::Value(2.0), // x
+        IRNode::Value(3.0), // y
+        IRNode::Value(4.0), // s
+        IRNode::Value(2.0), // value (divisor)
+        IRNode::OpCode(OpCode::SetDivideShifted(SetDivideShifted {
             block_id: 0,
             x: 1,
             y: 2,
@@ -688,10 +688,10 @@ fn test_set_divide_shifted() {
 #[test]
 fn test_set_power() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // block_id
-        ResolvedNode::Value(5.0), // index
-        ResolvedNode::Value(3.0), // value (exponent)
-        ResolvedNode::OpCode(OpCode::SetPower(SetPower {
+        IRNode::Value(0.0), // block_id
+        IRNode::Value(5.0), // index
+        IRNode::Value(3.0), // value (exponent)
+        IRNode::OpCode(OpCode::SetPower(SetPower {
             block_id: 0,
             index: 1,
             value: 2,
@@ -725,11 +725,11 @@ fn test_set_power() {
 #[test]
 fn test_set_power_pointed() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // block_id
-        ResolvedNode::Value(0.0), // index
-        ResolvedNode::Value(2.0), // offset
-        ResolvedNode::Value(3.0), // value (exponent)
-        ResolvedNode::OpCode(OpCode::SetPowerPointed(SetPowerPointed {
+        IRNode::Value(0.0), // block_id
+        IRNode::Value(0.0), // index
+        IRNode::Value(2.0), // offset
+        IRNode::Value(3.0), // value (exponent)
+        IRNode::OpCode(OpCode::SetPowerPointed(SetPowerPointed {
             block_id: 0,
             index: 1,
             offset: 2,
@@ -767,12 +767,12 @@ fn test_set_power_pointed() {
 #[test]
 fn test_set_power_shifted() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // block_id
-        ResolvedNode::Value(2.0), // x
-        ResolvedNode::Value(3.0), // y
-        ResolvedNode::Value(4.0), // s
-        ResolvedNode::Value(3.0), // value (exponent)
-        ResolvedNode::OpCode(OpCode::SetPowerShifted(SetPowerShifted {
+        IRNode::Value(0.0), // block_id
+        IRNode::Value(2.0), // x
+        IRNode::Value(3.0), // y
+        IRNode::Value(4.0), // s
+        IRNode::Value(3.0), // value (exponent)
+        IRNode::OpCode(OpCode::SetPowerShifted(SetPowerShifted {
             block_id: 0,
             x: 1,
             y: 2,
@@ -809,10 +809,10 @@ fn test_set_power_shifted() {
 #[test]
 fn test_set_rem() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // block_id
-        ResolvedNode::Value(5.0), // index
-        ResolvedNode::Value(3.0), // value (divisor)
-        ResolvedNode::OpCode(OpCode::SetRem(SetRem {
+        IRNode::Value(0.0), // block_id
+        IRNode::Value(5.0), // index
+        IRNode::Value(3.0), // value (divisor)
+        IRNode::OpCode(OpCode::SetRem(SetRem {
             block_id: 0,
             index: 1,
             value: 2,
@@ -846,11 +846,11 @@ fn test_set_rem() {
 #[test]
 fn test_set_rem_pointed() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // block_id
-        ResolvedNode::Value(0.0), // index
-        ResolvedNode::Value(2.0), // offset
-        ResolvedNode::Value(3.0), // value (divisor)
-        ResolvedNode::OpCode(OpCode::SetRemPointed(SetRemPointed {
+        IRNode::Value(0.0), // block_id
+        IRNode::Value(0.0), // index
+        IRNode::Value(2.0), // offset
+        IRNode::Value(3.0), // value (divisor)
+        IRNode::OpCode(OpCode::SetRemPointed(SetRemPointed {
             block_id: 0,
             index: 1,
             offset: 2,
@@ -888,12 +888,12 @@ fn test_set_rem_pointed() {
 #[test]
 fn test_set_rem_shifted() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // block_id
-        ResolvedNode::Value(2.0), // x
-        ResolvedNode::Value(3.0), // y
-        ResolvedNode::Value(4.0), // s
-        ResolvedNode::Value(3.0), // value (divisor)
-        ResolvedNode::OpCode(OpCode::SetRemShifted(SetRemShifted {
+        IRNode::Value(0.0), // block_id
+        IRNode::Value(2.0), // x
+        IRNode::Value(3.0), // y
+        IRNode::Value(4.0), // s
+        IRNode::Value(3.0), // value (divisor)
+        IRNode::OpCode(OpCode::SetRemShifted(SetRemShifted {
             block_id: 0,
             x: 1,
             y: 2,
@@ -930,10 +930,10 @@ fn test_set_rem_shifted() {
 #[test]
 fn test_set_mod() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // block_id
-        ResolvedNode::Value(5.0), // index
-        ResolvedNode::Value(3.0), // value (mod divisor)
-        ResolvedNode::OpCode(OpCode::SetMod(SetMod {
+        IRNode::Value(0.0), // block_id
+        IRNode::Value(5.0), // index
+        IRNode::Value(3.0), // value (mod divisor)
+        IRNode::OpCode(OpCode::SetMod(SetMod {
             block_id: 0,
             index: 1,
             value: 2,
@@ -967,11 +967,11 @@ fn test_set_mod() {
 #[test]
 fn test_set_mod_pointed() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // block_id
-        ResolvedNode::Value(0.0), // index
-        ResolvedNode::Value(2.0), // offset
-        ResolvedNode::Value(3.0), // value (mod divisor)
-        ResolvedNode::OpCode(OpCode::SetModPointed(SetModPointed {
+        IRNode::Value(0.0), // block_id
+        IRNode::Value(0.0), // index
+        IRNode::Value(2.0), // offset
+        IRNode::Value(3.0), // value (mod divisor)
+        IRNode::OpCode(OpCode::SetModPointed(SetModPointed {
             block_id: 0,
             index: 1,
             offset: 2,
@@ -1009,12 +1009,12 @@ fn test_set_mod_pointed() {
 #[test]
 fn test_set_mod_shifted() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // block_id
-        ResolvedNode::Value(2.0), // x
-        ResolvedNode::Value(3.0), // y
-        ResolvedNode::Value(4.0), // s
-        ResolvedNode::Value(3.0), // value (mod divisor)
-        ResolvedNode::OpCode(OpCode::SetModShifted(SetModShifted {
+        IRNode::Value(0.0), // block_id
+        IRNode::Value(2.0), // x
+        IRNode::Value(3.0), // y
+        IRNode::Value(4.0), // s
+        IRNode::Value(3.0), // value (mod divisor)
+        IRNode::OpCode(OpCode::SetModShifted(SetModShifted {
             block_id: 0,
             x: 1,
             y: 2,
@@ -1051,12 +1051,12 @@ fn test_set_mod_shifted() {
 #[test]
 fn test_copy_basic() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // src_block_id
-        ResolvedNode::Value(0.0), // src_index
-        ResolvedNode::Value(1.0), // dst_block_id
-        ResolvedNode::Value(1.0), // dst_index
-        ResolvedNode::Value(3.0), // count
-        ResolvedNode::OpCode(OpCode::Copy(Copy {
+        IRNode::Value(0.0), // src_block_id
+        IRNode::Value(0.0), // src_index
+        IRNode::Value(1.0), // dst_block_id
+        IRNode::Value(1.0), // dst_index
+        IRNode::Value(3.0), // count
+        IRNode::OpCode(OpCode::Copy(Copy {
             src_block_id: 0,
             src_index: 1,
             dst_block_id: 2,
@@ -1108,12 +1108,12 @@ fn test_copy_basic() {
 #[test]
 fn test_copy_overlap_forward() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),
-        ResolvedNode::Value(0.0),
-        ResolvedNode::Value(0.0),
-        ResolvedNode::Value(1.0),
-        ResolvedNode::Value(3.0),
-        ResolvedNode::OpCode(OpCode::Copy(Copy {
+        IRNode::Value(0.0),
+        IRNode::Value(0.0),
+        IRNode::Value(0.0),
+        IRNode::Value(1.0),
+        IRNode::Value(3.0),
+        IRNode::OpCode(OpCode::Copy(Copy {
             src_block_id: 0,
             src_index: 1,
             dst_block_id: 2,
@@ -1167,12 +1167,12 @@ fn test_copy_overlap_forward() {
 #[test]
 fn test_copy_overlap_backward() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),
-        ResolvedNode::Value(2.0),
-        ResolvedNode::Value(0.0),
-        ResolvedNode::Value(0.0),
-        ResolvedNode::Value(3.0),
-        ResolvedNode::OpCode(OpCode::Copy(Copy {
+        IRNode::Value(0.0),
+        IRNode::Value(2.0),
+        IRNode::Value(0.0),
+        IRNode::Value(0.0),
+        IRNode::Value(3.0),
+        IRNode::OpCode(OpCode::Copy(Copy {
             src_block_id: 0,
             src_index: 1,
             dst_block_id: 2,
@@ -1219,12 +1219,12 @@ fn test_copy_overlap_backward() {
 #[test]
 fn test_copy_zero_count() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),
-        ResolvedNode::Value(0.0),
-        ResolvedNode::Value(1.0),
-        ResolvedNode::Value(0.0),
-        ResolvedNode::Value(0.0),
-        ResolvedNode::OpCode(OpCode::Copy(Copy {
+        IRNode::Value(0.0),
+        IRNode::Value(0.0),
+        IRNode::Value(1.0),
+        IRNode::Value(0.0),
+        IRNode::Value(0.0),
+        IRNode::OpCode(OpCode::Copy(Copy {
             src_block_id: 0,
             src_index: 1,
             dst_block_id: 2,

@@ -5,11 +5,11 @@ use sonorust_tests::get_available_executors;
 #[test]
 fn test_execute() {
     let nodes = vec![
-        ResolvedNode::Value(1.0),
-        ResolvedNode::Value(2.0),
-        ResolvedNode::OpCode(OpCode::Add(Add { inputs: vec![0, 1] })), // = 3.0
-        ResolvedNode::Value(100.0),
-        ResolvedNode::OpCode(OpCode::Execute(Execute { nodes: vec![2, 3] })), // should return 100.0
+        IRNode::Value(1.0),
+        IRNode::Value(2.0),
+        IRNode::OpCode(OpCode::Add(Add { inputs: vec![0, 1] })), // = 3.0
+        IRNode::Value(100.0),
+        IRNode::OpCode(OpCode::Execute(Execute { nodes: vec![2, 3] })), // should return 100.0
     ];
 
     let executors = get_available_executors();
@@ -27,11 +27,11 @@ fn test_execute() {
 #[test]
 fn test_execute_0() {
     let nodes = vec![
-        ResolvedNode::Value(1.0),
-        ResolvedNode::Value(2.0),
-        ResolvedNode::OpCode(OpCode::Add(Add { inputs: vec![0, 1] })), // = 3.0
-        ResolvedNode::Value(100.0),
-        ResolvedNode::OpCode(OpCode::Execute0(Execute0 { nodes: vec![2, 3] })), // should return 100.0
+        IRNode::Value(1.0),
+        IRNode::Value(2.0),
+        IRNode::OpCode(OpCode::Add(Add { inputs: vec![0, 1] })), // = 3.0
+        IRNode::Value(100.0),
+        IRNode::OpCode(OpCode::Execute0(Execute0 { nodes: vec![2, 3] })), // should return 100.0
     ];
 
     let executors = get_available_executors();
@@ -49,12 +49,12 @@ fn test_execute_0() {
 #[test]
 fn test_execute_chained() {
     let nodes = vec![
-        ResolvedNode::Value(1.0),                                                // 0
-        ResolvedNode::Value(2.0),                                                // 1
-        ResolvedNode::OpCode(OpCode::Add(Add { inputs: vec![0, 1] })),           // 2 = 3.0
-        ResolvedNode::Value(5.0),                                                // 3
-        ResolvedNode::OpCode(OpCode::Multiply(Multiply { inputs: vec![2, 3] })), // 4 = 15.0
-        ResolvedNode::OpCode(OpCode::Execute(Execute { nodes: vec![2, 4] })),    // returns 15.0
+        IRNode::Value(1.0),                                                // 0
+        IRNode::Value(2.0),                                                // 1
+        IRNode::OpCode(OpCode::Add(Add { inputs: vec![0, 1] })),           // 2 = 3.0
+        IRNode::Value(5.0),                                                // 3
+        IRNode::OpCode(OpCode::Multiply(Multiply { inputs: vec![2, 3] })), // 4 = 15.0
+        IRNode::OpCode(OpCode::Execute(Execute { nodes: vec![2, 4] })),    // returns 15.0
     ];
 
     let executors = get_available_executors();
@@ -72,10 +72,10 @@ fn test_execute_chained() {
 #[test]
 fn test_if_true() {
     let nodes = vec![
-        ResolvedNode::Value(1.0),  // test (true)
-        ResolvedNode::Value(42.0), // consequent
-        ResolvedNode::Value(99.0), // alternate
-        ResolvedNode::OpCode(OpCode::If(If {
+        IRNode::Value(1.0),  // test (true)
+        IRNode::Value(42.0), // consequent
+        IRNode::Value(99.0), // alternate
+        IRNode::OpCode(OpCode::If(If {
             test: 0,
             consequent: 1,
             alternate: 2,
@@ -97,10 +97,10 @@ fn test_if_true() {
 #[test]
 fn test_if_false() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),  // test (false)
-        ResolvedNode::Value(42.0), // consequent
-        ResolvedNode::Value(99.0), // alternate
-        ResolvedNode::OpCode(OpCode::If(If {
+        IRNode::Value(0.0),  // test (false)
+        IRNode::Value(42.0), // consequent
+        IRNode::Value(99.0), // alternate
+        IRNode::OpCode(OpCode::If(If {
             test: 0,
             consequent: 1,
             alternate: 2,
@@ -122,12 +122,12 @@ fn test_if_false() {
 #[test]
 fn test_if_with_expression_consequent() {
     let nodes = vec![
-        ResolvedNode::Value(1.0), // test = true
-        ResolvedNode::Value(2.0),
-        ResolvedNode::Value(3.0),
-        ResolvedNode::OpCode(OpCode::Add(Add { inputs: vec![1, 2] })), // 3 = 5.0
-        ResolvedNode::Value(100.0),                                    // alternate
-        ResolvedNode::OpCode(OpCode::If(If {
+        IRNode::Value(1.0), // test = true
+        IRNode::Value(2.0),
+        IRNode::Value(3.0),
+        IRNode::OpCode(OpCode::Add(Add { inputs: vec![1, 2] })), // 3 = 5.0
+        IRNode::Value(100.0),                                    // alternate
+        IRNode::OpCode(OpCode::If(If {
             test: 0,
             consequent: 3,
             alternate: 4,
@@ -149,12 +149,12 @@ fn test_if_with_expression_consequent() {
 #[test]
 fn test_if_with_expression_alternate() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // test = false
-        ResolvedNode::Value(2.0),
-        ResolvedNode::Value(3.0),
-        ResolvedNode::OpCode(OpCode::Multiply(Multiply { inputs: vec![1, 2] })), // 3 = 6.0
-        ResolvedNode::Value(42.0),                                               // consequent
-        ResolvedNode::OpCode(OpCode::If(If {
+        IRNode::Value(0.0), // test = false
+        IRNode::Value(2.0),
+        IRNode::Value(3.0),
+        IRNode::OpCode(OpCode::Multiply(Multiply { inputs: vec![1, 2] })), // 3 = 6.0
+        IRNode::Value(42.0),                                               // consequent
+        IRNode::OpCode(OpCode::If(If {
             test: 0,
             consequent: 4,
             alternate: 3,
@@ -176,16 +176,16 @@ fn test_if_with_expression_alternate() {
 #[test]
 fn test_nested_if() {
     let nodes = vec![
-        ResolvedNode::Value(1.0),  // test 0 (true)
-        ResolvedNode::Value(0.0),  // test 1 (false)
-        ResolvedNode::Value(11.0), // alternate inner
-        ResolvedNode::Value(22.0), // consequent inner
-        ResolvedNode::OpCode(OpCode::If(If {
+        IRNode::Value(1.0),  // test 0 (true)
+        IRNode::Value(0.0),  // test 1 (false)
+        IRNode::Value(11.0), // alternate inner
+        IRNode::Value(22.0), // consequent inner
+        IRNode::OpCode(OpCode::If(If {
             test: 1,
             consequent: 3,
             alternate: 2,
         })), // inner If = 11.0
-        ResolvedNode::OpCode(OpCode::If(If {
+        IRNode::OpCode(OpCode::If(If {
             test: 0,
             consequent: 4,
             alternate: 2,
@@ -207,8 +207,8 @@ fn test_nested_if() {
 #[test]
 fn test_block_returns_value() {
     let nodes = vec![
-        ResolvedNode::Value(42.0),                              // 0: body value
-        ResolvedNode::OpCode(OpCode::Block(Block { body: 0 })), // 1
+        IRNode::Value(42.0),                              // 0: body value
+        IRNode::OpCode(OpCode::Block(Block { body: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -226,10 +226,10 @@ fn test_block_returns_value() {
 #[test]
 fn test_block_returns_from_break() {
     let nodes = vec![
-        ResolvedNode::Value(99.0), // 0: break value
-        ResolvedNode::Value(1.0),  // 1: break count
-        ResolvedNode::OpCode(OpCode::Break(Break { value: 0, count: 1 })), // 2
-        ResolvedNode::OpCode(OpCode::Block(Block { body: 2 })), // 3
+        IRNode::Value(99.0), // 0: break value
+        IRNode::Value(1.0),  // 1: break count
+        IRNode::OpCode(OpCode::Break(Break { value: 0, count: 1 })), // 2
+        IRNode::OpCode(OpCode::Block(Block { body: 2 })), // 3
     ];
 
     let executors = get_available_executors();
@@ -247,17 +247,17 @@ fn test_block_returns_from_break() {
 #[test]
 fn test_block_with_if_breaks() {
     let nodes = vec![
-        ResolvedNode::Value(55.5), // 0: break value
-        ResolvedNode::Value(1.0),  // 1: break count
-        ResolvedNode::OpCode(OpCode::Break(Break { value: 0, count: 1 })), // 2
-        ResolvedNode::Value(1.0),  // 3: true condition
-        ResolvedNode::Value(0.0),  // 4: else branch
-        ResolvedNode::OpCode(OpCode::If(If {
+        IRNode::Value(55.5), // 0: break value
+        IRNode::Value(1.0),  // 1: break count
+        IRNode::OpCode(OpCode::Break(Break { value: 0, count: 1 })), // 2
+        IRNode::Value(1.0),  // 3: true condition
+        IRNode::Value(0.0),  // 4: else branch
+        IRNode::OpCode(OpCode::If(If {
             test: 3,
             consequent: 2,
             alternate: 4,
         })), // 5
-        ResolvedNode::OpCode(OpCode::Block(Block { body: 5 })), // 6
+        IRNode::OpCode(OpCode::Block(Block { body: 5 })), // 6
     ];
 
     let executors = get_available_executors();
@@ -275,11 +275,11 @@ fn test_block_with_if_breaks() {
 #[test]
 fn test_nested_block_breaks_outer() {
     let nodes = vec![
-        ResolvedNode::Value(123.0), // 0: break value
-        ResolvedNode::Value(2.0),   // 1: break count
-        ResolvedNode::OpCode(OpCode::Break(Break { value: 0, count: 1 })), // 2
-        ResolvedNode::OpCode(OpCode::Block(Block { body: 2 })), // 3
-        ResolvedNode::OpCode(OpCode::Block(Block { body: 3 })), // 4
+        IRNode::Value(123.0), // 0: break value
+        IRNode::Value(2.0),   // 1: break count
+        IRNode::OpCode(OpCode::Break(Break { value: 0, count: 1 })), // 2
+        IRNode::OpCode(OpCode::Block(Block { body: 2 })), // 3
+        IRNode::OpCode(OpCode::Block(Block { body: 3 })), // 4
     ];
 
     let executors = get_available_executors();
@@ -298,19 +298,19 @@ fn test_nested_block_breaks_outer() {
 fn test_while_immediate_break() {
     // simulate: while(true) { break(1, 42.0) }
     let nodes = vec![
-        ResolvedNode::Value(42.0), // 0: break value
-        ResolvedNode::Value(1.0),  // 1: break count (pop 1 block)
-        ResolvedNode::OpCode(OpCode::Break(Break {
+        IRNode::Value(42.0), // 0: break value
+        IRNode::Value(1.0),  // 1: break count (pop 1 block)
+        IRNode::OpCode(OpCode::Break(Break {
             // 2: break node
             count: 1,
             value: 0,
         })),
-        ResolvedNode::Value(1.0), // 3: test (true)
-        ResolvedNode::OpCode(OpCode::Block(Block {
+        IRNode::Value(1.0), // 3: test (true)
+        IRNode::OpCode(OpCode::Block(Block {
             // 4: block node, body of while
             body: 2,
         })),
-        ResolvedNode::OpCode(OpCode::While(While {
+        IRNode::OpCode(OpCode::While(While {
             // 5: while node
             test: 3,
             body: 4,
@@ -333,27 +333,27 @@ fn test_while_immediate_break() {
 fn test_while_without_break() {
     // simulate: while(get(0) != 42) { set(0, add(get(0), 1)) }
     let nodes = vec![
-        ResolvedNode::Value(0.0), // 0: memory index 0
-        ResolvedNode::OpCode(OpCode::Get(Get {
+        IRNode::Value(0.0), // 0: memory index 0
+        IRNode::OpCode(OpCode::Get(Get {
             block_id: 0,
             index: 0,
         })), // 1: get(0)
-        ResolvedNode::Value(42.0), // 2: const 42
-        ResolvedNode::OpCode(OpCode::NotEqual(NotEqual { lhs: 1, rhs: 2 })), // 3: get(0) != 42
-        ResolvedNode::Value(0.0), // 4: memory index 0
-        ResolvedNode::OpCode(OpCode::Get(Get {
+        IRNode::Value(42.0), // 2: const 42
+        IRNode::OpCode(OpCode::NotEqual(NotEqual { lhs: 1, rhs: 2 })), // 3: get(0) != 42
+        IRNode::Value(0.0), // 4: memory index 0
+        IRNode::OpCode(OpCode::Get(Get {
             block_id: 0,
             index: 0,
         })), // 5: get(0)
-        ResolvedNode::Value(1.0), // 6: const 1
-        ResolvedNode::OpCode(OpCode::Add(Add { inputs: vec![5, 6] })), // 7: get(0) + 1
-        ResolvedNode::OpCode(OpCode::Set(Set {
+        IRNode::Value(1.0), // 6: const 1
+        IRNode::OpCode(OpCode::Add(Add { inputs: vec![5, 6] })), // 7: get(0) + 1
+        IRNode::OpCode(OpCode::Set(Set {
             block_id: 0,
             index: 4,
             value: 7,
         })), // 8: set(0, ...)
-        ResolvedNode::OpCode(OpCode::Block(Block { body: 8 })), // 9: block with store
-        ResolvedNode::OpCode(OpCode::While(While { test: 3, body: 9 })), // 10: while
+        IRNode::OpCode(OpCode::Block(Block { body: 8 })), // 9: block with store
+        IRNode::OpCode(OpCode::While(While { test: 3, body: 9 })), // 10: while
     ];
 
     let executors = get_available_executors();
@@ -377,14 +377,14 @@ fn test_while_without_break() {
 #[test]
 fn test_switch() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // 0 - literal 0
-        ResolvedNode::OpCode(OpCode::Get(Get {
+        IRNode::Value(0.0), // 0 - literal 0
+        IRNode::OpCode(OpCode::Get(Get {
             block_id: 0,
             index: 0,
         })), // 1
-        ResolvedNode::Value(10.0), // 2 - condition of case 0
-        ResolvedNode::Value(20.0), // 3 - body of case 0
-        ResolvedNode::OpCode(OpCode::Switch(Switch {
+        IRNode::Value(10.0), // 2 - condition of case 0
+        IRNode::Value(20.0), // 3 - body of case 0
+        IRNode::OpCode(OpCode::Switch(Switch {
             discriminant: 1,
             tests_and_consequents: vec![2, 3],
         })), // 4
@@ -419,15 +419,15 @@ fn test_switch() {
 #[test]
 fn test_switch_with_default() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // 0 - literal 0
-        ResolvedNode::OpCode(OpCode::Get(Get {
+        IRNode::Value(0.0), // 0 - literal 0
+        IRNode::OpCode(OpCode::Get(Get {
             block_id: 0,
             index: 0,
         })), // 1
-        ResolvedNode::Value(10.0), // 2 - condition of case 0
-        ResolvedNode::Value(20.0), // 3 - body of case 0
-        ResolvedNode::Value(99.0), // 4 - default
-        ResolvedNode::OpCode(OpCode::SwitchWithDefault(SwitchWithDefault {
+        IRNode::Value(10.0), // 2 - condition of case 0
+        IRNode::Value(20.0), // 3 - body of case 0
+        IRNode::Value(99.0), // 4 - default
+        IRNode::OpCode(OpCode::SwitchWithDefault(SwitchWithDefault {
             discriminant: 1,
             tests_and_consequents: vec![2, 3],
             default_consequent: 4,
@@ -463,14 +463,14 @@ fn test_switch_with_default() {
 #[test]
 fn test_switch_integer() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // 0 - literal 0
-        ResolvedNode::OpCode(OpCode::Get(Get {
+        IRNode::Value(0.0), // 0 - literal 0
+        IRNode::OpCode(OpCode::Get(Get {
             block_id: 0,
             index: 0,
         })), // 1
-        ResolvedNode::Value(10.0), // 2 - body of case 0
-        ResolvedNode::Value(20.0), // 3 - body of case 1
-        ResolvedNode::OpCode(OpCode::SwitchInteger(SwitchInteger {
+        IRNode::Value(10.0), // 2 - body of case 0
+        IRNode::Value(20.0), // 3 - body of case 1
+        IRNode::OpCode(OpCode::SwitchInteger(SwitchInteger {
             discriminant: 1,
             consequents: vec![2, 3],
         })), // 4
@@ -513,15 +513,15 @@ fn test_switch_integer() {
 #[test]
 fn test_switch_integer_with_default() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // 0 - literal 0
-        ResolvedNode::OpCode(OpCode::Get(Get {
+        IRNode::Value(0.0), // 0 - literal 0
+        IRNode::OpCode(OpCode::Get(Get {
             block_id: 0,
             index: 0,
         })), // 1
-        ResolvedNode::Value(10.0), // 2 - body of case 0
-        ResolvedNode::Value(20.0), // 3 - body of case 1
-        ResolvedNode::Value(99.0), // 4 - default
-        ResolvedNode::OpCode(OpCode::SwitchIntegerWithDefault(SwitchIntegerWithDefault {
+        IRNode::Value(10.0), // 2 - body of case 0
+        IRNode::Value(20.0), // 3 - body of case 1
+        IRNode::Value(99.0), // 4 - default
+        IRNode::OpCode(OpCode::SwitchIntegerWithDefault(SwitchIntegerWithDefault {
             discriminant: 1,
             consequents: vec![2, 3],
             default_consequent: 4,

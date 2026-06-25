@@ -1,6 +1,6 @@
 use sonorust_ir::{
     IRValue,
-    nodes::{OpCode, ResolvedNode},
+    nodes::{OpCode, IRNode},
 };
 use sonorust_runtime::context::RuntimeContext;
 
@@ -27,7 +27,7 @@ impl Executable for OpCode {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         match_opcodes!(

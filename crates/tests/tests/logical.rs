@@ -5,9 +5,9 @@ use sonorust_tests::get_available_executors;
 #[test]
 fn test_not_equal_true() {
     let nodes = vec![
-        ResolvedNode::Value(2.0),                                            // 0
-        ResolvedNode::Value(3.5),                                            // 1
-        ResolvedNode::OpCode(OpCode::NotEqual(NotEqual { lhs: 0, rhs: 1 })), // 2
+        IRNode::Value(2.0),                                            // 0
+        IRNode::Value(3.5),                                            // 1
+        IRNode::OpCode(OpCode::NotEqual(NotEqual { lhs: 0, rhs: 1 })), // 2
     ];
 
     let executors = get_available_executors();
@@ -25,9 +25,9 @@ fn test_not_equal_true() {
 #[test]
 fn test_not_equal_false() {
     let nodes = vec![
-        ResolvedNode::Value(4.5),                                            // 0
-        ResolvedNode::Value(4.5),                                            // 1
-        ResolvedNode::OpCode(OpCode::NotEqual(NotEqual { lhs: 0, rhs: 1 })), // 2
+        IRNode::Value(4.5),                                            // 0
+        IRNode::Value(4.5),                                            // 1
+        IRNode::OpCode(OpCode::NotEqual(NotEqual { lhs: 0, rhs: 1 })), // 2
     ];
 
     let executors = get_available_executors();
@@ -45,9 +45,9 @@ fn test_not_equal_false() {
 #[test]
 fn test_equal_true() {
     let nodes = vec![
-        ResolvedNode::Value(2.0),                                      // 0
-        ResolvedNode::Value(2.0),                                      // 1
-        ResolvedNode::OpCode(OpCode::Equal(Equal { lhs: 0, rhs: 1 })), // 2
+        IRNode::Value(2.0),                                      // 0
+        IRNode::Value(2.0),                                      // 1
+        IRNode::OpCode(OpCode::Equal(Equal { lhs: 0, rhs: 1 })), // 2
     ];
 
     let executors = get_available_executors();
@@ -65,9 +65,9 @@ fn test_equal_true() {
 #[test]
 fn test_equal_false() {
     let nodes = vec![
-        ResolvedNode::Value(2.5),                                      // 0
-        ResolvedNode::Value(4.5),                                      // 1
-        ResolvedNode::OpCode(OpCode::Equal(Equal { lhs: 0, rhs: 1 })), // 2
+        IRNode::Value(2.5),                                      // 0
+        IRNode::Value(4.5),                                      // 1
+        IRNode::OpCode(OpCode::Equal(Equal { lhs: 0, rhs: 1 })), // 2
     ];
 
     let executors = get_available_executors();
@@ -85,9 +85,9 @@ fn test_equal_false() {
 #[test]
 fn test_greater_true() {
     let nodes = vec![
-        ResolvedNode::Value(5.0),                                          // 0
-        ResolvedNode::Value(2.0),                                          // 1
-        ResolvedNode::OpCode(OpCode::Greater(Greater { lhs: 0, rhs: 1 })), // 2
+        IRNode::Value(5.0),                                          // 0
+        IRNode::Value(2.0),                                          // 1
+        IRNode::OpCode(OpCode::Greater(Greater { lhs: 0, rhs: 1 })), // 2
     ];
 
     let executors = get_available_executors();
@@ -105,9 +105,9 @@ fn test_greater_true() {
 #[test]
 fn test_greater_false() {
     let nodes = vec![
-        ResolvedNode::Value(1.0),
-        ResolvedNode::Value(10.0),
-        ResolvedNode::OpCode(OpCode::Greater(Greater { lhs: 0, rhs: 1 })),
+        IRNode::Value(1.0),
+        IRNode::Value(10.0),
+        IRNode::OpCode(OpCode::Greater(Greater { lhs: 0, rhs: 1 })),
     ];
 
     let executors = get_available_executors();
@@ -125,9 +125,9 @@ fn test_greater_false() {
 #[test]
 fn test_greater_or_true_equal() {
     let nodes = vec![
-        ResolvedNode::Value(3.3),
-        ResolvedNode::Value(3.3),
-        ResolvedNode::OpCode(OpCode::GreaterOr(GreaterOr { lhs: 0, rhs: 1 })),
+        IRNode::Value(3.3),
+        IRNode::Value(3.3),
+        IRNode::OpCode(OpCode::GreaterOr(GreaterOr { lhs: 0, rhs: 1 })),
     ];
 
     let executors = get_available_executors();
@@ -145,9 +145,9 @@ fn test_greater_or_true_equal() {
 #[test]
 fn test_greater_or_true_gt() {
     let nodes = vec![
-        ResolvedNode::Value(9.0),
-        ResolvedNode::Value(7.5),
-        ResolvedNode::OpCode(OpCode::GreaterOr(GreaterOr { lhs: 0, rhs: 1 })),
+        IRNode::Value(9.0),
+        IRNode::Value(7.5),
+        IRNode::OpCode(OpCode::GreaterOr(GreaterOr { lhs: 0, rhs: 1 })),
     ];
 
     let executors = get_available_executors();
@@ -165,9 +165,9 @@ fn test_greater_or_true_gt() {
 #[test]
 fn test_greater_or_false() {
     let nodes = vec![
-        ResolvedNode::Value(1.0),
-        ResolvedNode::Value(2.0),
-        ResolvedNode::OpCode(OpCode::GreaterOr(GreaterOr { lhs: 0, rhs: 1 })),
+        IRNode::Value(1.0),
+        IRNode::Value(2.0),
+        IRNode::OpCode(OpCode::GreaterOr(GreaterOr { lhs: 0, rhs: 1 })),
     ];
 
     let executors = get_available_executors();
@@ -185,9 +185,9 @@ fn test_greater_or_false() {
 #[test]
 fn test_less_true() {
     let nodes = vec![
-        ResolvedNode::Value(-5.0),
-        ResolvedNode::Value(3.0),
-        ResolvedNode::OpCode(OpCode::Less(Less { lhs: 0, rhs: 1 })),
+        IRNode::Value(-5.0),
+        IRNode::Value(3.0),
+        IRNode::OpCode(OpCode::Less(Less { lhs: 0, rhs: 1 })),
     ];
 
     let executors = get_available_executors();
@@ -205,9 +205,9 @@ fn test_less_true() {
 #[test]
 fn test_less_false() {
     let nodes = vec![
-        ResolvedNode::Value(10.0),
-        ResolvedNode::Value(1.0),
-        ResolvedNode::OpCode(OpCode::Less(Less { lhs: 0, rhs: 1 })),
+        IRNode::Value(10.0),
+        IRNode::Value(1.0),
+        IRNode::OpCode(OpCode::Less(Less { lhs: 0, rhs: 1 })),
     ];
 
     let executors = get_available_executors();
@@ -225,9 +225,9 @@ fn test_less_false() {
 #[test]
 fn test_less_or_true_eq() {
     let nodes = vec![
-        ResolvedNode::Value(4.4),
-        ResolvedNode::Value(4.4),
-        ResolvedNode::OpCode(OpCode::LessOr(LessOr { lhs: 0, rhs: 1 })),
+        IRNode::Value(4.4),
+        IRNode::Value(4.4),
+        IRNode::OpCode(OpCode::LessOr(LessOr { lhs: 0, rhs: 1 })),
     ];
 
     let executors = get_available_executors();
@@ -245,9 +245,9 @@ fn test_less_or_true_eq() {
 #[test]
 fn test_less_or_true_lt() {
     let nodes = vec![
-        ResolvedNode::Value(1.5),
-        ResolvedNode::Value(2.0),
-        ResolvedNode::OpCode(OpCode::LessOr(LessOr { lhs: 0, rhs: 1 })),
+        IRNode::Value(1.5),
+        IRNode::Value(2.0),
+        IRNode::OpCode(OpCode::LessOr(LessOr { lhs: 0, rhs: 1 })),
     ];
 
     let executors = get_available_executors();
@@ -265,9 +265,9 @@ fn test_less_or_true_lt() {
 #[test]
 fn test_less_or_false() {
     let nodes = vec![
-        ResolvedNode::Value(5.0),
-        ResolvedNode::Value(3.0),
-        ResolvedNode::OpCode(OpCode::LessOr(LessOr { lhs: 0, rhs: 1 })),
+        IRNode::Value(5.0),
+        IRNode::Value(3.0),
+        IRNode::OpCode(OpCode::LessOr(LessOr { lhs: 0, rhs: 1 })),
     ];
 
     let executors = get_available_executors();
@@ -285,8 +285,8 @@ fn test_less_or_false() {
 #[test]
 fn test_not_zero() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),                            // 0
-        ResolvedNode::OpCode(OpCode::Not(Not { value: 0 })), // 1
+        IRNode::Value(0.0),                            // 0
+        IRNode::OpCode(OpCode::Not(Not { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -304,8 +304,8 @@ fn test_not_zero() {
 #[test]
 fn test_not_nonzero() {
     let nodes = vec![
-        ResolvedNode::Value(std::f32::consts::PI),           // 0
-        ResolvedNode::OpCode(OpCode::Not(Not { value: 0 })), // 1
+        IRNode::Value(std::f32::consts::PI),           // 0
+        IRNode::OpCode(OpCode::Not(Not { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -323,9 +323,9 @@ fn test_not_nonzero() {
 #[test]
 fn test_and_all_nonzero() {
     let nodes = vec![
-        ResolvedNode::Value(1.0),                                      // 0
-        ResolvedNode::Value(2.0),                                      // 1
-        ResolvedNode::OpCode(OpCode::And(And { inputs: vec![0, 1] })), // 2
+        IRNode::Value(1.0),                                      // 0
+        IRNode::Value(2.0),                                      // 1
+        IRNode::OpCode(OpCode::And(And { inputs: vec![0, 1] })), // 2
     ];
 
     let executors = get_available_executors();
@@ -345,9 +345,9 @@ fn test_and_all_nonzero() {
 #[test]
 fn test_and_with_zero_first() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),                                      // 0
-        ResolvedNode::Value(2.0),                                      // 1
-        ResolvedNode::OpCode(OpCode::And(And { inputs: vec![0, 1] })), // 2
+        IRNode::Value(0.0),                                      // 0
+        IRNode::Value(2.0),                                      // 1
+        IRNode::OpCode(OpCode::And(And { inputs: vec![0, 1] })), // 2
     ];
 
     let executors = get_available_executors();
@@ -365,9 +365,9 @@ fn test_and_with_zero_first() {
 #[test]
 fn test_and_with_zero_last() {
     let nodes = vec![
-        ResolvedNode::Value(2.0),                                      // 0
-        ResolvedNode::Value(0.0),                                      // 1
-        ResolvedNode::OpCode(OpCode::And(And { inputs: vec![0, 1] })), // 2
+        IRNode::Value(2.0),                                      // 0
+        IRNode::Value(0.0),                                      // 1
+        IRNode::OpCode(OpCode::And(And { inputs: vec![0, 1] })), // 2
     ];
 
     let executors = get_available_executors();
@@ -385,9 +385,9 @@ fn test_and_with_zero_last() {
 #[test]
 fn test_or_all_zero() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),                                    // 0
-        ResolvedNode::Value(0.0),                                    // 1
-        ResolvedNode::OpCode(OpCode::Or(Or { inputs: vec![0, 1] })), // 2
+        IRNode::Value(0.0),                                    // 0
+        IRNode::Value(0.0),                                    // 1
+        IRNode::OpCode(OpCode::Or(Or { inputs: vec![0, 1] })), // 2
     ];
 
     let executors = get_available_executors();
@@ -405,9 +405,9 @@ fn test_or_all_zero() {
 #[test]
 fn test_or_first_nonzero() {
     let nodes = vec![
-        ResolvedNode::Value(5.0),                                    // 0
-        ResolvedNode::Value(0.0),                                    // 1
-        ResolvedNode::OpCode(OpCode::Or(Or { inputs: vec![0, 1] })), // 2
+        IRNode::Value(5.0),                                    // 0
+        IRNode::Value(0.0),                                    // 1
+        IRNode::OpCode(OpCode::Or(Or { inputs: vec![0, 1] })), // 2
     ];
 
     let executors = get_available_executors();
@@ -425,9 +425,9 @@ fn test_or_first_nonzero() {
 #[test]
 fn test_or_second_nonzero() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),                                    // 0
-        ResolvedNode::Value(8.0),                                    // 1
-        ResolvedNode::OpCode(OpCode::Or(Or { inputs: vec![0, 1] })), // 2
+        IRNode::Value(0.0),                                    // 0
+        IRNode::Value(8.0),                                    // 1
+        IRNode::OpCode(OpCode::Or(Or { inputs: vec![0, 1] })), // 2
     ];
 
     let executors = get_available_executors();

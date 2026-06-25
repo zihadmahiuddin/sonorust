@@ -7,7 +7,7 @@ impl Executable for Equal {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let lhs = executor.execute(nodes, self.lhs, context);
@@ -24,7 +24,7 @@ impl Executable for NotEqual {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let lhs = executor.execute(nodes, self.lhs, context);
@@ -41,7 +41,7 @@ impl Executable for Greater {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let lhs = executor.execute(nodes, self.lhs, context);
@@ -54,7 +54,7 @@ impl Executable for GreaterOr {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let lhs = executor.execute(nodes, self.lhs, context);
@@ -67,7 +67,7 @@ impl Executable for Less {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let lhs = executor.execute(nodes, self.lhs, context);
@@ -80,7 +80,7 @@ impl Executable for LessOr {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let lhs = executor.execute(nodes, self.lhs, context);
@@ -93,7 +93,7 @@ impl Executable for And {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let mut last_value = 0.0;
@@ -131,7 +131,7 @@ impl Executable for Or {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         for &input in &self.inputs {
@@ -161,7 +161,7 @@ impl Executable for Not {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let value = executor.execute(nodes, self.value, context);

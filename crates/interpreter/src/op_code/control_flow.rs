@@ -9,7 +9,7 @@ impl Executable for Execute {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let mut value: IRValue = 0.0;
@@ -34,7 +34,7 @@ impl Executable for Execute0 {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         for &node in &self.nodes {
@@ -57,7 +57,7 @@ impl Executable for Block {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         match executor.take_control() {
@@ -76,7 +76,7 @@ impl Executable for Break {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let count = executor.execute(nodes, self.count, context);
@@ -103,7 +103,7 @@ impl Executable for If {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let test = executor.execute(nodes, self.test, context);
@@ -120,7 +120,7 @@ impl Executable for While {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         loop {
@@ -146,7 +146,7 @@ impl Executable for Switch {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let discriminant = executor.execute(nodes, self.discriminant, context);
@@ -175,7 +175,7 @@ impl Executable for SwitchWithDefault {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let discriminant = executor.execute(nodes, self.discriminant, context);
@@ -207,7 +207,7 @@ impl Executable for SwitchInteger {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let discriminant = executor.execute(nodes, self.discriminant, context);
@@ -229,7 +229,7 @@ impl Executable for SwitchIntegerWithDefault {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let discriminant = executor.execute(nodes, self.discriminant, context);

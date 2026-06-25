@@ -8,7 +8,7 @@ impl Executable for Abs {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         executor.execute(nodes, self.value, context).abs()
@@ -19,7 +19,7 @@ impl Executable for Frac {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         executor.execute(nodes, self.value, context).fract()
@@ -30,7 +30,7 @@ impl Executable for Trunc {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         executor.execute(nodes, self.value, context).trunc()
@@ -41,7 +41,7 @@ impl Executable for Negate {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         -executor.execute(nodes, self.value, context)
@@ -52,7 +52,7 @@ impl Executable for Add {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         self.inputs
@@ -66,7 +66,7 @@ impl Executable for Subtract {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let mut inputs = self.inputs.iter();
@@ -86,7 +86,7 @@ impl Executable for Multiply {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         self.inputs
@@ -100,7 +100,7 @@ impl Executable for Divide {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let mut inputs = self.inputs.iter();
@@ -120,7 +120,7 @@ impl Executable for Mod {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let mut inputs = self.inputs.iter();
@@ -140,7 +140,7 @@ impl Executable for Rem {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let mut inputs = self.inputs.iter();
@@ -160,7 +160,7 @@ impl Executable for Power {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         if self.inputs.is_empty() {
@@ -184,7 +184,7 @@ impl Executable for Clamp {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let min = executor.execute(nodes, self.min, context);
@@ -199,7 +199,7 @@ impl Executable for Lerp {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let min = executor.execute(nodes, self.min, context);
@@ -213,7 +213,7 @@ impl Executable for LerpClamped {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let min = executor.execute(nodes, self.min, context);
@@ -227,7 +227,7 @@ impl Executable for Unlerp {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let min = executor.execute(nodes, self.min, context);
@@ -241,7 +241,7 @@ impl Executable for UnlerpClamped {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let min = executor.execute(nodes, self.min, context);
@@ -255,7 +255,7 @@ impl Executable for Min {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let x = executor.execute(nodes, self.x, context);
@@ -268,7 +268,7 @@ impl Executable for Max {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let x = executor.execute(nodes, self.x, context);
@@ -281,7 +281,7 @@ impl Executable for Remap {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let from_min = executor.execute(nodes, self.from_min, context);
@@ -297,7 +297,7 @@ impl Executable for RemapClamped {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let from_min = executor.execute(nodes, self.from_min, context);
@@ -318,7 +318,7 @@ impl Executable for Round {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let value = executor.execute(nodes, self.value, context);
@@ -330,7 +330,7 @@ impl Executable for Floor {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let value = executor.execute(nodes, self.value, context);
@@ -342,7 +342,7 @@ impl Executable for Ceil {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let value = executor.execute(nodes, self.value, context);
@@ -354,7 +354,7 @@ impl Executable for Sin {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let value = executor.execute(nodes, self.value, context);
@@ -366,7 +366,7 @@ impl Executable for Sinh {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let value = executor.execute(nodes, self.value, context);
@@ -378,7 +378,7 @@ impl Executable for Cos {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let value = executor.execute(nodes, self.value, context);
@@ -390,7 +390,7 @@ impl Executable for Cosh {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let value = executor.execute(nodes, self.value, context);
@@ -402,7 +402,7 @@ impl Executable for Tan {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let value = executor.execute(nodes, self.value, context);
@@ -414,7 +414,7 @@ impl Executable for Tanh {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let value = executor.execute(nodes, self.value, context);
@@ -426,7 +426,7 @@ impl Executable for Arcsin {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let value = executor.execute(nodes, self.value, context);
@@ -438,7 +438,7 @@ impl Executable for Arccos {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let value = executor.execute(nodes, self.value, context);
@@ -450,7 +450,7 @@ impl Executable for Arctan {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let value = executor.execute(nodes, self.value, context);
@@ -462,7 +462,7 @@ impl Executable for Arctan2 {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let x = executor.execute(nodes, self.x, context);
@@ -475,7 +475,7 @@ impl Executable for Degree {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let radians = executor.execute(nodes, self.value, context);
@@ -487,7 +487,7 @@ impl Executable for Radian {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let degrees = executor.execute(nodes, self.value, context);
@@ -499,7 +499,7 @@ impl Executable for Log {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let value = executor.execute(nodes, self.value, context);
@@ -511,7 +511,7 @@ impl Executable for Sign {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let value = executor.execute(nodes, self.value, context);
@@ -536,7 +536,7 @@ impl Executable for Random {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let min = executor.execute(nodes, self.min, context);
@@ -549,7 +549,7 @@ impl Executable for RandomInteger {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let min = executor.execute(nodes, self.min, context);

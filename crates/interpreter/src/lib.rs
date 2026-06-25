@@ -4,7 +4,7 @@ mod node;
 mod op_code;
 
 use num_traits::FromPrimitive;
-use sonorust_ir::{IRValue, nodes::ResolvedNode};
+use sonorust_ir::{IRValue, nodes::IRNode};
 use sonorust_runtime::{SonorustIRExecutor, context::RuntimeContext};
 
 type ControlFlowState = ControlFlow<Vec<IRValue>>;
@@ -13,7 +13,7 @@ pub trait Executable {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue;
 }
@@ -51,13 +51,13 @@ impl SonorustInterpreter {
 impl SonorustIRExecutor for SonorustInterpreter {
     fn execute(
         &mut self,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         root_index: usize,
         context: &mut RuntimeContext,
     ) -> IRValue {
         match &nodes[root_index] {
-            ResolvedNode::Value(value) => *value,
-            ResolvedNode::OpCode(op_code) => op_code.execute(context, nodes, self),
+            IRNode::Value(value) => *value,
+            IRNode::OpCode(op_code) => op_code.execute(context, nodes, self),
         }
     }
 }

@@ -7,7 +7,7 @@ use cranelift::{
     module::{Linkage, Module},
     prelude::{isa::CallConv, *},
 };
-use sonorust_ir::{IRValue, nodes::ResolvedNode};
+use sonorust_ir::{IRValue, nodes::IRNode};
 use sonorust_runtime::{
     SonorustIRExecutor,
     context::{RuntimeContext, get_external_functions},
@@ -34,7 +34,7 @@ pub struct CraneliftJitExecutor {
 }
 
 impl CraneliftJitExecutor {
-    fn build_function(nodes: &[ResolvedNode], root_index: usize) -> CompiledFunctionPointer {
+    fn build_function(nodes: &[IRNode], root_index: usize) -> CompiledFunctionPointer {
         let externals_addrs = get_external_functions();
         let mut externals_func_refs = HashMap::new();
 
@@ -86,14 +86,14 @@ impl CraneliftJitExecutor {
 }
 
 impl SonorustIRExecutor for CraneliftJitExecutor {
-    fn prepare(&mut self, nodes: &[ResolvedNode], root_index: usize) {
+    fn prepare(&mut self, nodes: &[IRNode], root_index: usize) {
         let func = Self::build_function(nodes, root_index);
         self.prepared_functions.insert(NodeIndex(root_index), func);
     }
 
     fn execute(
         &mut self,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         root_index: usize,
         runtime_context: &mut RuntimeContext,
     ) -> f32 {
@@ -110,7 +110,7 @@ impl SonorustIRExecutor for CraneliftJitExecutor {
 fn build_cranelift_function(
     func: &mut Function,
     externals_func_refs: &HashMap<&str, FuncRef>,
-    nodes: &[ResolvedNode],
+    nodes: &[IRNode],
     root_index: usize,
 ) {
     let mut ctx = FunctionBuilderContext::new();

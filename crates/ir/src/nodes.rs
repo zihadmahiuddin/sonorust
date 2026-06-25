@@ -1,7 +1,7 @@
 use crate::IRValue;
 
 #[derive(Debug)]
-pub enum ResolvedNode {
+pub enum IRNode {
     Value(IRValue),
     OpCode(OpCode),
 }

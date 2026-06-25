@@ -5,8 +5,8 @@ use sonorust_tests::get_available_executors;
 #[test]
 fn test_abs_negative() {
     let nodes = vec![
-        ResolvedNode::Value(-3.5),                           // 0
-        ResolvedNode::OpCode(OpCode::Abs(Abs { value: 0 })), // 1
+        IRNode::Value(-3.5),                           // 0
+        IRNode::OpCode(OpCode::Abs(Abs { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -24,8 +24,8 @@ fn test_abs_negative() {
 #[test]
 fn test_abs_positive() {
     let nodes = vec![
-        ResolvedNode::Value(3.5),                            // 0
-        ResolvedNode::OpCode(OpCode::Abs(Abs { value: 0 })), // 1
+        IRNode::Value(3.5),                            // 0
+        IRNode::OpCode(OpCode::Abs(Abs { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -43,8 +43,8 @@ fn test_abs_positive() {
 #[test]
 fn test_frac_negative() {
     let nodes = vec![
-        ResolvedNode::Value(-5.75),                            // 0
-        ResolvedNode::OpCode(OpCode::Frac(Frac { value: 0 })), // 1
+        IRNode::Value(-5.75),                            // 0
+        IRNode::OpCode(OpCode::Frac(Frac { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -62,8 +62,8 @@ fn test_frac_negative() {
 #[test]
 fn test_frac_positive() {
     let nodes = vec![
-        ResolvedNode::Value(5.75),                             // 0
-        ResolvedNode::OpCode(OpCode::Frac(Frac { value: 0 })), // 1
+        IRNode::Value(5.75),                             // 0
+        IRNode::OpCode(OpCode::Frac(Frac { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -81,8 +81,8 @@ fn test_frac_positive() {
 #[test]
 fn test_trunc_negative() {
     let nodes = vec![
-        ResolvedNode::Value(-4.8),                               // 0
-        ResolvedNode::OpCode(OpCode::Trunc(Trunc { value: 0 })), // 1
+        IRNode::Value(-4.8),                               // 0
+        IRNode::OpCode(OpCode::Trunc(Trunc { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -100,8 +100,8 @@ fn test_trunc_negative() {
 #[test]
 fn test_trunc_positive() {
     let nodes = vec![
-        ResolvedNode::Value(4.8),                                // 0
-        ResolvedNode::OpCode(OpCode::Trunc(Trunc { value: 0 })), // 1
+        IRNode::Value(4.8),                                // 0
+        IRNode::OpCode(OpCode::Trunc(Trunc { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -119,8 +119,8 @@ fn test_trunc_positive() {
 #[test]
 fn test_negate_negative() {
     let nodes = vec![
-        ResolvedNode::Value(-6.25),                                // 0
-        ResolvedNode::OpCode(OpCode::Negate(Negate { value: 0 })), // 1
+        IRNode::Value(-6.25),                                // 0
+        IRNode::OpCode(OpCode::Negate(Negate { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -138,8 +138,8 @@ fn test_negate_negative() {
 #[test]
 fn test_negate_positive() {
     let nodes = vec![
-        ResolvedNode::Value(6.25),                                 // 0
-        ResolvedNode::OpCode(OpCode::Negate(Negate { value: 0 })), // 1
+        IRNode::Value(6.25),                                 // 0
+        IRNode::OpCode(OpCode::Negate(Negate { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -157,9 +157,9 @@ fn test_negate_positive() {
 #[test]
 fn test_add() {
     let nodes = vec![
-        ResolvedNode::Value(2.0),                                      // 0
-        ResolvedNode::Value(3.5),                                      // 1
-        ResolvedNode::OpCode(OpCode::Add(Add { inputs: vec![0, 1] })), // 2
+        IRNode::Value(2.0),                                      // 0
+        IRNode::Value(3.5),                                      // 1
+        IRNode::OpCode(OpCode::Add(Add { inputs: vec![0, 1] })), // 2
     ];
 
     let executors = get_available_executors();
@@ -177,11 +177,11 @@ fn test_add() {
 #[test]
 fn test_add_chain() {
     let nodes = vec![
-        ResolvedNode::Value(1.0),                                      // 0
-        ResolvedNode::Value(2.0),                                      // 1
-        ResolvedNode::Value(3.0),                                      // 2
-        ResolvedNode::OpCode(OpCode::Add(Add { inputs: vec![0, 1] })), // 3 = 3.0
-        ResolvedNode::OpCode(OpCode::Add(Add { inputs: vec![3, 2] })), // 4 = 6.0
+        IRNode::Value(1.0),                                      // 0
+        IRNode::Value(2.0),                                      // 1
+        IRNode::Value(3.0),                                      // 2
+        IRNode::OpCode(OpCode::Add(Add { inputs: vec![0, 1] })), // 3 = 3.0
+        IRNode::OpCode(OpCode::Add(Add { inputs: vec![3, 2] })), // 4 = 6.0
     ];
 
     let executors = get_available_executors();
@@ -199,9 +199,9 @@ fn test_add_chain() {
 #[test]
 fn test_subtract() {
     let nodes = vec![
-        ResolvedNode::Value(10.0),
-        ResolvedNode::Value(4.0),
-        ResolvedNode::OpCode(OpCode::Subtract(Subtract { inputs: vec![0, 1] })),
+        IRNode::Value(10.0),
+        IRNode::Value(4.0),
+        IRNode::OpCode(OpCode::Subtract(Subtract { inputs: vec![0, 1] })),
     ];
 
     let executors = get_available_executors();
@@ -219,9 +219,9 @@ fn test_subtract() {
 #[test]
 fn test_subtract_negative() {
     let nodes = vec![
-        ResolvedNode::Value(5.0),                                                // 0
-        ResolvedNode::Value(10.0),                                               // 1
-        ResolvedNode::OpCode(OpCode::Subtract(Subtract { inputs: vec![0, 1] })), // 2 = -5.0
+        IRNode::Value(5.0),                                                // 0
+        IRNode::Value(10.0),                                               // 1
+        IRNode::OpCode(OpCode::Subtract(Subtract { inputs: vec![0, 1] })), // 2 = -5.0
     ];
 
     let executors = get_available_executors();
@@ -239,9 +239,9 @@ fn test_subtract_negative() {
 #[test]
 fn test_multiply() {
     let nodes = vec![
-        ResolvedNode::Value(3.0),
-        ResolvedNode::Value(4.0),
-        ResolvedNode::OpCode(OpCode::Multiply(Multiply { inputs: vec![0, 1] })),
+        IRNode::Value(3.0),
+        IRNode::Value(4.0),
+        IRNode::OpCode(OpCode::Multiply(Multiply { inputs: vec![0, 1] })),
     ];
 
     let executors = get_available_executors();
@@ -259,9 +259,9 @@ fn test_multiply() {
 #[test]
 fn test_multiply_zero() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),
-        ResolvedNode::Value(999.0),
-        ResolvedNode::OpCode(OpCode::Multiply(Multiply { inputs: vec![0, 1] })),
+        IRNode::Value(0.0),
+        IRNode::Value(999.0),
+        IRNode::OpCode(OpCode::Multiply(Multiply { inputs: vec![0, 1] })),
     ];
 
     let executors = get_available_executors();
@@ -279,9 +279,9 @@ fn test_multiply_zero() {
 #[test]
 fn test_divide() {
     let nodes = vec![
-        ResolvedNode::Value(9.0),
-        ResolvedNode::Value(3.0),
-        ResolvedNode::OpCode(OpCode::Divide(Divide { inputs: vec![0, 1] })),
+        IRNode::Value(9.0),
+        IRNode::Value(3.0),
+        IRNode::OpCode(OpCode::Divide(Divide { inputs: vec![0, 1] })),
     ];
 
     let executors = get_available_executors();
@@ -299,9 +299,9 @@ fn test_divide() {
 #[test]
 fn test_mod() {
     let nodes = vec![
-        ResolvedNode::Value(-5.3),                                     // 0
-        ResolvedNode::Value(2.0),                                      // 1
-        ResolvedNode::OpCode(OpCode::Mod(Mod { inputs: vec![0, 1] })), // 2
+        IRNode::Value(-5.3),                                     // 0
+        IRNode::Value(2.0),                                      // 1
+        IRNode::OpCode(OpCode::Mod(Mod { inputs: vec![0, 1] })), // 2
     ];
 
     let executors = get_available_executors();
@@ -320,9 +320,9 @@ fn test_mod() {
 #[test]
 fn test_mod_negative_operand() {
     let nodes = vec![
-        ResolvedNode::Value(17.0),                                     // 0
-        ResolvedNode::Value(-12.0),                                    // 1
-        ResolvedNode::OpCode(OpCode::Mod(Mod { inputs: vec![0, 1] })), // 2
+        IRNode::Value(17.0),                                     // 0
+        IRNode::Value(-12.0),                                    // 1
+        IRNode::OpCode(OpCode::Mod(Mod { inputs: vec![0, 1] })), // 2
     ];
 
     let executors = get_available_executors();
@@ -341,9 +341,9 @@ fn test_mod_negative_operand() {
 #[test]
 fn test_rem() {
     let nodes = vec![
-        ResolvedNode::Value(-5.3),                                     // 0
-        ResolvedNode::Value(2.0),                                      // 1
-        ResolvedNode::OpCode(OpCode::Rem(Rem { inputs: vec![0, 1] })), // 2
+        IRNode::Value(-5.3),                                     // 0
+        IRNode::Value(2.0),                                      // 1
+        IRNode::OpCode(OpCode::Rem(Rem { inputs: vec![0, 1] })), // 2
     ];
 
     let executors = get_available_executors();
@@ -362,9 +362,9 @@ fn test_rem() {
 #[test]
 fn test_rem_negative_operand() {
     let nodes = vec![
-        ResolvedNode::Value(17.0),                                     // 0
-        ResolvedNode::Value(-12.0),                                    // 1
-        ResolvedNode::OpCode(OpCode::Rem(Rem { inputs: vec![0, 1] })), // 2
+        IRNode::Value(17.0),                                     // 0
+        IRNode::Value(-12.0),                                    // 1
+        IRNode::OpCode(OpCode::Rem(Rem { inputs: vec![0, 1] })), // 2
     ];
 
     let executors = get_available_executors();
@@ -382,7 +382,7 @@ fn test_rem_negative_operand() {
 
 #[test]
 fn test_power_no_args_zero() {
-    let nodes = vec![ResolvedNode::OpCode(OpCode::Power(Power {
+    let nodes = vec![IRNode::OpCode(OpCode::Power(Power {
         inputs: vec![],
     }))];
 
@@ -401,8 +401,8 @@ fn test_power_no_args_zero() {
 #[test]
 fn test_power_single_arg() {
     let nodes = vec![
-        ResolvedNode::Value(5.0),                                       // 0
-        ResolvedNode::OpCode(OpCode::Power(Power { inputs: vec![0] })), // 1 = 5
+        IRNode::Value(5.0),                                       // 0
+        IRNode::OpCode(OpCode::Power(Power { inputs: vec![0] })), // 1 = 5
     ];
 
     let executors = get_available_executors();
@@ -420,9 +420,9 @@ fn test_power_single_arg() {
 #[test]
 fn test_power_two_args() {
     let nodes = vec![
-        ResolvedNode::Value(2.0),                                          // 0
-        ResolvedNode::Value(3.0),                                          // 1
-        ResolvedNode::OpCode(OpCode::Power(Power { inputs: vec![0, 1] })), // 2 = 2^3 = 8
+        IRNode::Value(2.0),                                          // 0
+        IRNode::Value(3.0),                                          // 1
+        IRNode::OpCode(OpCode::Power(Power { inputs: vec![0, 1] })), // 2 = 2^3 = 8
     ];
 
     let executors = get_available_executors();
@@ -441,10 +441,10 @@ fn test_power_two_args() {
 #[test]
 fn test_power_three_args() {
     let nodes = vec![
-        ResolvedNode::Value(2.0), // 0
-        ResolvedNode::Value(3.0), // 1
-        ResolvedNode::Value(2.0), // 2
-        ResolvedNode::OpCode(OpCode::Power(Power {
+        IRNode::Value(2.0), // 0
+        IRNode::Value(3.0), // 1
+        IRNode::Value(2.0), // 2
+        IRNode::OpCode(OpCode::Power(Power {
             inputs: vec![0, 1, 2],
         })), // 3 = (2^3)^2 = 8^2 = 64
     ];
@@ -465,9 +465,9 @@ fn test_power_three_args() {
 #[test]
 fn test_power_negative_base_even_exponent() {
     let nodes = vec![
-        ResolvedNode::Value(-2.0),                                         // 0
-        ResolvedNode::Value(2.0),                                          // 1
-        ResolvedNode::OpCode(OpCode::Power(Power { inputs: vec![0, 1] })), // 2 = (-2)^2 = 4
+        IRNode::Value(-2.0),                                         // 0
+        IRNode::Value(2.0),                                          // 1
+        IRNode::OpCode(OpCode::Power(Power { inputs: vec![0, 1] })), // 2 = (-2)^2 = 4
     ];
 
     let executors = get_available_executors();
@@ -486,9 +486,9 @@ fn test_power_negative_base_even_exponent() {
 #[test]
 fn test_power_zero_base() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),                                          // 0
-        ResolvedNode::Value(5.0),                                          // 1
-        ResolvedNode::OpCode(OpCode::Power(Power { inputs: vec![0, 1] })), // 2 = 0^5 = 0
+        IRNode::Value(0.0),                                          // 0
+        IRNode::Value(5.0),                                          // 1
+        IRNode::OpCode(OpCode::Power(Power { inputs: vec![0, 1] })), // 2 = 0^5 = 0
     ];
 
     let executors = get_available_executors();
@@ -507,9 +507,9 @@ fn test_power_zero_base() {
 #[test]
 fn test_power_negative_exponent() {
     let nodes = vec![
-        ResolvedNode::Value(4.0),                                          // 0
-        ResolvedNode::Value(-1.0),                                         // 1
-        ResolvedNode::OpCode(OpCode::Power(Power { inputs: vec![0, 1] })), // 2 = 4^-1 = 0.25
+        IRNode::Value(4.0),                                          // 0
+        IRNode::Value(-1.0),                                         // 1
+        IRNode::OpCode(OpCode::Power(Power { inputs: vec![0, 1] })), // 2 = 4^-1 = 0.25
     ];
 
     let executors = get_available_executors();
@@ -528,10 +528,10 @@ fn test_power_negative_exponent() {
 #[test]
 fn test_clamp_within_bounds() {
     let nodes = vec![
-        ResolvedNode::Value(2.0), // 0 = min
-        ResolvedNode::Value(5.0), // 1 = max
-        ResolvedNode::Value(3.5), // 2 = value
-        ResolvedNode::OpCode(OpCode::Clamp(Clamp {
+        IRNode::Value(2.0), // 0 = min
+        IRNode::Value(5.0), // 1 = max
+        IRNode::Value(3.5), // 2 = value
+        IRNode::OpCode(OpCode::Clamp(Clamp {
             min: 0,
             max: 1,
             value: 2,
@@ -554,10 +554,10 @@ fn test_clamp_within_bounds() {
 #[test]
 fn test_clamp_below_min() {
     let nodes = vec![
-        ResolvedNode::Value(2.0), // 0 = min
-        ResolvedNode::Value(5.0), // 1 = max
-        ResolvedNode::Value(1.0), // 2 = value
-        ResolvedNode::OpCode(OpCode::Clamp(Clamp {
+        IRNode::Value(2.0), // 0 = min
+        IRNode::Value(5.0), // 1 = max
+        IRNode::Value(1.0), // 2 = value
+        IRNode::OpCode(OpCode::Clamp(Clamp {
             min: 0,
             max: 1,
             value: 2,
@@ -580,10 +580,10 @@ fn test_clamp_below_min() {
 #[test]
 fn test_clamp_above_max() {
     let nodes = vec![
-        ResolvedNode::Value(2.0), // 0 = min
-        ResolvedNode::Value(5.0), // 1 = max
-        ResolvedNode::Value(6.0), // 2 = value
-        ResolvedNode::OpCode(OpCode::Clamp(Clamp {
+        IRNode::Value(2.0), // 0 = min
+        IRNode::Value(5.0), // 1 = max
+        IRNode::Value(6.0), // 2 = value
+        IRNode::OpCode(OpCode::Clamp(Clamp {
             min: 0,
             max: 1,
             value: 2,
@@ -606,10 +606,10 @@ fn test_clamp_above_max() {
 #[test]
 fn test_lerp_zero() {
     let nodes = vec![
-        ResolvedNode::Value(10.0), // 0 = min
-        ResolvedNode::Value(20.0), // 1 = max
-        ResolvedNode::Value(0.0),  // 2 = value
-        ResolvedNode::OpCode(OpCode::Lerp(Lerp {
+        IRNode::Value(10.0), // 0 = min
+        IRNode::Value(20.0), // 1 = max
+        IRNode::Value(0.0),  // 2 = value
+        IRNode::OpCode(OpCode::Lerp(Lerp {
             min: 0,
             max: 1,
             value: 2,
@@ -632,10 +632,10 @@ fn test_lerp_zero() {
 #[test]
 fn test_lerp_one() {
     let nodes = vec![
-        ResolvedNode::Value(10.0), // 0 = min
-        ResolvedNode::Value(20.0), // 1 = max
-        ResolvedNode::Value(1.0),  // 2 = value
-        ResolvedNode::OpCode(OpCode::Lerp(Lerp {
+        IRNode::Value(10.0), // 0 = min
+        IRNode::Value(20.0), // 1 = max
+        IRNode::Value(1.0),  // 2 = value
+        IRNode::OpCode(OpCode::Lerp(Lerp {
             min: 0,
             max: 1,
             value: 2,
@@ -658,10 +658,10 @@ fn test_lerp_one() {
 #[test]
 fn test_lerp_half() {
     let nodes = vec![
-        ResolvedNode::Value(10.0), // 0 = min
-        ResolvedNode::Value(20.0), // 1 = max
-        ResolvedNode::Value(0.5),  // 2 = value
-        ResolvedNode::OpCode(OpCode::Lerp(Lerp {
+        IRNode::Value(10.0), // 0 = min
+        IRNode::Value(20.0), // 1 = max
+        IRNode::Value(0.5),  // 2 = value
+        IRNode::OpCode(OpCode::Lerp(Lerp {
             min: 0,
             max: 1,
             value: 2,
@@ -684,10 +684,10 @@ fn test_lerp_half() {
 #[test]
 fn test_lerp_past_one() {
     let nodes = vec![
-        ResolvedNode::Value(10.0), // 0 = min
-        ResolvedNode::Value(20.0), // 1 = max
-        ResolvedNode::Value(1.5),  // 2 = value
-        ResolvedNode::OpCode(OpCode::Lerp(Lerp {
+        IRNode::Value(10.0), // 0 = min
+        IRNode::Value(20.0), // 1 = max
+        IRNode::Value(1.5),  // 2 = value
+        IRNode::OpCode(OpCode::Lerp(Lerp {
             min: 0,
             max: 1,
             value: 2,
@@ -710,10 +710,10 @@ fn test_lerp_past_one() {
 #[test]
 fn test_lerp_clamped_below_zero() {
     let nodes = vec![
-        ResolvedNode::Value(100.0), // 0 = min
-        ResolvedNode::Value(200.0), // 1 = max
-        ResolvedNode::Value(-1.0),  // 2 = value (t < 0)
-        ResolvedNode::OpCode(OpCode::LerpClamped(LerpClamped {
+        IRNode::Value(100.0), // 0 = min
+        IRNode::Value(200.0), // 1 = max
+        IRNode::Value(-1.0),  // 2 = value (t < 0)
+        IRNode::OpCode(OpCode::LerpClamped(LerpClamped {
             min: 0,
             max: 1,
             value: 2,
@@ -737,10 +737,10 @@ fn test_lerp_clamped_below_zero() {
 #[test]
 fn test_lerp_clamped_above_one() {
     let nodes = vec![
-        ResolvedNode::Value(100.0), // 0 = min
-        ResolvedNode::Value(200.0), // 1 = max
-        ResolvedNode::Value(2.0),   // 2 = value (t > 1)
-        ResolvedNode::OpCode(OpCode::LerpClamped(LerpClamped {
+        IRNode::Value(100.0), // 0 = min
+        IRNode::Value(200.0), // 1 = max
+        IRNode::Value(2.0),   // 2 = value (t > 1)
+        IRNode::OpCode(OpCode::LerpClamped(LerpClamped {
             min: 0,
             max: 1,
             value: 2,
@@ -764,10 +764,10 @@ fn test_lerp_clamped_above_one() {
 #[test]
 fn test_lerp_clamped_midpoint() {
     let nodes = vec![
-        ResolvedNode::Value(100.0), // 0 = min
-        ResolvedNode::Value(200.0), // 1 = max
-        ResolvedNode::Value(0.5),   // 2 = value (t = 0.5)
-        ResolvedNode::OpCode(OpCode::LerpClamped(LerpClamped {
+        IRNode::Value(100.0), // 0 = min
+        IRNode::Value(200.0), // 1 = max
+        IRNode::Value(0.5),   // 2 = value (t = 0.5)
+        IRNode::OpCode(OpCode::LerpClamped(LerpClamped {
             min: 0,
             max: 1,
             value: 2,
@@ -791,10 +791,10 @@ fn test_lerp_clamped_midpoint() {
 #[test]
 fn test_lerp_clamped_exact_zero() {
     let nodes = vec![
-        ResolvedNode::Value(10.0), // 0 = min
-        ResolvedNode::Value(20.0), // 1 = max
-        ResolvedNode::Value(0.0),  // 2 = value
-        ResolvedNode::OpCode(OpCode::LerpClamped(LerpClamped {
+        IRNode::Value(10.0), // 0 = min
+        IRNode::Value(20.0), // 1 = max
+        IRNode::Value(0.0),  // 2 = value
+        IRNode::OpCode(OpCode::LerpClamped(LerpClamped {
             min: 0,
             max: 1,
             value: 2,
@@ -818,10 +818,10 @@ fn test_lerp_clamped_exact_zero() {
 #[test]
 fn test_lerp_clamped_exact_one() {
     let nodes = vec![
-        ResolvedNode::Value(10.0), // 0 = min
-        ResolvedNode::Value(20.0), // 1 = max
-        ResolvedNode::Value(1.0),  // 2 = value
-        ResolvedNode::OpCode(OpCode::LerpClamped(LerpClamped {
+        IRNode::Value(10.0), // 0 = min
+        IRNode::Value(20.0), // 1 = max
+        IRNode::Value(1.0),  // 2 = value
+        IRNode::OpCode(OpCode::LerpClamped(LerpClamped {
             min: 0,
             max: 1,
             value: 2,
@@ -845,10 +845,10 @@ fn test_lerp_clamped_exact_one() {
 #[test]
 fn test_unlerp_zero() {
     let nodes = vec![
-        ResolvedNode::Value(10.0), // 0 = min
-        ResolvedNode::Value(20.0), // 1 = max
-        ResolvedNode::Value(10.0), // 2 = value
-        ResolvedNode::OpCode(OpCode::Unlerp(Unlerp {
+        IRNode::Value(10.0), // 0 = min
+        IRNode::Value(20.0), // 1 = max
+        IRNode::Value(10.0), // 2 = value
+        IRNode::OpCode(OpCode::Unlerp(Unlerp {
             min: 0,
             max: 1,
             value: 2,
@@ -871,10 +871,10 @@ fn test_unlerp_zero() {
 #[test]
 fn test_unlerp_one() {
     let nodes = vec![
-        ResolvedNode::Value(10.0), // 0 = min
-        ResolvedNode::Value(20.0), // 1 = max
-        ResolvedNode::Value(20.0), // 2 = value
-        ResolvedNode::OpCode(OpCode::Unlerp(Unlerp {
+        IRNode::Value(10.0), // 0 = min
+        IRNode::Value(20.0), // 1 = max
+        IRNode::Value(20.0), // 2 = value
+        IRNode::OpCode(OpCode::Unlerp(Unlerp {
             min: 0,
             max: 1,
             value: 2,
@@ -897,10 +897,10 @@ fn test_unlerp_one() {
 #[test]
 fn test_unlerp_half() {
     let nodes = vec![
-        ResolvedNode::Value(0.0), // 0 = min
-        ResolvedNode::Value(2.0), // 1 = max
-        ResolvedNode::Value(1.0), // 2 = value
-        ResolvedNode::OpCode(OpCode::Unlerp(Unlerp {
+        IRNode::Value(0.0), // 0 = min
+        IRNode::Value(2.0), // 1 = max
+        IRNode::Value(1.0), // 2 = value
+        IRNode::OpCode(OpCode::Unlerp(Unlerp {
             min: 0,
             max: 1,
             value: 2,
@@ -923,10 +923,10 @@ fn test_unlerp_half() {
 #[test]
 fn test_unlerp_below_min() {
     let nodes = vec![
-        ResolvedNode::Value(5.0),  // 0 = min
-        ResolvedNode::Value(10.0), // 1 = max
-        ResolvedNode::Value(0.0),  // 2 = value
-        ResolvedNode::OpCode(OpCode::Unlerp(Unlerp {
+        IRNode::Value(5.0),  // 0 = min
+        IRNode::Value(10.0), // 1 = max
+        IRNode::Value(0.0),  // 2 = value
+        IRNode::OpCode(OpCode::Unlerp(Unlerp {
             min: 0,
             max: 1,
             value: 2,
@@ -949,10 +949,10 @@ fn test_unlerp_below_min() {
 #[test]
 fn test_unlerp_above_max() {
     let nodes = vec![
-        ResolvedNode::Value(5.0),  // 0 = min
-        ResolvedNode::Value(10.0), // 1 = max
-        ResolvedNode::Value(15.0), // 2 = value
-        ResolvedNode::OpCode(OpCode::Unlerp(Unlerp {
+        IRNode::Value(5.0),  // 0 = min
+        IRNode::Value(10.0), // 1 = max
+        IRNode::Value(15.0), // 2 = value
+        IRNode::OpCode(OpCode::Unlerp(Unlerp {
             min: 0,
             max: 1,
             value: 2,
@@ -975,10 +975,10 @@ fn test_unlerp_above_max() {
 #[test]
 fn test_unlerp_clamped_within_range() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),  // 0 = min
-        ResolvedNode::Value(10.0), // 1 = max
-        ResolvedNode::Value(5.0),  // 2 = value
-        ResolvedNode::OpCode(OpCode::UnlerpClamped(UnlerpClamped {
+        IRNode::Value(0.0),  // 0 = min
+        IRNode::Value(10.0), // 1 = max
+        IRNode::Value(5.0),  // 2 = value
+        IRNode::OpCode(OpCode::UnlerpClamped(UnlerpClamped {
             min: 0,
             max: 1,
             value: 2,
@@ -1001,10 +1001,10 @@ fn test_unlerp_clamped_within_range() {
 #[test]
 fn test_unlerp_clamped_below_min() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),  // 0 = min
-        ResolvedNode::Value(10.0), // 1 = max
-        ResolvedNode::Value(-5.0), // 2 = value
-        ResolvedNode::OpCode(OpCode::UnlerpClamped(UnlerpClamped {
+        IRNode::Value(0.0),  // 0 = min
+        IRNode::Value(10.0), // 1 = max
+        IRNode::Value(-5.0), // 2 = value
+        IRNode::OpCode(OpCode::UnlerpClamped(UnlerpClamped {
             min: 0,
             max: 1,
             value: 2,
@@ -1027,10 +1027,10 @@ fn test_unlerp_clamped_below_min() {
 #[test]
 fn test_unlerp_clamped_above_max() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),  // 0 = min
-        ResolvedNode::Value(10.0), // 1 = max
-        ResolvedNode::Value(15.0), // 2 = value
-        ResolvedNode::OpCode(OpCode::UnlerpClamped(UnlerpClamped {
+        IRNode::Value(0.0),  // 0 = min
+        IRNode::Value(10.0), // 1 = max
+        IRNode::Value(15.0), // 2 = value
+        IRNode::OpCode(OpCode::UnlerpClamped(UnlerpClamped {
             min: 0,
             max: 1,
             value: 2,
@@ -1052,10 +1052,10 @@ fn test_unlerp_clamped_above_max() {
 #[test]
 fn test_unlerp_clamped_min_equals_max() {
     let nodes = vec![
-        ResolvedNode::Value(10.0), // 0 = min
-        ResolvedNode::Value(10.0), // 1 = max
-        ResolvedNode::Value(15.0), // 2 = value (irrelevant)
-        ResolvedNode::OpCode(OpCode::UnlerpClamped(UnlerpClamped {
+        IRNode::Value(10.0), // 0 = min
+        IRNode::Value(10.0), // 1 = max
+        IRNode::Value(15.0), // 2 = value (irrelevant)
+        IRNode::OpCode(OpCode::UnlerpClamped(UnlerpClamped {
             min: 0,
             max: 1,
             value: 2,
@@ -1077,9 +1077,9 @@ fn test_unlerp_clamped_min_equals_max() {
 #[test]
 fn test_min_left_smaller() {
     let nodes = vec![
-        ResolvedNode::Value(2.0),                              // 0 = x
-        ResolvedNode::Value(5.0),                              // 1 = y
-        ResolvedNode::OpCode(OpCode::Min(Min { x: 0, y: 1 })), // 2
+        IRNode::Value(2.0),                              // 0 = x
+        IRNode::Value(5.0),                              // 1 = y
+        IRNode::OpCode(OpCode::Min(Min { x: 0, y: 1 })), // 2
     ];
 
     let executors = get_available_executors();
@@ -1097,9 +1097,9 @@ fn test_min_left_smaller() {
 #[test]
 fn test_min_right_smaller() {
     let nodes = vec![
-        ResolvedNode::Value(7.0),                              // 0 = x
-        ResolvedNode::Value(3.0),                              // 1 = y
-        ResolvedNode::OpCode(OpCode::Min(Min { x: 0, y: 1 })), // 2
+        IRNode::Value(7.0),                              // 0 = x
+        IRNode::Value(3.0),                              // 1 = y
+        IRNode::OpCode(OpCode::Min(Min { x: 0, y: 1 })), // 2
     ];
 
     let executors = get_available_executors();
@@ -1117,9 +1117,9 @@ fn test_min_right_smaller() {
 #[test]
 fn test_min_equal() {
     let nodes = vec![
-        ResolvedNode::Value(4.0),                              // 0 = x
-        ResolvedNode::Value(4.0),                              // 1 = y
-        ResolvedNode::OpCode(OpCode::Min(Min { x: 0, y: 1 })), // 2
+        IRNode::Value(4.0),                              // 0 = x
+        IRNode::Value(4.0),                              // 1 = y
+        IRNode::OpCode(OpCode::Min(Min { x: 0, y: 1 })), // 2
     ];
 
     let executors = get_available_executors();
@@ -1137,9 +1137,9 @@ fn test_min_equal() {
 #[test]
 fn test_max_left_greater() {
     let nodes = vec![
-        ResolvedNode::Value(8.0),                              // 0 = x
-        ResolvedNode::Value(6.0),                              // 1 = y
-        ResolvedNode::OpCode(OpCode::Max(Max { x: 0, y: 1 })), // 2
+        IRNode::Value(8.0),                              // 0 = x
+        IRNode::Value(6.0),                              // 1 = y
+        IRNode::OpCode(OpCode::Max(Max { x: 0, y: 1 })), // 2
     ];
 
     let executors = get_available_executors();
@@ -1157,9 +1157,9 @@ fn test_max_left_greater() {
 #[test]
 fn test_max_right_greater() {
     let nodes = vec![
-        ResolvedNode::Value(1.0),                              // 0 = x
-        ResolvedNode::Value(9.0),                              // 1 = y
-        ResolvedNode::OpCode(OpCode::Max(Max { x: 0, y: 1 })), // 2
+        IRNode::Value(1.0),                              // 0 = x
+        IRNode::Value(9.0),                              // 1 = y
+        IRNode::OpCode(OpCode::Max(Max { x: 0, y: 1 })), // 2
     ];
 
     let executors = get_available_executors();
@@ -1177,9 +1177,9 @@ fn test_max_right_greater() {
 #[test]
 fn test_max_equal() {
     let nodes = vec![
-        ResolvedNode::Value(7.0),                              // 0 = x
-        ResolvedNode::Value(7.0),                              // 1 = y
-        ResolvedNode::OpCode(OpCode::Max(Max { x: 0, y: 1 })), // 2
+        IRNode::Value(7.0),                              // 0 = x
+        IRNode::Value(7.0),                              // 1 = y
+        IRNode::OpCode(OpCode::Max(Max { x: 0, y: 1 })), // 2
     ];
 
     let executors = get_available_executors();
@@ -1197,12 +1197,12 @@ fn test_max_equal() {
 #[test]
 fn test_remap_basic() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),   // 0 = from_min
-        ResolvedNode::Value(10.0),  // 1 = from_max
-        ResolvedNode::Value(0.0),   // 2 = to_min
-        ResolvedNode::Value(100.0), // 3 = to_max
-        ResolvedNode::Value(5.0),   // 4 = value
-        ResolvedNode::OpCode(OpCode::Remap(Remap {
+        IRNode::Value(0.0),   // 0 = from_min
+        IRNode::Value(10.0),  // 1 = from_max
+        IRNode::Value(0.0),   // 2 = to_min
+        IRNode::Value(100.0), // 3 = to_max
+        IRNode::Value(5.0),   // 4 = value
+        IRNode::OpCode(OpCode::Remap(Remap {
             from_min: 0,
             from_max: 1,
             to_min: 2,
@@ -1226,12 +1226,12 @@ fn test_remap_basic() {
 #[test]
 fn test_remap_value_below_min() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),   // 0 = from_min
-        ResolvedNode::Value(10.0),  // 1 = from_max
-        ResolvedNode::Value(0.0),   // 2 = to_min
-        ResolvedNode::Value(100.0), // 3 = to_max
-        ResolvedNode::Value(-5.0),  // 4 = value
-        ResolvedNode::OpCode(OpCode::Remap(Remap {
+        IRNode::Value(0.0),   // 0 = from_min
+        IRNode::Value(10.0),  // 1 = from_max
+        IRNode::Value(0.0),   // 2 = to_min
+        IRNode::Value(100.0), // 3 = to_max
+        IRNode::Value(-5.0),  // 4 = value
+        IRNode::OpCode(OpCode::Remap(Remap {
             from_min: 0,
             from_max: 1,
             to_min: 2,
@@ -1255,12 +1255,12 @@ fn test_remap_value_below_min() {
 #[test]
 fn test_remap_from_min_equals_max() {
     let nodes = vec![
-        ResolvedNode::Value(1.0), // 0 = from_min
-        ResolvedNode::Value(1.0), // 1 = from_max
-        ResolvedNode::Value(2.0), // 2 = to_min
-        ResolvedNode::Value(4.0), // 3 = to_max
-        ResolvedNode::Value(1.0), // 4 = value
-        ResolvedNode::OpCode(OpCode::Remap(Remap {
+        IRNode::Value(1.0), // 0 = from_min
+        IRNode::Value(1.0), // 1 = from_max
+        IRNode::Value(2.0), // 2 = to_min
+        IRNode::Value(4.0), // 3 = to_max
+        IRNode::Value(1.0), // 4 = value
+        IRNode::OpCode(OpCode::Remap(Remap {
             from_min: 0,
             from_max: 1,
             to_min: 2,
@@ -1284,12 +1284,12 @@ fn test_remap_from_min_equals_max() {
 #[test]
 fn test_remap_clamped_in_range() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),   // 0 = from_min
-        ResolvedNode::Value(10.0),  // 1 = from_max
-        ResolvedNode::Value(0.0),   // 2 = to_min
-        ResolvedNode::Value(100.0), // 3 = to_max
-        ResolvedNode::Value(5.0),   // 4 = value
-        ResolvedNode::OpCode(OpCode::RemapClamped(RemapClamped {
+        IRNode::Value(0.0),   // 0 = from_min
+        IRNode::Value(10.0),  // 1 = from_max
+        IRNode::Value(0.0),   // 2 = to_min
+        IRNode::Value(100.0), // 3 = to_max
+        IRNode::Value(5.0),   // 4 = value
+        IRNode::OpCode(OpCode::RemapClamped(RemapClamped {
             from_min: 0,
             from_max: 1,
             to_min: 2,
@@ -1313,12 +1313,12 @@ fn test_remap_clamped_in_range() {
 #[test]
 fn test_remap_clamped_below_min() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),
-        ResolvedNode::Value(10.0),
-        ResolvedNode::Value(0.0),
-        ResolvedNode::Value(100.0),
-        ResolvedNode::Value(-5.0),
-        ResolvedNode::OpCode(OpCode::RemapClamped(RemapClamped {
+        IRNode::Value(0.0),
+        IRNode::Value(10.0),
+        IRNode::Value(0.0),
+        IRNode::Value(100.0),
+        IRNode::Value(-5.0),
+        IRNode::OpCode(OpCode::RemapClamped(RemapClamped {
             from_min: 0,
             from_max: 1,
             to_min: 2,
@@ -1342,12 +1342,12 @@ fn test_remap_clamped_below_min() {
 #[test]
 fn test_remap_clamped_above_max() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),
-        ResolvedNode::Value(10.0),
-        ResolvedNode::Value(0.0),
-        ResolvedNode::Value(100.0),
-        ResolvedNode::Value(20.0),
-        ResolvedNode::OpCode(OpCode::RemapClamped(RemapClamped {
+        IRNode::Value(0.0),
+        IRNode::Value(10.0),
+        IRNode::Value(0.0),
+        IRNode::Value(100.0),
+        IRNode::Value(20.0),
+        IRNode::OpCode(OpCode::RemapClamped(RemapClamped {
             from_min: 0,
             from_max: 1,
             to_min: 2,
@@ -1371,12 +1371,12 @@ fn test_remap_clamped_above_max() {
 #[test]
 fn test_remap_clamped_min_equals_max() {
     let nodes = vec![
-        ResolvedNode::Value(1.0),
-        ResolvedNode::Value(1.0),
-        ResolvedNode::Value(10.0),
-        ResolvedNode::Value(20.0),
-        ResolvedNode::Value(1.0),
-        ResolvedNode::OpCode(OpCode::RemapClamped(RemapClamped {
+        IRNode::Value(1.0),
+        IRNode::Value(1.0),
+        IRNode::Value(10.0),
+        IRNode::Value(20.0),
+        IRNode::Value(1.0),
+        IRNode::OpCode(OpCode::RemapClamped(RemapClamped {
             from_min: 0,
             from_max: 1,
             to_min: 2,
@@ -1400,8 +1400,8 @@ fn test_remap_clamped_min_equals_max() {
 #[test]
 fn test_round_half_up_even() {
     let nodes = vec![
-        ResolvedNode::Value(2.5),                                // 0
-        ResolvedNode::OpCode(OpCode::Round(Round { value: 0 })), // 1
+        IRNode::Value(2.5),                                // 0
+        IRNode::OpCode(OpCode::Round(Round { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -1419,8 +1419,8 @@ fn test_round_half_up_even() {
 #[test]
 fn test_round_half_up_odd() {
     let nodes = vec![
-        ResolvedNode::Value(3.5),                                // 0
-        ResolvedNode::OpCode(OpCode::Round(Round { value: 0 })), // 1
+        IRNode::Value(3.5),                                // 0
+        IRNode::OpCode(OpCode::Round(Round { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -1438,8 +1438,8 @@ fn test_round_half_up_odd() {
 #[test]
 fn test_round_negative_half() {
     let nodes = vec![
-        ResolvedNode::Value(-1.5),                               // 0
-        ResolvedNode::OpCode(OpCode::Round(Round { value: 0 })), // 1
+        IRNode::Value(-1.5),                               // 0
+        IRNode::OpCode(OpCode::Round(Round { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -1457,8 +1457,8 @@ fn test_round_negative_half() {
 #[test]
 fn test_floor_positive() {
     let nodes = vec![
-        ResolvedNode::Value(3.7),                                // 0
-        ResolvedNode::OpCode(OpCode::Floor(Floor { value: 0 })), // 1
+        IRNode::Value(3.7),                                // 0
+        IRNode::OpCode(OpCode::Floor(Floor { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -1476,8 +1476,8 @@ fn test_floor_positive() {
 #[test]
 fn test_floor_negative() {
     let nodes = vec![
-        ResolvedNode::Value(-1.2),                               // 0
-        ResolvedNode::OpCode(OpCode::Floor(Floor { value: 0 })), // 1
+        IRNode::Value(-1.2),                               // 0
+        IRNode::OpCode(OpCode::Floor(Floor { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -1495,8 +1495,8 @@ fn test_floor_negative() {
 #[test]
 fn test_ceil_positive() {
     let nodes = vec![
-        ResolvedNode::Value(2.1),                              // 0
-        ResolvedNode::OpCode(OpCode::Ceil(Ceil { value: 0 })), // 1
+        IRNode::Value(2.1),                              // 0
+        IRNode::OpCode(OpCode::Ceil(Ceil { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -1514,8 +1514,8 @@ fn test_ceil_positive() {
 #[test]
 fn test_ceil_negative() {
     let nodes = vec![
-        ResolvedNode::Value(-3.9),                             // 0
-        ResolvedNode::OpCode(OpCode::Ceil(Ceil { value: 0 })), // 1
+        IRNode::Value(-3.9),                             // 0
+        IRNode::OpCode(OpCode::Ceil(Ceil { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -1538,8 +1538,8 @@ fn test_sin() {
 
     for (&x, &y) in inputs.iter().zip(expected.iter()) {
         let nodes = vec![
-            ResolvedNode::Value(x),
-            ResolvedNode::OpCode(OpCode::Sin(Sin { value: 0 })),
+            IRNode::Value(x),
+            IRNode::OpCode(OpCode::Sin(Sin { value: 0 })),
         ];
 
         let executors = get_available_executors();
@@ -1562,8 +1562,8 @@ fn test_cos() {
 
     for (&x, &y) in inputs.iter().zip(expected.iter()) {
         let nodes = vec![
-            ResolvedNode::Value(x),
-            ResolvedNode::OpCode(OpCode::Cos(Cos { value: 0 })),
+            IRNode::Value(x),
+            IRNode::OpCode(OpCode::Cos(Cos { value: 0 })),
         ];
 
         let executors = get_available_executors();
@@ -1586,8 +1586,8 @@ fn test_tan() {
 
     for (&x, &y) in inputs.iter().zip(expected.iter()) {
         let nodes = vec![
-            ResolvedNode::Value(x),
-            ResolvedNode::OpCode(OpCode::Tan(Tan { value: 0 })),
+            IRNode::Value(x),
+            IRNode::OpCode(OpCode::Tan(Tan { value: 0 })),
         ];
 
         let executors = get_available_executors();
@@ -1610,8 +1610,8 @@ fn test_sinh() {
 
     for (&x, &y) in inputs.iter().zip(expected.iter()) {
         let nodes = vec![
-            ResolvedNode::Value(x),
-            ResolvedNode::OpCode(OpCode::Sinh(Sinh { value: 0 })),
+            IRNode::Value(x),
+            IRNode::OpCode(OpCode::Sinh(Sinh { value: 0 })),
         ];
 
         let executors = get_available_executors();
@@ -1634,8 +1634,8 @@ fn test_cosh() {
 
     for (&x, &y) in inputs.iter().zip(expected.iter()) {
         let nodes = vec![
-            ResolvedNode::Value(x),
-            ResolvedNode::OpCode(OpCode::Cosh(Cosh { value: 0 })),
+            IRNode::Value(x),
+            IRNode::OpCode(OpCode::Cosh(Cosh { value: 0 })),
         ];
 
         let executors = get_available_executors();
@@ -1658,8 +1658,8 @@ fn test_tanh() {
 
     for (&x, &y) in inputs.iter().zip(expected.iter()) {
         let nodes = vec![
-            ResolvedNode::Value(x),
-            ResolvedNode::OpCode(OpCode::Tanh(Tanh { value: 0 })),
+            IRNode::Value(x),
+            IRNode::OpCode(OpCode::Tanh(Tanh { value: 0 })),
         ];
 
         let executors = get_available_executors();
@@ -1687,8 +1687,8 @@ fn test_asin() {
 
     for (&x, &y) in inputs.iter().zip(expected.iter()) {
         let nodes = vec![
-            ResolvedNode::Value(x),
-            ResolvedNode::OpCode(OpCode::Arcsin(Arcsin { value: 0 })),
+            IRNode::Value(x),
+            IRNode::OpCode(OpCode::Arcsin(Arcsin { value: 0 })),
         ];
 
         let executors = get_available_executors();
@@ -1717,8 +1717,8 @@ fn test_acos() {
 
     for (&x, &y) in inputs.iter().zip(expected.iter()) {
         let nodes = vec![
-            ResolvedNode::Value(x),
-            ResolvedNode::OpCode(OpCode::Arccos(Arccos { value: 0 })),
+            IRNode::Value(x),
+            IRNode::OpCode(OpCode::Arccos(Arccos { value: 0 })),
         ];
 
         let executors = get_available_executors();
@@ -1748,8 +1748,8 @@ fn test_atan() {
 
     for (&x, &y) in inputs.iter().zip(expected.iter()) {
         let nodes = vec![
-            ResolvedNode::Value(x),
-            ResolvedNode::OpCode(OpCode::Arctan(Arctan { value: 0 })),
+            IRNode::Value(x),
+            IRNode::OpCode(OpCode::Arctan(Arctan { value: 0 })),
         ];
 
         let executors = get_available_executors();
@@ -1783,9 +1783,9 @@ fn test_atan2() {
 
     for ((y, x), expected) in pairs.iter().zip(expected.iter()) {
         let nodes = vec![
-            ResolvedNode::Value(*y),
-            ResolvedNode::Value(*x),
-            ResolvedNode::OpCode(OpCode::Arctan2(Arctan2 { y: 0, x: 1 })),
+            IRNode::Value(*y),
+            IRNode::Value(*x),
+            IRNode::OpCode(OpCode::Arctan2(Arctan2 { y: 0, x: 1 })),
         ];
 
         let executors = get_available_executors();
@@ -1803,8 +1803,8 @@ fn test_atan2() {
 #[test]
 fn test_degree_pi() {
     let nodes = vec![
-        ResolvedNode::Value(std::f32::consts::PI), // 0
-        ResolvedNode::OpCode(OpCode::Degree(Degree { value: 0 })), // 1
+        IRNode::Value(std::f32::consts::PI), // 0
+        IRNode::OpCode(OpCode::Degree(Degree { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -1821,8 +1821,8 @@ fn test_degree_pi() {
 #[test]
 fn test_degree_zero() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),                                  // 0
-        ResolvedNode::OpCode(OpCode::Degree(Degree { value: 0 })), // 1
+        IRNode::Value(0.0),                                  // 0
+        IRNode::OpCode(OpCode::Degree(Degree { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -1840,8 +1840,8 @@ fn test_degree_zero() {
 #[test]
 fn test_degree_negative() {
     let nodes = vec![
-        ResolvedNode::Value(-std::f32::consts::PI / 2.0), // 0
-        ResolvedNode::OpCode(OpCode::Degree(Degree { value: 0 })), // 1
+        IRNode::Value(-std::f32::consts::PI / 2.0), // 0
+        IRNode::OpCode(OpCode::Degree(Degree { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -1858,8 +1858,8 @@ fn test_degree_negative() {
 #[test]
 fn test_radian_180() {
     let nodes = vec![
-        ResolvedNode::Value(180.0),                                // 0
-        ResolvedNode::OpCode(OpCode::Radian(Radian { value: 0 })), // 1
+        IRNode::Value(180.0),                                // 0
+        IRNode::OpCode(OpCode::Radian(Radian { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -1876,8 +1876,8 @@ fn test_radian_180() {
 #[test]
 fn test_radian_zero() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),                                  // 0
-        ResolvedNode::OpCode(OpCode::Radian(Radian { value: 0 })), // 1
+        IRNode::Value(0.0),                                  // 0
+        IRNode::OpCode(OpCode::Radian(Radian { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -1895,8 +1895,8 @@ fn test_radian_zero() {
 #[test]
 fn test_radian_negative() {
     let nodes = vec![
-        ResolvedNode::Value(-90.0),                                // 0
-        ResolvedNode::OpCode(OpCode::Radian(Radian { value: 0 })), // 1
+        IRNode::Value(-90.0),                                // 0
+        IRNode::OpCode(OpCode::Radian(Radian { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -1913,8 +1913,8 @@ fn test_radian_negative() {
 #[test]
 fn test_log_regular_value() {
     let nodes = vec![
-        ResolvedNode::Value(10.0),                           // 0 = value
-        ResolvedNode::OpCode(OpCode::Log(Log { value: 0 })), // 1
+        IRNode::Value(10.0),                           // 0 = value
+        IRNode::OpCode(OpCode::Log(Log { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -1931,8 +1931,8 @@ fn test_log_regular_value() {
 #[test]
 fn test_log_of_1() {
     let nodes = vec![
-        ResolvedNode::Value(1.0),                            // 0 = value
-        ResolvedNode::OpCode(OpCode::Log(Log { value: 0 })), // 1
+        IRNode::Value(1.0),                            // 0 = value
+        IRNode::OpCode(OpCode::Log(Log { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -1950,8 +1950,8 @@ fn test_log_of_1() {
 #[test]
 fn test_log_of_e() {
     let nodes = vec![
-        ResolvedNode::Value(std::f32::consts::E), // 0 = value
-        ResolvedNode::OpCode(OpCode::Log(Log { value: 0 })), // 1
+        IRNode::Value(std::f32::consts::E), // 0 = value
+        IRNode::OpCode(OpCode::Log(Log { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -1968,8 +1968,8 @@ fn test_log_of_e() {
 #[test]
 fn test_log_of_zero() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),                            // 0 = value
-        ResolvedNode::OpCode(OpCode::Log(Log { value: 0 })), // 1
+        IRNode::Value(0.0),                            // 0 = value
+        IRNode::OpCode(OpCode::Log(Log { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -1986,8 +1986,8 @@ fn test_log_of_zero() {
 #[test]
 fn test_log_of_negative() {
     let nodes = vec![
-        ResolvedNode::Value(-1.0),                           // 0 = value
-        ResolvedNode::OpCode(OpCode::Log(Log { value: 0 })), // 1
+        IRNode::Value(-1.0),                           // 0 = value
+        IRNode::OpCode(OpCode::Log(Log { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -2004,8 +2004,8 @@ fn test_log_of_negative() {
 #[test]
 fn test_sign_positive() {
     let nodes = vec![
-        ResolvedNode::Value(42.0),                             // 0
-        ResolvedNode::OpCode(OpCode::Sign(Sign { value: 0 })), // 1
+        IRNode::Value(42.0),                             // 0
+        IRNode::OpCode(OpCode::Sign(Sign { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -2023,8 +2023,8 @@ fn test_sign_positive() {
 #[test]
 fn test_sign_negative() {
     let nodes = vec![
-        ResolvedNode::Value(-std::f32::consts::PI),            // 0
-        ResolvedNode::OpCode(OpCode::Sign(Sign { value: 0 })), // 1
+        IRNode::Value(-std::f32::consts::PI),            // 0
+        IRNode::OpCode(OpCode::Sign(Sign { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -2042,8 +2042,8 @@ fn test_sign_negative() {
 #[test]
 fn test_sign_zero() {
     let nodes = vec![
-        ResolvedNode::Value(0.0),                              // 0
-        ResolvedNode::OpCode(OpCode::Sign(Sign { value: 0 })), // 1
+        IRNode::Value(0.0),                              // 0
+        IRNode::OpCode(OpCode::Sign(Sign { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -2061,8 +2061,8 @@ fn test_sign_zero() {
 #[test]
 fn test_sign_nan() {
     let nodes = vec![
-        ResolvedNode::Value(f32::NAN),                         // 0
-        ResolvedNode::OpCode(OpCode::Sign(Sign { value: 0 })), // 1
+        IRNode::Value(f32::NAN),                         // 0
+        IRNode::OpCode(OpCode::Sign(Sign { value: 0 })), // 1
     ];
 
     let executors = get_available_executors();
@@ -2079,9 +2079,9 @@ fn test_sign_nan() {
 #[test]
 fn test_random_range_and_variance() {
     let nodes = vec![
-        ResolvedNode::Value(5.0),                                        // min
-        ResolvedNode::Value(10.0),                                       // max
-        ResolvedNode::OpCode(OpCode::Random(Random { min: 0, max: 1 })), // random node
+        IRNode::Value(5.0),                                        // min
+        IRNode::Value(10.0),                                       // max
+        IRNode::OpCode(OpCode::Random(Random { min: 0, max: 1 })), // random node
     ];
 
     let executors = get_available_executors();
@@ -2109,9 +2109,9 @@ fn test_random_range_and_variance() {
 #[test]
 fn test_random_integer_range_and_integral() {
     let nodes = vec![
-        ResolvedNode::Value(1.0), // min inclusive
-        ResolvedNode::Value(5.0), // max exclusive
-        ResolvedNode::OpCode(OpCode::RandomInteger(RandomInteger { min: 0, max: 1 })), // random int node
+        IRNode::Value(1.0), // min inclusive
+        IRNode::Value(5.0), // max exclusive
+        IRNode::OpCode(OpCode::RandomInteger(RandomInteger { min: 0, max: 1 })), // random int node
     ];
 
     let executors = get_available_executors();

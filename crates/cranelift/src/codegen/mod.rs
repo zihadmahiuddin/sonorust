@@ -10,7 +10,7 @@ use cranelift::{
     prelude::{Block, FunctionBuilder, Value},
 };
 
-use sonorust_ir::nodes::{OpCode, ResolvedNode};
+use sonorust_ir::nodes::{IRNode, OpCode};
 
 #[derive(Debug, Clone)]
 pub enum BlockKind {
@@ -35,7 +35,7 @@ pub struct CodegenContext<'s, 'b> {
     builder: &'s mut FunctionBuilder<'b>,
     externals_func_refs: &'s HashMap<&'s str, FuncRef>,
     ctx_param: Value,
-    nodes: &'s [ResolvedNode],
+    nodes: &'s [IRNode],
     block_stack: Vec<BlockKind>,
     pending_block_stack: Option<BlockKind>,
     current_block_terminated: bool,
@@ -46,7 +46,7 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         builder: &'s mut FunctionBuilder<'b>,
         externals_func_refs: &'s HashMap<&'s str, FuncRef>,
         ctx_param: Value,
-        nodes: &'s [ResolvedNode],
+        nodes: &'s [IRNode],
     ) -> Self {
         Self {
             builder,
@@ -62,10 +62,8 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     // Helper to build arbitrary nodes recursively
     pub fn build_node_ir(&mut self, node_index: usize) -> Value {
         match &self.nodes[node_index] {
-            ResolvedNode::Value(value) => {
-                crate::ir_value_cranelift_const(self.builder.ins(), *value)
-            }
-            ResolvedNode::OpCode(opcode) => match opcode {
+            IRNode::Value(value) => crate::ir_value_cranelift_const(self.builder.ins(), *value),
+            IRNode::OpCode(opcode) => match opcode {
                 // Control Flow
                 OpCode::Execute(node) => self.build_execute_ir(node),
                 OpCode::Execute0(node) => self.build_execute0_ir(node),

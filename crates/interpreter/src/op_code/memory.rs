@@ -7,7 +7,7 @@ impl Executable for Copy {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let src_block_id = executor.execute(nodes, self.src_block_id, context);
@@ -36,7 +36,7 @@ impl Executable for Get {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -55,7 +55,7 @@ impl Executable for GetPointed {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -89,7 +89,7 @@ impl Executable for GetShifted {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -112,7 +112,7 @@ impl Executable for Set {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -136,7 +136,7 @@ impl Executable for SetPointed {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -172,7 +172,7 @@ impl Executable for SetShifted {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -200,7 +200,7 @@ impl Executable for SetAdd {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -226,7 +226,7 @@ impl Executable for SetAddPointed {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -267,7 +267,7 @@ impl Executable for SetAddShifted {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -297,7 +297,7 @@ impl Executable for SetDivide {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -323,7 +323,7 @@ impl Executable for SetDividePointed {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -364,7 +364,7 @@ impl Executable for SetDivideShifted {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -394,7 +394,7 @@ impl Executable for SetMultiply {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -420,7 +420,7 @@ impl Executable for SetMultiplyPointed {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -461,7 +461,7 @@ impl Executable for SetMultiplyShifted {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -491,7 +491,7 @@ impl Executable for SetMod {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -517,7 +517,7 @@ impl Executable for SetModPointed {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -558,7 +558,7 @@ impl Executable for SetModShifted {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -588,7 +588,7 @@ impl Executable for SetRem {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -614,7 +614,7 @@ impl Executable for SetRemPointed {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -655,7 +655,7 @@ impl Executable for SetRemShifted {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -685,7 +685,7 @@ impl Executable for SetPower {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -711,7 +711,7 @@ impl Executable for SetPowerPointed {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -752,7 +752,7 @@ impl Executable for SetPowerShifted {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -782,7 +782,7 @@ impl Executable for SetSubtract {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -808,7 +808,7 @@ impl Executable for SetSubtractPointed {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
@@ -849,7 +849,7 @@ impl Executable for SetSubtractShifted {
     fn execute(
         &self,
         context: &mut RuntimeContext,
-        nodes: &[ResolvedNode],
+        nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
