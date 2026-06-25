@@ -6,5 +6,6 @@ members = ["crates/cranelift", "crates/interpreter", "crates/ir", "crates/models
 sonorust-ir = { path = "./crates/ir" }
 sonorust-interpreter = { path = "./crates/interpreter" }
 sonorust-cranelift = { path = "./crates/cranelift" }
+sonorust-models = { path = "./crates/models" }
 sonorust-runtime = { path = "./crates/runtime" }
 sonorust-tests = { path = "./crates/tests" }

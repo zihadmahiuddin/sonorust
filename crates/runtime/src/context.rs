@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use rand::Rng;
 use sonorust_ir::IRValue;
+use sonorust_models::ids::{ArchetypeId, EntityId};
 use tracing::warn;
 
 pub trait MemoryAccess {
@@ -9,7 +10,14 @@ pub trait MemoryAccess {
     fn write(&self, block_id: u64, index: usize, value: IRValue) -> Option<IRValue>;
 }
 
+#[derive(Debug, Clone, Copy)]
+pub struct CurrentEntity {
+    pub id: EntityId,
+    pub archetype_id: ArchetypeId,
+}
+
 pub struct RuntimeContext<'a> {
+    pub current_entity: CurrentEntity,
     pub memory: &'a dyn MemoryAccess,
 }
 

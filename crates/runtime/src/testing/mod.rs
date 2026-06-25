@@ -1,8 +1,9 @@
 use std::{cell::RefCell, collections::HashMap};
 
-use crate::context::{MemoryAccess, RuntimeContext};
+use crate::context::{CurrentEntity, MemoryAccess, RuntimeContext};
 
 use sonorust_ir::IRValue;
+use sonorust_models::ids::{ArchetypeId, EntityId};
 use tracing::warn;
 
 #[derive(Default)]
@@ -15,6 +16,10 @@ impl<'a> TestingRuntimeContext {
     #[allow(dead_code)] // used in tests
     pub fn as_ctx(&'a mut self) -> RuntimeContext<'a> {
         RuntimeContext {
+            current_entity: CurrentEntity {
+                id: EntityId(0),
+                archetype_id: ArchetypeId(0),
+            },
             memory: &self.memory,
         }
     }
