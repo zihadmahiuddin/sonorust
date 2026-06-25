@@ -6,8 +6,14 @@ use sonorust_models::ids::{ArchetypeId, EntityId};
 use tracing::warn;
 
 pub trait MemoryAccess {
-    fn read(&self, block_id: u64, index: usize) -> Option<IRValue>;
-    fn write(&self, block_id: u64, index: usize, value: IRValue) -> Option<IRValue>;
+    fn read(&self, ctx: &RuntimeContext, block_id: u64, index: usize) -> Option<IRValue>;
+    fn write(
+        &self,
+        ctx: &RuntimeContext,
+        block_id: u64,
+        index: usize,
+        value: IRValue,
+    ) -> Option<IRValue>;
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -32,7 +38,7 @@ impl<'a> RuntimeContext<'a> {
     ) -> IRValue {
         let mut temp = Vec::with_capacity(count);
         for i in 0..count {
-            match self.memory.read(src_block_id, src_index + i) {
+            match self.memory.read(self, src_block_id, src_index + i) {
                 Some(v) => temp.push(v),
                 None => {
                     warn!(
@@ -47,7 +53,7 @@ impl<'a> RuntimeContext<'a> {
         for (i, value) in temp.into_iter().enumerate() {
             if self
                 .memory
-                .write(dst_block_id, dst_index + i, value)
+                .write(self, dst_block_id, dst_index + i, value)
                 .is_none()
             {
                 warn!(
@@ -92,7 +98,7 @@ pub fn get_external_functions<'a>() -> ExternalFunctionsMap<'a> {
 #[unsafe(no_mangle)]
 extern "C" fn read_mem(ctx: *mut RuntimeContext, block_id: i64, index: i64) -> IRValue {
     let ctx = unsafe { &mut *ctx };
-    if let Some(value) = ctx.memory.read(block_id as u64, index as usize) {
+    if let Some(value) = ctx.memory.read(ctx, block_id as u64, index as usize) {
         value
     } else {
         warn!("Failed to read from block {block_id} index {index}");
@@ -108,7 +114,10 @@ extern "C" fn write_mem(
     value: IRValue,
 ) -> IRValue {
     let ctx = unsafe { &mut *ctx };
-    if let Some(value) = ctx.memory.write(block_id as u64, index as usize, value) {
+    if let Some(value) = ctx
+        .memory
+        .write(ctx, block_id as u64, index as usize, value)
+    {
         value
     } else {
         warn!("Failed to write to block {block_id} index {index}");

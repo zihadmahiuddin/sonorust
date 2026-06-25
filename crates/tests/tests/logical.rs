@@ -12,7 +12,7 @@ fn test_not_equal_true() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 1.0,
@@ -32,7 +32,7 @@ fn test_not_equal_false() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 0.0,
@@ -52,7 +52,7 @@ fn test_equal_true() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 1.0,
@@ -72,7 +72,7 @@ fn test_equal_false() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 0.0,
@@ -92,7 +92,7 @@ fn test_greater_true() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 1.0,
@@ -112,7 +112,7 @@ fn test_greater_false() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 0.0,
@@ -132,7 +132,7 @@ fn test_greater_or_true_equal() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 1.0,
@@ -152,7 +152,7 @@ fn test_greater_or_true_gt() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 1.0,
@@ -172,7 +172,7 @@ fn test_greater_or_false() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 0.0,
@@ -192,7 +192,7 @@ fn test_less_true() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 1.0,
@@ -212,7 +212,7 @@ fn test_less_false() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 0.0,
@@ -232,7 +232,7 @@ fn test_less_or_true_eq() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 1.0,
@@ -252,7 +252,7 @@ fn test_less_or_true_lt() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 1.0,
@@ -272,7 +272,7 @@ fn test_less_or_false() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 0.0,
@@ -291,7 +291,7 @@ fn test_not_zero() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 1.0,
@@ -310,7 +310,7 @@ fn test_not_nonzero() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 0.0,
@@ -330,7 +330,7 @@ fn test_and_all_nonzero() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
 
         // Last input returned
@@ -352,7 +352,7 @@ fn test_and_with_zero_first() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 0.0,
@@ -372,7 +372,7 @@ fn test_and_with_zero_last() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 0.0,
@@ -392,7 +392,7 @@ fn test_or_all_zero() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 0.0,
@@ -412,7 +412,7 @@ fn test_or_first_nonzero() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 5.0,
@@ -432,7 +432,7 @@ fn test_or_second_nonzero() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 8.0,

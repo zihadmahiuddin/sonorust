@@ -16,8 +16,10 @@ fn test_get() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
-        runtime_context.memory.write(0, 0, 7.0);
+        let runtime_context = TestingRuntimeContext::default();
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 0, 7.0);
         let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 7.0,
@@ -47,9 +49,15 @@ fn test_get_pointed() {
             .memory
             .writable
             .insert(3, RefCell::new(vec![0.0; 4096]));
-        runtime_context.memory.write(0, 0, 3.0);
-        runtime_context.memory.write(0, 1, 5.0);
-        runtime_context.memory.write(3, 7, 123.45);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 0, 3.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 1, 5.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 3, 7, 123.45);
 
         let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
         assert_eq!(
@@ -82,7 +90,9 @@ fn test_get_shifted() {
             .memory
             .writable
             .insert(0, RefCell::new(vec![0.0; 4096]));
-        runtime_context.memory.write(0, 2 + 3 * 4, 999.99); // index = 14
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 2 + 3 * 4, 999.99); // index = 14
 
         let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
         assert_eq!(
@@ -107,7 +117,7 @@ fn test_set() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 7.0,
@@ -139,8 +149,12 @@ fn test_set_pointed() {
             .memory
             .writable
             .insert(3, RefCell::new(vec![0.0; 4096]));
-        runtime_context.memory.write(0, 0, 3.0);
-        runtime_context.memory.write(0, 1, 5.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 0, 3.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 1, 5.0);
 
         let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
         assert_eq!(
@@ -150,7 +164,7 @@ fn test_set_pointed() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(3, 7),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 3, 7),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -192,7 +206,9 @@ fn test_set_shifted() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(0, index),
+            runtime_context
+                .memory
+                .read(&runtime_context.as_ctx(), 0, index),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -219,7 +235,9 @@ fn test_set_add() {
             .memory
             .writable
             .insert(0, RefCell::new(vec![0.0; 4096]));
-        runtime_context.memory.write(0, 5, 7.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 5, 7.0);
 
         let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
 
@@ -230,7 +248,7 @@ fn test_set_add() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(0, 5),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 0, 5),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -260,9 +278,15 @@ fn test_set_add_pointed() {
             .memory
             .writable
             .insert(3, RefCell::new(vec![0.0; 4096]));
-        runtime_context.memory.write(0, 0, 3.0);
-        runtime_context.memory.write(0, 1, 5.0);
-        runtime_context.memory.write(3, 7, 7.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 0, 3.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 1, 5.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 3, 7, 7.0);
 
         let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
 
@@ -273,7 +297,7 @@ fn test_set_add_pointed() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(3, 7),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 3, 7),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -304,7 +328,9 @@ fn test_set_add_shifted() {
             .memory
             .writable
             .insert(0, RefCell::new(vec![0.0; 4096]));
-        runtime_context.memory.write(0, 14, 10.0); // 2 + 3 * 4 = 14
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 14, 10.0); // 2 + 3 * 4 = 14
 
         let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
 
@@ -315,7 +341,9 @@ fn test_set_add_shifted() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(0, 14),
+            runtime_context
+                .memory
+                .read(&runtime_context.as_ctx(), 0, 14),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -352,7 +380,7 @@ fn test_set_subtract() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(0, 5),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 0, 5),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -381,9 +409,15 @@ fn test_set_subtract_pointed() {
             .memory
             .writable
             .insert(3, RefCell::new(vec![10.0; 4096]));
-        runtime_context.memory.write(0, 0, 3.0);
-        runtime_context.memory.write(0, 1, 5.0);
-        runtime_context.memory.write(3, 7, 10.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 0, 3.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 1, 5.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 3, 7, 10.0);
 
         let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
 
@@ -394,7 +428,7 @@ fn test_set_subtract_pointed() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(3, 7),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 3, 7),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -425,7 +459,9 @@ fn test_set_subtract_shifted() {
             .memory
             .writable
             .insert(0, RefCell::new(vec![10.0; 4096]));
-        runtime_context.memory.write(0, 14, 10.0); // 2 + 3 * 4 = 14
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 14, 10.0); // 2 + 3 * 4 = 14
 
         let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
 
@@ -436,7 +472,9 @@ fn test_set_subtract_shifted() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(0, 14),
+            runtime_context
+                .memory
+                .read(&runtime_context.as_ctx(), 0, 14),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -473,7 +511,7 @@ fn test_set_multiply() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(0, 5),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 0, 5),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -502,9 +540,15 @@ fn test_set_multiply_pointed() {
             .memory
             .writable
             .insert(3, RefCell::new(vec![10.0; 4096]));
-        runtime_context.memory.write(0, 0, 3.0);
-        runtime_context.memory.write(0, 1, 5.0);
-        runtime_context.memory.write(3, 7, 10.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 0, 3.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 1, 5.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 3, 7, 10.0);
 
         let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
 
@@ -515,7 +559,7 @@ fn test_set_multiply_pointed() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(3, 7),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 3, 7),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -546,7 +590,9 @@ fn test_set_multiply_shifted() {
             .memory
             .writable
             .insert(0, RefCell::new(vec![10.0; 4096]));
-        runtime_context.memory.write(0, 14, 10.0); // 2 + 3 * 4 = 14
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 14, 10.0); // 2 + 3 * 4 = 14
 
         let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
 
@@ -557,7 +603,9 @@ fn test_set_multiply_shifted() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(0, 14),
+            runtime_context
+                .memory
+                .read(&runtime_context.as_ctx(), 0, 14),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -594,7 +642,7 @@ fn test_set_divide() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(0, 5),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 0, 5),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -623,9 +671,15 @@ fn test_set_divide_pointed() {
             .memory
             .writable
             .insert(3, RefCell::new(vec![10.0; 4096]));
-        runtime_context.memory.write(0, 0, 3.0);
-        runtime_context.memory.write(0, 1, 5.0);
-        runtime_context.memory.write(3, 7, 20.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 0, 3.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 1, 5.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 3, 7, 20.0);
 
         let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
 
@@ -636,7 +690,7 @@ fn test_set_divide_pointed() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(3, 7),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 3, 7),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -667,7 +721,9 @@ fn test_set_divide_shifted() {
             .memory
             .writable
             .insert(0, RefCell::new(vec![40.0; 4096]));
-        runtime_context.memory.write(0, 14, 40.0); // 2 + 3 * 4 = 14
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 14, 40.0); // 2 + 3 * 4 = 14
 
         let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
 
@@ -678,7 +734,9 @@ fn test_set_divide_shifted() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(0, 14),
+            runtime_context
+                .memory
+                .read(&runtime_context.as_ctx(), 0, 14),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -715,7 +773,7 @@ fn test_set_power() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(0, 5),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 0, 5),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -744,9 +802,15 @@ fn test_set_power_pointed() {
             .memory
             .writable
             .insert(3, RefCell::new(vec![2.0; 4096]));
-        runtime_context.memory.write(0, 0, 3.0);
-        runtime_context.memory.write(0, 1, 5.0);
-        runtime_context.memory.write(3, 7, 2.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 0, 3.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 1, 5.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 3, 7, 2.0);
 
         let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
 
@@ -757,7 +821,7 @@ fn test_set_power_pointed() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(3, 7),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 3, 7),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -788,7 +852,9 @@ fn test_set_power_shifted() {
             .memory
             .writable
             .insert(0, RefCell::new(vec![2.0; 4096]));
-        runtime_context.memory.write(0, 14, 2.0); // 2 + 3 * 4 = 14
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 14, 2.0); // 2 + 3 * 4 = 14
 
         let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
 
@@ -799,7 +865,9 @@ fn test_set_power_shifted() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(0, 14),
+            runtime_context
+                .memory
+                .read(&runtime_context.as_ctx(), 0, 14),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -836,7 +904,7 @@ fn test_set_rem() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(0, 5),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 0, 5),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -865,9 +933,15 @@ fn test_set_rem_pointed() {
             .memory
             .writable
             .insert(3, RefCell::new(vec![10.0; 4096]));
-        runtime_context.memory.write(0, 0, 3.0);
-        runtime_context.memory.write(0, 1, 5.0);
-        runtime_context.memory.write(3, 7, 10.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 0, 3.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 1, 5.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 3, 7, 10.0);
 
         let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
 
@@ -878,7 +952,7 @@ fn test_set_rem_pointed() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(3, 7),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 3, 7),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -909,7 +983,9 @@ fn test_set_rem_shifted() {
             .memory
             .writable
             .insert(0, RefCell::new(vec![10.0; 4096]));
-        runtime_context.memory.write(0, 14, 10.0); // 2 + 3 * 4 = 14
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 14, 10.0); // 2 + 3 * 4 = 14
 
         let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
 
@@ -920,7 +996,9 @@ fn test_set_rem_shifted() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(0, 14),
+            runtime_context
+                .memory
+                .read(&runtime_context.as_ctx(), 0, 14),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -957,7 +1035,7 @@ fn test_set_mod() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(0, 5),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 0, 5),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -986,9 +1064,15 @@ fn test_set_mod_pointed() {
             .memory
             .writable
             .insert(3, RefCell::new(vec![10.0; 4096]));
-        runtime_context.memory.write(0, 0, 3.0);
-        runtime_context.memory.write(0, 1, 5.0);
-        runtime_context.memory.write(3, 7, 10.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 0, 3.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 1, 5.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 3, 7, 10.0);
 
         let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
 
@@ -999,7 +1083,7 @@ fn test_set_mod_pointed() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(3, 7),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 3, 7),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -1030,7 +1114,9 @@ fn test_set_mod_shifted() {
             .memory
             .writable
             .insert(0, RefCell::new(vec![10.0; 4096]));
-        runtime_context.memory.write(0, 14, 10.0); // 2 + 3 * 4 = 14
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 14, 10.0); // 2 + 3 * 4 = 14
 
         let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
 
@@ -1041,7 +1127,9 @@ fn test_set_mod_shifted() {
         );
         assert_eq!(
             Some(result),
-            runtime_context.memory.read(0, 14),
+            runtime_context
+                .memory
+                .read(&runtime_context.as_ctx(), 0, 14),
             "Assertion failed for executor: {}",
             executor_name
         );
@@ -1085,19 +1173,19 @@ fn test_copy_basic() {
             executor_name
         );
         assert_eq!(
-            runtime_context.memory.read(1, 1),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 1, 1),
             Some(11.0),
             "Assertion failed for executor: {}",
             executor_name
         );
         assert_eq!(
-            runtime_context.memory.read(1, 2),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 1, 2),
             Some(22.0),
             "Assertion failed for executor: {}",
             executor_name
         );
         assert_eq!(
-            runtime_context.memory.read(1, 3),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 1, 3),
             Some(33.0),
             "Assertion failed for executor: {}",
             executor_name
@@ -1138,25 +1226,25 @@ fn test_copy_overlap_forward() {
             executor_name
         );
         assert_eq!(
-            runtime_context.memory.read(0, 1),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 0, 1),
             Some(1.0),
             "Assertion failed for executor: {}",
             executor_name
         );
         assert_eq!(
-            runtime_context.memory.read(0, 2),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 0, 2),
             Some(2.0),
             "Assertion failed for executor: {}",
             executor_name
         );
         assert_eq!(
-            runtime_context.memory.read(0, 3),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 0, 3),
             Some(3.0),
             "Assertion failed for executor: {}",
             executor_name
         );
         assert_eq!(
-            runtime_context.memory.read(0, 4),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 0, 4),
             Some(5.0),
             "Assertion failed for executor: {}",
             executor_name
@@ -1197,19 +1285,19 @@ fn test_copy_overlap_backward() {
             executor_name
         );
         assert_eq!(
-            runtime_context.memory.read(0, 0),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 0, 0),
             Some(12.0),
             "Assertion failed for executor: {}",
             executor_name
         );
         assert_eq!(
-            runtime_context.memory.read(0, 1),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 0, 1),
             Some(13.0),
             "Assertion failed for executor: {}",
             executor_name
         );
         assert_eq!(
-            runtime_context.memory.read(0, 2),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 0, 2),
             Some(14.0),
             "Assertion failed for executor: {}",
             executor_name
@@ -1253,7 +1341,7 @@ fn test_copy_zero_count() {
             executor_name
         );
         assert_eq!(
-            runtime_context.memory.read(1, 0),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 1, 0),
             Some(9.0),
             "Assertion failed for executor: {}",
             executor_name

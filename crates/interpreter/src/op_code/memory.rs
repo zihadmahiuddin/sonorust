@@ -47,7 +47,10 @@ impl Executable for Get {
         let index = int_from_f64_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
-        context.memory.read(block_id, index).unwrap_or_default()
+        context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default()
     }
 }
 
@@ -68,19 +71,26 @@ impl Executable for GetPointed {
 
         let offset = executor.execute(nodes, self.offset, context);
 
-        let final_block_id = context.memory.read(block_id, index).unwrap_or_default();
+        let final_block_id = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
         let final_block_id = int_from_f64_checked(final_block_id).unwrap_or_else(|| {
             panic!("Expected final_block_id to be valid usize, found {final_block_id}")
         });
 
-        let final_index = context.memory.read(block_id, index + 1).unwrap_or_default() + offset;
+        let final_index = context
+            .memory
+            .read(context, block_id, index + 1)
+            .unwrap_or_default()
+            + offset;
         let final_index = int_from_f64_checked(final_index).unwrap_or_else(|| {
             panic!("Expected final_index to be valid usize, found {final_index}")
         });
 
         context
             .memory
-            .read(final_block_id, final_index)
+            .read(context, final_block_id, final_index)
             .unwrap_or_default()
     }
 }
@@ -104,7 +114,10 @@ impl Executable for GetShifted {
         let index = int_from_f64_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
-        context.memory.read(block_id, index).unwrap_or_default()
+        context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default()
     }
 }
 
@@ -127,7 +140,7 @@ impl Executable for Set {
 
         context
             .memory
-            .write(block_id, index, value)
+            .write(context, block_id, index, value)
             .unwrap_or_default()
     }
 }
@@ -149,12 +162,19 @@ impl Executable for SetPointed {
 
         let offset = executor.execute(nodes, self.offset, context);
 
-        let final_block_id = context.memory.read(block_id, index).unwrap_or_default();
+        let final_block_id = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
         let final_block_id = int_from_f64_checked(final_block_id).unwrap_or_else(|| {
             panic!("Expected final_block_id to be valid usize, found {final_block_id}")
         });
 
-        let final_index = context.memory.read(block_id, index + 1).unwrap_or_default() + offset;
+        let final_index = context
+            .memory
+            .read(context, block_id, index + 1)
+            .unwrap_or_default()
+            + offset;
         let final_index = int_from_f64_checked(final_index).unwrap_or_else(|| {
             panic!("Expected final_index to be valid usize, found {final_index}")
         });
@@ -163,7 +183,7 @@ impl Executable for SetPointed {
 
         context
             .memory
-            .write(final_block_id, final_index, value)
+            .write(context, final_block_id, final_index, value)
             .unwrap_or_default()
     }
 }
@@ -191,7 +211,7 @@ impl Executable for SetShifted {
 
         context
             .memory
-            .write(block_id, index, value)
+            .write(context, block_id, index, value)
             .unwrap_or_default()
     }
 }
@@ -213,11 +233,14 @@ impl Executable for SetAdd {
 
         let value = executor.execute(nodes, self.value, context);
 
-        let old_value = context.memory.read(block_id, index).unwrap_or_default();
+        let old_value = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
 
         context
             .memory
-            .write(block_id, index, old_value + value)
+            .write(context, block_id, index, old_value + value)
             .unwrap_or_default()
     }
 }
@@ -239,12 +262,19 @@ impl Executable for SetAddPointed {
 
         let offset = executor.execute(nodes, self.offset, context);
 
-        let final_block_id = context.memory.read(block_id, index).unwrap_or_default();
+        let final_block_id = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
         let final_block_id = int_from_f64_checked(final_block_id).unwrap_or_else(|| {
             panic!("Expected final_block_id to be valid usize, found {final_block_id}")
         });
 
-        let final_index = context.memory.read(block_id, index + 1).unwrap_or_default() + offset;
+        let final_index = context
+            .memory
+            .read(context, block_id, index + 1)
+            .unwrap_or_default()
+            + offset;
         let final_index = int_from_f64_checked(final_index).unwrap_or_else(|| {
             panic!("Expected final_index to be valid usize, found {final_index}")
         });
@@ -253,12 +283,12 @@ impl Executable for SetAddPointed {
 
         let old_value = context
             .memory
-            .read(final_block_id, final_index)
+            .read(context, final_block_id, final_index)
             .unwrap_or_default();
 
         context
             .memory
-            .write(final_block_id, final_index, old_value + value)
+            .write(context, final_block_id, final_index, old_value + value)
             .unwrap_or_default()
     }
 }
@@ -284,11 +314,14 @@ impl Executable for SetAddShifted {
 
         let value = executor.execute(nodes, self.value, context);
 
-        let old_value = context.memory.read(block_id, index).unwrap_or_default();
+        let old_value = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
 
         context
             .memory
-            .write(block_id, index, old_value + value)
+            .write(context, block_id, index, old_value + value)
             .unwrap_or_default()
     }
 }
@@ -310,11 +343,14 @@ impl Executable for SetDivide {
 
         let value = executor.execute(nodes, self.value, context);
 
-        let old_value = context.memory.read(block_id, index).unwrap_or_default();
+        let old_value = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
 
         context
             .memory
-            .write(block_id, index, old_value / value)
+            .write(context, block_id, index, old_value / value)
             .unwrap_or_default()
     }
 }
@@ -336,12 +372,19 @@ impl Executable for SetDividePointed {
 
         let offset = executor.execute(nodes, self.offset, context);
 
-        let final_block_id = context.memory.read(block_id, index).unwrap_or_default();
+        let final_block_id = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
         let final_block_id = int_from_f64_checked(final_block_id).unwrap_or_else(|| {
             panic!("Expected final_block_id to be valid usize, found {final_block_id}")
         });
 
-        let final_index = context.memory.read(block_id, index + 1).unwrap_or_default() + offset;
+        let final_index = context
+            .memory
+            .read(context, block_id, index + 1)
+            .unwrap_or_default()
+            + offset;
         let final_index = int_from_f64_checked(final_index).unwrap_or_else(|| {
             panic!("Expected final_index to be valid usize, found {final_index}")
         });
@@ -350,12 +393,12 @@ impl Executable for SetDividePointed {
 
         let old_value = context
             .memory
-            .read(final_block_id, final_index)
+            .read(context, final_block_id, final_index)
             .unwrap_or_default();
 
         context
             .memory
-            .write(final_block_id, final_index, old_value / value)
+            .write(context, final_block_id, final_index, old_value / value)
             .unwrap_or_default()
     }
 }
@@ -381,11 +424,14 @@ impl Executable for SetDivideShifted {
 
         let value = executor.execute(nodes, self.value, context);
 
-        let old_value = context.memory.read(block_id, index).unwrap_or_default();
+        let old_value = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
 
         context
             .memory
-            .write(block_id, index, old_value / value)
+            .write(context, block_id, index, old_value / value)
             .unwrap_or_default()
     }
 }
@@ -407,11 +453,14 @@ impl Executable for SetMultiply {
 
         let value = executor.execute(nodes, self.value, context);
 
-        let old_value = context.memory.read(block_id, index).unwrap_or_default();
+        let old_value = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
 
         context
             .memory
-            .write(block_id, index, old_value * value)
+            .write(context, block_id, index, old_value * value)
             .unwrap_or_default()
     }
 }
@@ -433,12 +482,19 @@ impl Executable for SetMultiplyPointed {
 
         let offset = executor.execute(nodes, self.offset, context);
 
-        let final_block_id = context.memory.read(block_id, index).unwrap_or_default();
+        let final_block_id = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
         let final_block_id = int_from_f64_checked(final_block_id).unwrap_or_else(|| {
             panic!("Expected final_block_id to be valid usize, found {final_block_id}")
         });
 
-        let final_index = context.memory.read(block_id, index + 1).unwrap_or_default() + offset;
+        let final_index = context
+            .memory
+            .read(context, block_id, index + 1)
+            .unwrap_or_default()
+            + offset;
         let final_index = int_from_f64_checked(final_index).unwrap_or_else(|| {
             panic!("Expected final_index to be valid usize, found {final_index}")
         });
@@ -447,12 +503,12 @@ impl Executable for SetMultiplyPointed {
 
         let old_value = context
             .memory
-            .read(final_block_id, final_index)
+            .read(context, final_block_id, final_index)
             .unwrap_or_default();
 
         context
             .memory
-            .write(final_block_id, final_index, old_value * value)
+            .write(context, final_block_id, final_index, old_value * value)
             .unwrap_or_default()
     }
 }
@@ -478,11 +534,14 @@ impl Executable for SetMultiplyShifted {
 
         let value = executor.execute(nodes, self.value, context);
 
-        let old_value = context.memory.read(block_id, index).unwrap_or_default();
+        let old_value = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
 
         context
             .memory
-            .write(block_id, index, old_value * value)
+            .write(context, block_id, index, old_value * value)
             .unwrap_or_default()
     }
 }
@@ -504,11 +563,14 @@ impl Executable for SetMod {
 
         let value = executor.execute(nodes, self.value, context);
 
-        let old_value = context.memory.read(block_id, index).unwrap_or_default();
+        let old_value = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
 
         context
             .memory
-            .write(block_id, index, modulo(old_value, value))
+            .write(context, block_id, index, modulo(old_value, value))
             .unwrap_or_default()
     }
 }
@@ -530,12 +592,19 @@ impl Executable for SetModPointed {
 
         let offset = executor.execute(nodes, self.offset, context);
 
-        let final_block_id = context.memory.read(block_id, index).unwrap_or_default();
+        let final_block_id = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
         let final_block_id = int_from_f64_checked(final_block_id).unwrap_or_else(|| {
             panic!("Expected final_block_id to be valid usize, found {final_block_id}")
         });
 
-        let final_index = context.memory.read(block_id, index + 1).unwrap_or_default() + offset;
+        let final_index = context
+            .memory
+            .read(context, block_id, index + 1)
+            .unwrap_or_default()
+            + offset;
         let final_index = int_from_f64_checked(final_index).unwrap_or_else(|| {
             panic!("Expected final_index to be valid usize, found {final_index}")
         });
@@ -544,12 +613,17 @@ impl Executable for SetModPointed {
 
         let old_value = context
             .memory
-            .read(final_block_id, final_index)
+            .read(context, final_block_id, final_index)
             .unwrap_or_default();
 
         context
             .memory
-            .write(final_block_id, final_index, modulo(old_value, value))
+            .write(
+                context,
+                final_block_id,
+                final_index,
+                modulo(old_value, value),
+            )
             .unwrap_or_default()
     }
 }
@@ -575,11 +649,14 @@ impl Executable for SetModShifted {
 
         let value = executor.execute(nodes, self.value, context);
 
-        let old_value = context.memory.read(block_id, index).unwrap_or_default();
+        let old_value = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
 
         context
             .memory
-            .write(block_id, index, modulo(old_value, value))
+            .write(context, block_id, index, modulo(old_value, value))
             .unwrap_or_default()
     }
 }
@@ -601,11 +678,14 @@ impl Executable for SetRem {
 
         let value = executor.execute(nodes, self.value, context);
 
-        let old_value = context.memory.read(block_id, index).unwrap_or_default();
+        let old_value = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
 
         context
             .memory
-            .write(block_id, index, old_value % value)
+            .write(context, block_id, index, old_value % value)
             .unwrap_or_default()
     }
 }
@@ -627,12 +707,19 @@ impl Executable for SetRemPointed {
 
         let offset = executor.execute(nodes, self.offset, context);
 
-        let final_block_id = context.memory.read(block_id, index).unwrap_or_default();
+        let final_block_id = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
         let final_block_id = int_from_f64_checked(final_block_id).unwrap_or_else(|| {
             panic!("Expected final_block_id to be valid usize, found {final_block_id}")
         });
 
-        let final_index = context.memory.read(block_id, index + 1).unwrap_or_default() + offset;
+        let final_index = context
+            .memory
+            .read(context, block_id, index + 1)
+            .unwrap_or_default()
+            + offset;
         let final_index = int_from_f64_checked(final_index).unwrap_or_else(|| {
             panic!("Expected final_index to be valid usize, found {final_index}")
         });
@@ -641,12 +728,12 @@ impl Executable for SetRemPointed {
 
         let old_value = context
             .memory
-            .read(final_block_id, final_index)
+            .read(context, final_block_id, final_index)
             .unwrap_or_default();
 
         context
             .memory
-            .write(final_block_id, final_index, old_value % value)
+            .write(context, final_block_id, final_index, old_value % value)
             .unwrap_or_default()
     }
 }
@@ -672,11 +759,14 @@ impl Executable for SetRemShifted {
 
         let value = executor.execute(nodes, self.value, context);
 
-        let old_value = context.memory.read(block_id, index).unwrap_or_default();
+        let old_value = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
 
         context
             .memory
-            .write(block_id, index, old_value % value)
+            .write(context, block_id, index, old_value % value)
             .unwrap_or_default()
     }
 }
@@ -698,11 +788,14 @@ impl Executable for SetPower {
 
         let value = executor.execute(nodes, self.value, context);
 
-        let old_value = context.memory.read(block_id, index).unwrap_or_default();
+        let old_value = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
 
         context
             .memory
-            .write(block_id, index, old_value.powf(value))
+            .write(context, block_id, index, old_value.powf(value))
             .unwrap_or_default()
     }
 }
@@ -724,12 +817,19 @@ impl Executable for SetPowerPointed {
 
         let offset = executor.execute(nodes, self.offset, context);
 
-        let final_block_id = context.memory.read(block_id, index).unwrap_or_default();
+        let final_block_id = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
         let final_block_id = int_from_f64_checked(final_block_id).unwrap_or_else(|| {
             panic!("Expected final_block_id to be valid usize, found {final_block_id}")
         });
 
-        let final_index = context.memory.read(block_id, index + 1).unwrap_or_default() + offset;
+        let final_index = context
+            .memory
+            .read(context, block_id, index + 1)
+            .unwrap_or_default()
+            + offset;
         let final_index = int_from_f64_checked(final_index).unwrap_or_else(|| {
             panic!("Expected final_index to be valid usize, found {final_index}")
         });
@@ -738,12 +838,12 @@ impl Executable for SetPowerPointed {
 
         let old_value = context
             .memory
-            .read(final_block_id, final_index)
+            .read(context, final_block_id, final_index)
             .unwrap_or_default();
 
         context
             .memory
-            .write(final_block_id, final_index, old_value.powf(value))
+            .write(context, final_block_id, final_index, old_value.powf(value))
             .unwrap_or_default()
     }
 }
@@ -769,11 +869,14 @@ impl Executable for SetPowerShifted {
 
         let value = executor.execute(nodes, self.value, context);
 
-        let old_value = context.memory.read(block_id, index).unwrap_or_default();
+        let old_value = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
 
         context
             .memory
-            .write(block_id, index, old_value.powf(value))
+            .write(context, block_id, index, old_value.powf(value))
             .unwrap_or_default()
     }
 }
@@ -795,11 +898,14 @@ impl Executable for SetSubtract {
 
         let value = executor.execute(nodes, self.value, context);
 
-        let old_value = context.memory.read(block_id, index).unwrap_or_default();
+        let old_value = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
 
         context
             .memory
-            .write(block_id, index, old_value - value)
+            .write(context, block_id, index, old_value - value)
             .unwrap_or_default()
     }
 }
@@ -821,12 +927,19 @@ impl Executable for SetSubtractPointed {
 
         let offset = executor.execute(nodes, self.offset, context);
 
-        let final_block_id = context.memory.read(block_id, index).unwrap_or_default();
+        let final_block_id = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
         let final_block_id = int_from_f64_checked(final_block_id).unwrap_or_else(|| {
             panic!("Expected final_block_id to be valid usize, found {final_block_id}")
         });
 
-        let final_index = context.memory.read(block_id, index + 1).unwrap_or_default() + offset;
+        let final_index = context
+            .memory
+            .read(context, block_id, index + 1)
+            .unwrap_or_default()
+            + offset;
         let final_index = int_from_f64_checked(final_index).unwrap_or_else(|| {
             panic!("Expected final_index to be valid usize, found {final_index}")
         });
@@ -835,12 +948,12 @@ impl Executable for SetSubtractPointed {
 
         let old_value = context
             .memory
-            .read(final_block_id, final_index)
+            .read(context, final_block_id, final_index)
             .unwrap_or_default();
 
         context
             .memory
-            .write(final_block_id, final_index, old_value - value)
+            .write(context, final_block_id, final_index, old_value - value)
             .unwrap_or_default()
     }
 }
@@ -866,11 +979,14 @@ impl Executable for SetSubtractShifted {
 
         let value = executor.execute(nodes, self.value, context);
 
-        let old_value = context.memory.read(block_id, index).unwrap_or_default();
+        let old_value = context
+            .memory
+            .read(context, block_id, index)
+            .unwrap_or_default();
 
         context
             .memory
-            .write(block_id, index, old_value - value)
+            .write(context, block_id, index, old_value - value)
             .unwrap_or_default()
     }
 }

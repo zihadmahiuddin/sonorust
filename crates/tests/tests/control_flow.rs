@@ -14,7 +14,7 @@ fn test_execute() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 100.0,
@@ -36,7 +36,7 @@ fn test_execute_0() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 0.0,
@@ -59,7 +59,7 @@ fn test_execute_chained() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 15.0,
@@ -84,7 +84,7 @@ fn test_if_true() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 42.0,
@@ -109,7 +109,7 @@ fn test_if_false() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 99.0,
@@ -136,7 +136,7 @@ fn test_if_with_expression_consequent() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 5.0,
@@ -163,7 +163,7 @@ fn test_if_with_expression_alternate() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 6.0,
@@ -194,7 +194,7 @@ fn test_nested_if() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 11.0,
@@ -213,7 +213,7 @@ fn test_block_returns_value() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 42.0,
@@ -226,15 +226,15 @@ fn test_block_returns_value() {
 #[test]
 fn test_block_returns_from_break() {
     let nodes = vec![
-        IRNode::Value(99.0), // 0: break value
-        IRNode::Value(1.0),  // 1: break count
+        IRNode::Value(99.0),                                         // 0: break value
+        IRNode::Value(1.0),                                          // 1: break count
         IRNode::OpCode(OpCode::Break(Break { value: 0, count: 1 })), // 2
-        IRNode::OpCode(OpCode::Block(Block { body: 2 })), // 3
+        IRNode::OpCode(OpCode::Block(Block { body: 2 })),            // 3
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 99.0,
@@ -247,22 +247,22 @@ fn test_block_returns_from_break() {
 #[test]
 fn test_block_with_if_breaks() {
     let nodes = vec![
-        IRNode::Value(55.5), // 0: break value
-        IRNode::Value(1.0),  // 1: break count
+        IRNode::Value(55.5),                                         // 0: break value
+        IRNode::Value(1.0),                                          // 1: break count
         IRNode::OpCode(OpCode::Break(Break { value: 0, count: 1 })), // 2
-        IRNode::Value(1.0),  // 3: true condition
-        IRNode::Value(0.0),  // 4: else branch
+        IRNode::Value(1.0),                                          // 3: true condition
+        IRNode::Value(0.0),                                          // 4: else branch
         IRNode::OpCode(OpCode::If(If {
             test: 3,
             consequent: 2,
             alternate: 4,
         })), // 5
-        IRNode::OpCode(OpCode::Block(Block { body: 5 })), // 6
+        IRNode::OpCode(OpCode::Block(Block { body: 5 })),            // 6
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 6, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 55.5,
@@ -275,16 +275,16 @@ fn test_block_with_if_breaks() {
 #[test]
 fn test_nested_block_breaks_outer() {
     let nodes = vec![
-        IRNode::Value(123.0), // 0: break value
-        IRNode::Value(2.0),   // 1: break count
+        IRNode::Value(123.0),                                        // 0: break value
+        IRNode::Value(2.0),                                          // 1: break count
         IRNode::OpCode(OpCode::Break(Break { value: 0, count: 1 })), // 2
-        IRNode::OpCode(OpCode::Block(Block { body: 2 })), // 3
-        IRNode::OpCode(OpCode::Block(Block { body: 3 })), // 4
+        IRNode::OpCode(OpCode::Block(Block { body: 2 })),            // 3
+        IRNode::OpCode(OpCode::Block(Block { body: 3 })),            // 4
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 123.0,
@@ -319,7 +319,7 @@ fn test_while_immediate_break() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 42.0,
@@ -358,7 +358,7 @@ fn test_while_without_break() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 10, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 0.0,
@@ -366,7 +366,7 @@ fn test_while_without_break() {
             executor_name
         );
         assert_eq!(
-            runtime_context.memory.read(0, 0),
+            runtime_context.memory.read(&runtime_context.as_ctx(), 0, 0),
             Some(42.0),
             "Assertion failed for executor: {}",
             executor_name
@@ -392,9 +392,11 @@ fn test_switch() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
 
-        runtime_context.memory.write(0, 0, 10.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 0, 10.0);
 
         // matches case 0
         let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
@@ -404,7 +406,9 @@ fn test_switch() {
             executor_name
         );
 
-        runtime_context.memory.write(0, 0, 5.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 0, 5.0);
 
         // no match → default
         let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
@@ -436,9 +440,11 @@ fn test_switch_with_default() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
 
-        runtime_context.memory.write(0, 0, 10.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 0, 10.0);
 
         // matches case 0
         let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
@@ -448,7 +454,9 @@ fn test_switch_with_default() {
             executor_name
         );
 
-        runtime_context.memory.write(0, 0, 5.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 0, 5.0);
 
         // no match → default
         let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
@@ -478,7 +486,7 @@ fn test_switch_integer() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
 
         // matches case 0
         let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
@@ -488,7 +496,9 @@ fn test_switch_integer() {
             executor_name
         );
 
-        runtime_context.memory.write(0, 0, 1.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 0, 1.0);
 
         // matches case 1
         let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
@@ -498,7 +508,9 @@ fn test_switch_integer() {
             executor_name
         );
 
-        runtime_context.memory.write(0, 0, 5.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 0, 5.0);
 
         // no match → default
         let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
@@ -530,7 +542,7 @@ fn test_switch_integer_with_default() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = TestingRuntimeContext::default();
+        let runtime_context = TestingRuntimeContext::default();
 
         // matches case 0
         let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
@@ -540,7 +552,9 @@ fn test_switch_integer_with_default() {
             executor_name
         );
 
-        runtime_context.memory.write(0, 0, 1.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 0, 1.0);
 
         // matches case 1
         let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
@@ -550,7 +564,9 @@ fn test_switch_integer_with_default() {
             executor_name
         );
 
-        runtime_context.memory.write(0, 0, 5.0);
+        runtime_context
+            .memory
+            .write(&runtime_context.as_ctx(), 0, 0, 5.0);
 
         // no match → default
         let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);

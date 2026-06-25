@@ -14,7 +14,7 @@ pub struct TestingRuntimeContext {
 
 impl<'a> TestingRuntimeContext {
     #[allow(dead_code)] // used in tests
-    pub fn as_ctx(&'a mut self) -> RuntimeContext<'a> {
+    pub fn as_ctx(&'a self) -> RuntimeContext<'a> {
         RuntimeContext {
             current_entity: CurrentEntity {
                 id: EntityId(0),
@@ -44,7 +44,7 @@ impl Default for TestingMemory {
 }
 
 impl MemoryAccess for TestingMemory {
-    fn read(&self, block_id: u64, index: usize) -> Option<IRValue> {
+    fn read(&self, _ctx: &RuntimeContext, block_id: u64, index: usize) -> Option<IRValue> {
         if let Some(block) = self.writable.get(&block_id) {
             block
                 .try_borrow()
@@ -58,7 +58,13 @@ impl MemoryAccess for TestingMemory {
         }
     }
 
-    fn write(&self, block_id: u64, index: usize, value: IRValue) -> Option<IRValue> {
+    fn write(
+        &self,
+        _ctx: &RuntimeContext,
+        block_id: u64,
+        index: usize,
+        value: IRValue,
+    ) -> Option<IRValue> {
         if let Some(block) = self.writable.get(&block_id) {
             if let Some(old_value) = block
                 .try_borrow_mut()
