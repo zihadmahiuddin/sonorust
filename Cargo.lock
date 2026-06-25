@@ -463,6 +463,10 @@ name = "sonorust-ir"
 version = "0.1.0"
 
 [[package]]
+name = "sonorust-models"
+version = "0.1.0"
+
+[[package]]
 name = "sonorust-runtime"
 version = "0.1.0"
 dependencies = [

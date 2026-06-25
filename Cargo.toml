@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/cranelift", "crates/interpreter", "crates/ir", "crates/runtime", "crates/tests"]
+members = ["crates/cranelift", "crates/interpreter", "crates/ir", "crates/models", "crates/runtime", "crates/tests"]
 
 [workspace.dependencies]
 sonorust-ir = { path = "./crates/ir" }
