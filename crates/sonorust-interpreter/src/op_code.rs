@@ -13,6 +13,7 @@ mod memory;
 
 macro_rules! match_opcodes {
     ($val:expr, $ctx:expr, $nodes:expr, $exec:expr; $($variant:ident),* $(,)?) => {
+        #[allow(unused)] // sometimes they're all implemented :D
         match $val {
             $(
                 OpCode::$variant(node) => node.execute($ctx, $nodes, $exec),

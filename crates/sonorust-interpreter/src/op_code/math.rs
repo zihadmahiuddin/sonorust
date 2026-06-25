@@ -528,7 +528,7 @@ impl Executable for Sign {
             return 1.0;
         }
 
-        return -1.0;
+        -1.0
     }
 }
 

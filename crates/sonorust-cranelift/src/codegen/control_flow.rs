@@ -41,7 +41,8 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         let else_block = self.builder.create_block();
         let join_block = self.builder.create_block();
 
-        self.builder.append_block_param(join_block, crate::IR_VALUE_CRANELIFT_TYPE);
+        self.builder
+            .append_block_param(join_block, crate::IR_VALUE_CRANELIFT_TYPE);
 
         self.builder
             .ins()
@@ -331,7 +332,9 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
 
         let default_block = self.builder.create_block();
         let join_block = self.builder.create_block();
-        let join_param = self.builder.append_block_param(join_block, crate::IR_VALUE_CRANELIFT_TYPE);
+        let join_param = self
+            .builder
+            .append_block_param(join_block, crate::IR_VALUE_CRANELIFT_TYPE);
 
         switch.emit(self.builder, test_value_i64, default_block);
 
@@ -374,7 +377,9 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
 
         let default_block = self.builder.create_block();
         let join_block = self.builder.create_block();
-        let join_param = self.builder.append_block_param(join_block, crate::IR_VALUE_CRANELIFT_TYPE);
+        let join_param = self
+            .builder
+            .append_block_param(join_block, crate::IR_VALUE_CRANELIFT_TYPE);
 
         switch.emit(self.builder, test_value_i64, default_block);
 

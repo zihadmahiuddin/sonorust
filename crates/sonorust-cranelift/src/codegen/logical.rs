@@ -42,7 +42,9 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         let input = self.build_node_ir(node.value);
         let zero = crate::ir_value_cranelift_const(self.builder.ins(), 0.0);
         let cmp = self.builder.ins().fcmp(FloatCC::Equal, input, zero);
-        self.builder.ins().fcvt_from_sint(crate::IR_VALUE_CRANELIFT_TYPE, cmp)
+        self.builder
+            .ins()
+            .fcvt_from_sint(crate::IR_VALUE_CRANELIFT_TYPE, cmp)
     }
 
     pub(crate) fn build_and_ir(&mut self, node: &And) -> Value {
@@ -52,7 +54,9 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         );
 
         let result_block = self.builder.create_block();
-        let result_param = self.builder.append_block_param(result_block, crate::IR_VALUE_CRANELIFT_TYPE);
+        let result_param = self
+            .builder
+            .append_block_param(result_block, crate::IR_VALUE_CRANELIFT_TYPE);
 
         let zero = crate::ir_value_cranelift_const(self.builder.ins(), 0.0);
 
@@ -98,7 +102,9 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         assert!(!node.inputs.is_empty(), "Or requires at least one argument");
 
         let result_block = self.builder.create_block();
-        let result_param = self.builder.append_block_param(result_block, crate::IR_VALUE_CRANELIFT_TYPE);
+        let result_param = self
+            .builder
+            .append_block_param(result_block, crate::IR_VALUE_CRANELIFT_TYPE);
 
         let zero = crate::ir_value_cranelift_const(self.builder.ins(), 0.0);
 

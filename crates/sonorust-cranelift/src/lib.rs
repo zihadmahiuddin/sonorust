@@ -81,9 +81,7 @@ impl CraneliftJitExecutor {
         module.finalize_definitions().unwrap();
 
         let code_ptr = module.get_finalized_function(func_id);
-        unsafe {
-            std::mem::transmute::<*const u8, fn(*mut RuntimeContext) -> IRValue>(code_ptr)
-        }
+        unsafe { std::mem::transmute::<*const u8, fn(*mut RuntimeContext) -> IRValue>(code_ptr) }
     }
 }
 
