@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 
 use sonorust_ir::nodes::*;
-use sonorust_runtime::{basic::BasicRuntimeContext, context::MemoryAccess};
+use sonorust_runtime::{context::MemoryAccess, testing::TestingRuntimeContext};
 use sonorust_tests::get_available_executors;
 
 #[test]
@@ -16,7 +16,7 @@ fn test_get() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context.memory.write(0, 0, 7.0);
         let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
         assert_eq!(
@@ -42,7 +42,7 @@ fn test_get_pointed() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -77,7 +77,7 @@ fn test_get_shifted() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -107,7 +107,7 @@ fn test_set() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 7.0,
@@ -134,7 +134,7 @@ fn test_set_pointed() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -176,7 +176,7 @@ fn test_set_shifted() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -214,7 +214,7 @@ fn test_set_add() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -254,7 +254,7 @@ fn test_set_add_pointed() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
 
         runtime_context
             .memory
@@ -299,7 +299,7 @@ fn test_set_add_shifted() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -337,7 +337,7 @@ fn test_set_subtract() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -376,7 +376,7 @@ fn test_set_subtract_pointed() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -420,7 +420,7 @@ fn test_set_subtract_shifted() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -458,7 +458,7 @@ fn test_set_multiply() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -497,7 +497,7 @@ fn test_set_multiply_pointed() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -541,7 +541,7 @@ fn test_set_multiply_shifted() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -579,7 +579,7 @@ fn test_set_divide() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -618,7 +618,7 @@ fn test_set_divide_pointed() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -662,7 +662,7 @@ fn test_set_divide_shifted() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -700,7 +700,7 @@ fn test_set_power() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -739,7 +739,7 @@ fn test_set_power_pointed() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -783,7 +783,7 @@ fn test_set_power_shifted() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -821,7 +821,7 @@ fn test_set_rem() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -860,7 +860,7 @@ fn test_set_rem_pointed() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -904,7 +904,7 @@ fn test_set_rem_shifted() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -942,7 +942,7 @@ fn test_set_mod() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -981,7 +981,7 @@ fn test_set_mod_pointed() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -1025,7 +1025,7 @@ fn test_set_mod_shifted() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -1067,7 +1067,7 @@ fn test_copy_basic() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -1124,7 +1124,7 @@ fn test_copy_overlap_forward() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -1183,7 +1183,7 @@ fn test_copy_overlap_backward() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable
@@ -1235,7 +1235,7 @@ fn test_copy_zero_count() {
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
-        let mut runtime_context = BasicRuntimeContext::default();
+        let mut runtime_context = TestingRuntimeContext::default();
         runtime_context
             .memory
             .writable

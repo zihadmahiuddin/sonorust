@@ -7,11 +7,11 @@ use tracing::warn;
 
 #[derive(Default)]
 #[allow(dead_code)] // used in tests
-pub struct BasicRuntimeContext {
-    pub memory: BasicMemory,
+pub struct TestingRuntimeContext {
+    pub memory: TestingMemory,
 }
 
-impl<'a> BasicRuntimeContext {
+impl<'a> TestingRuntimeContext {
     #[allow(dead_code)] // used in tests
     pub fn as_ctx(&'a mut self) -> RuntimeContext<'a> {
         RuntimeContext {
@@ -20,12 +20,12 @@ impl<'a> BasicRuntimeContext {
     }
 }
 
-pub struct BasicMemory {
+pub struct TestingMemory {
     pub read_only: HashMap<u64, Vec<IRValue>>,
     pub writable: HashMap<u64, RefCell<Vec<IRValue>>>,
 }
 
-impl Default for BasicMemory {
+impl Default for TestingMemory {
     fn default() -> Self {
         let mut read_only = HashMap::new();
         read_only.insert(1, vec![0.0; 4096]);
@@ -38,7 +38,7 @@ impl Default for BasicMemory {
     }
 }
 
-impl MemoryAccess for BasicMemory {
+impl MemoryAccess for TestingMemory {
     fn read(&self, block_id: u64, index: usize) -> Option<IRValue> {
         if let Some(block) = self.writable.get(&block_id) {
             block
