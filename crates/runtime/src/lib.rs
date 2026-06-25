@@ -2,6 +2,7 @@ use crate::context::RuntimeContext;
 use sonorust_ir::{IRValue, nodes::IRNode};
 
 pub mod context;
+pub mod memory;
 pub mod testing;
 
 pub trait SonorustIRExecutor {

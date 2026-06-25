@@ -4,3 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+sonorust-ir = { workspace = true }
+
+glam = { workspace = true }
+serde = { workspace = true }
+tracing = { workspace = true }
