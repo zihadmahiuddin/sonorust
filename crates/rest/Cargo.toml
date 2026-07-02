@@ -1,0 +1,13 @@
+[package]
+name = "sonorust-rest"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+sonorust-models.workspace = true
+
+flate2 = "1.1.1"
+reqwest = { version = "0.12.15", features = ["blocking"] }
+serde_json.workspace = true
+thiserror = "2.0.12"
+url = "2.5.4"
