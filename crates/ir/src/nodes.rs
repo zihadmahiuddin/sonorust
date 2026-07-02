@@ -106,11 +106,11 @@ pub enum OpCode {
 // Control Flow
 #[derive(Debug)]
 pub struct Execute {
-    pub nodes: Vec<usize>,
+    pub args: Vec<usize>,
 }
 #[derive(Debug)]
 pub struct Execute0 {
-    pub nodes: Vec<usize>,
+    pub args: Vec<usize>,
 }
 #[derive(Debug)]
 pub struct Block {
@@ -185,31 +185,31 @@ pub struct Negate {
 }
 #[derive(Debug)]
 pub struct Add {
-    pub inputs: Vec<usize>,
+    pub args: Vec<usize>,
 }
 #[derive(Debug)]
 pub struct Subtract {
-    pub inputs: Vec<usize>,
+    pub args: Vec<usize>,
 }
 #[derive(Debug)]
 pub struct Multiply {
-    pub inputs: Vec<usize>,
+    pub args: Vec<usize>,
 }
 #[derive(Debug)]
 pub struct Divide {
-    pub inputs: Vec<usize>,
+    pub args: Vec<usize>,
 }
 #[derive(Debug)]
 pub struct Mod {
-    pub inputs: Vec<usize>,
+    pub args: Vec<usize>,
 }
 #[derive(Debug)]
 pub struct Rem {
-    pub inputs: Vec<usize>,
+    pub args: Vec<usize>,
 }
 #[derive(Debug)]
 pub struct Power {
-    pub inputs: Vec<usize>,
+    pub args: Vec<usize>,
 }
 #[derive(Debug)]
 pub struct Clamp {
@@ -526,11 +526,11 @@ pub struct LessOr {
 }
 #[derive(Debug)]
 pub struct And {
-    pub inputs: Vec<usize>,
+    pub args: Vec<usize>,
 }
 #[derive(Debug)]
 pub struct Or {
-    pub inputs: Vec<usize>,
+    pub args: Vec<usize>,
 }
 #[derive(Debug)]
 pub struct Not {

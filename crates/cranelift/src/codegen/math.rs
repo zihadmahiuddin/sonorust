@@ -151,7 +151,7 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
 
     pub(crate) fn build_add_ir(&mut self, node: &Add) -> Value {
         let mut result = crate::ir_value_cranelift_const(self.builder.ins(), 0.0);
-        for &input in &node.inputs {
+        for &input in &node.args {
             let val = self.build_node_ir(input);
             result = self.builder.ins().fadd(result, val);
         }
@@ -159,13 +159,13 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     }
 
     pub(crate) fn build_subtract_ir(&mut self, node: &Subtract) -> Value {
-        let mut inputs_iter = node.inputs.iter();
+        let mut args_iter = node.args.iter();
         let mut result = self.build_node_ir(
-            *inputs_iter
+            *args_iter
                 .next()
                 .expect("At least 2 values required for subtraction."),
         );
-        for &input in inputs_iter {
+        for &input in args_iter {
             let val = self.build_node_ir(input);
             result = self.builder.ins().fsub(result, val);
         }
@@ -174,7 +174,7 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
 
     pub(crate) fn build_multiply_ir(&mut self, node: &Multiply) -> Value {
         let mut result = crate::ir_value_cranelift_const(self.builder.ins(), 1.0);
-        for &input in &node.inputs {
+        for &input in &node.args {
             let val = self.build_node_ir(input);
             result = self.builder.ins().fmul(result, val);
         }
@@ -182,13 +182,13 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     }
 
     pub(crate) fn build_divide_ir(&mut self, node: &Divide) -> Value {
-        let mut inputs_iter = node.inputs.iter();
+        let mut args_iter = node.args.iter();
         let mut result = self.build_node_ir(
-            *inputs_iter
+            *args_iter
                 .next()
                 .expect("At least 2 values required for subtraction."),
         );
-        for &input in inputs_iter {
+        for &input in args_iter {
             let val = self.build_node_ir(input);
             result = self.builder.ins().fdiv(result, val);
         }
@@ -196,9 +196,9 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     }
 
     pub(crate) fn build_mod_ir(&mut self, node: &Mod) -> Value {
-        assert!(node.inputs.len() >= 2, "Mod requires at least 2 inputs");
+        assert!(node.args.len() >= 2, "Mod requires at least 2 inputs");
 
-        let mut iter = node.inputs.iter();
+        let mut iter = node.args.iter();
         let first = self.build_node_ir(*iter.next().unwrap());
         let second = self.build_node_ir(*iter.next().unwrap());
 
@@ -214,9 +214,9 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     }
 
     pub(crate) fn build_rem_ir(&mut self, node: &Rem) -> Value {
-        assert!(node.inputs.len() >= 2, "Rem requires at least 2 inputs");
+        assert!(node.args.len() >= 2, "Rem requires at least 2 inputs");
 
-        let mut iter = node.inputs.iter();
+        let mut iter = node.args.iter();
         let first = self.build_node_ir(*iter.next().unwrap());
         let second = self.build_node_ir(*iter.next().unwrap());
 
@@ -232,12 +232,12 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     }
 
     pub(crate) fn build_power_ir(&mut self, node: &Power) -> Value {
-        if node.inputs.is_empty() {
+        if node.args.is_empty() {
             return crate::ir_value_cranelift_const(self.builder.ins(), 0.0);
         }
 
         let values: Vec<Value> = node
-            .inputs
+            .args
             .iter()
             .map(|&input| self.build_node_ir(input))
             .collect();

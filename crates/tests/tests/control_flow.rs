@@ -7,9 +7,9 @@ fn test_execute() {
     let nodes = vec![
         IRNode::Value(1.0),
         IRNode::Value(2.0),
-        IRNode::OpCode(OpCode::Add(Add { inputs: vec![0, 1] })), // = 3.0
+        IRNode::OpCode(OpCode::Add(Add { args: vec![0, 1] })), // = 3.0
         IRNode::Value(100.0),
-        IRNode::OpCode(OpCode::Execute(Execute { nodes: vec![2, 3] })), // should return 100.0
+        IRNode::OpCode(OpCode::Execute(Execute { args: vec![2, 3] })), // should return 100.0
     ];
 
     let executors = get_available_executors();
@@ -29,9 +29,9 @@ fn test_execute_0() {
     let nodes = vec![
         IRNode::Value(1.0),
         IRNode::Value(2.0),
-        IRNode::OpCode(OpCode::Add(Add { inputs: vec![0, 1] })), // = 3.0
+        IRNode::OpCode(OpCode::Add(Add { args: vec![0, 1] })), // = 3.0
         IRNode::Value(100.0),
-        IRNode::OpCode(OpCode::Execute0(Execute0 { nodes: vec![2, 3] })), // should return 100.0
+        IRNode::OpCode(OpCode::Execute0(Execute0 { args: vec![2, 3] })), // should return 100.0
     ];
 
     let executors = get_available_executors();
@@ -49,12 +49,12 @@ fn test_execute_0() {
 #[test]
 fn test_execute_chained() {
     let nodes = vec![
-        IRNode::Value(1.0),                                                // 0
-        IRNode::Value(2.0),                                                // 1
-        IRNode::OpCode(OpCode::Add(Add { inputs: vec![0, 1] })),           // 2 = 3.0
-        IRNode::Value(5.0),                                                // 3
-        IRNode::OpCode(OpCode::Multiply(Multiply { inputs: vec![2, 3] })), // 4 = 15.0
-        IRNode::OpCode(OpCode::Execute(Execute { nodes: vec![2, 4] })),    // returns 15.0
+        IRNode::Value(1.0),                                              // 0
+        IRNode::Value(2.0),                                              // 1
+        IRNode::OpCode(OpCode::Add(Add { args: vec![0, 1] })),           // 2 = 3.0
+        IRNode::Value(5.0),                                              // 3
+        IRNode::OpCode(OpCode::Multiply(Multiply { args: vec![2, 3] })), // 4 = 15.0
+        IRNode::OpCode(OpCode::Execute(Execute { args: vec![2, 4] })),   // returns 15.0
     ];
 
     let executors = get_available_executors();
@@ -125,8 +125,8 @@ fn test_if_with_expression_consequent() {
         IRNode::Value(1.0), // test = true
         IRNode::Value(2.0),
         IRNode::Value(3.0),
-        IRNode::OpCode(OpCode::Add(Add { inputs: vec![1, 2] })), // 3 = 5.0
-        IRNode::Value(100.0),                                    // alternate
+        IRNode::OpCode(OpCode::Add(Add { args: vec![1, 2] })), // 3 = 5.0
+        IRNode::Value(100.0),                                  // alternate
         IRNode::OpCode(OpCode::If(If {
             test: 0,
             consequent: 3,
@@ -152,8 +152,8 @@ fn test_if_with_expression_alternate() {
         IRNode::Value(0.0), // test = false
         IRNode::Value(2.0),
         IRNode::Value(3.0),
-        IRNode::OpCode(OpCode::Multiply(Multiply { inputs: vec![1, 2] })), // 3 = 6.0
-        IRNode::Value(42.0),                                               // consequent
+        IRNode::OpCode(OpCode::Multiply(Multiply { args: vec![1, 2] })), // 3 = 6.0
+        IRNode::Value(42.0),                                             // consequent
         IRNode::OpCode(OpCode::If(If {
             test: 0,
             consequent: 4,
@@ -346,7 +346,7 @@ fn test_while_without_break() {
             index: 0,
         })), // 5: get(0)
         IRNode::Value(1.0), // 6: const 1
-        IRNode::OpCode(OpCode::Add(Add { inputs: vec![5, 6] })), // 7: get(0) + 1
+        IRNode::OpCode(OpCode::Add(Add { args: vec![5, 6] })), // 7: get(0) + 1
         IRNode::OpCode(OpCode::Set(Set {
             block_id: 0,
             index: 4,

@@ -157,9 +157,9 @@ fn test_negate_positive() {
 #[test]
 fn test_add() {
     let nodes = vec![
-        IRNode::Value(2.0),                                      // 0
-        IRNode::Value(3.5),                                      // 1
-        IRNode::OpCode(OpCode::Add(Add { inputs: vec![0, 1] })), // 2
+        IRNode::Value(2.0),                                    // 0
+        IRNode::Value(3.5),                                    // 1
+        IRNode::OpCode(OpCode::Add(Add { args: vec![0, 1] })), // 2
     ];
 
     let executors = get_available_executors();
@@ -177,11 +177,11 @@ fn test_add() {
 #[test]
 fn test_add_chain() {
     let nodes = vec![
-        IRNode::Value(1.0),                                      // 0
-        IRNode::Value(2.0),                                      // 1
-        IRNode::Value(3.0),                                      // 2
-        IRNode::OpCode(OpCode::Add(Add { inputs: vec![0, 1] })), // 3 = 3.0
-        IRNode::OpCode(OpCode::Add(Add { inputs: vec![3, 2] })), // 4 = 6.0
+        IRNode::Value(1.0),                                    // 0
+        IRNode::Value(2.0),                                    // 1
+        IRNode::Value(3.0),                                    // 2
+        IRNode::OpCode(OpCode::Add(Add { args: vec![0, 1] })), // 3 = 3.0
+        IRNode::OpCode(OpCode::Add(Add { args: vec![3, 2] })), // 4 = 6.0
     ];
 
     let executors = get_available_executors();
@@ -201,7 +201,7 @@ fn test_subtract() {
     let nodes = vec![
         IRNode::Value(10.0),
         IRNode::Value(4.0),
-        IRNode::OpCode(OpCode::Subtract(Subtract { inputs: vec![0, 1] })),
+        IRNode::OpCode(OpCode::Subtract(Subtract { args: vec![0, 1] })),
     ];
 
     let executors = get_available_executors();
@@ -219,9 +219,9 @@ fn test_subtract() {
 #[test]
 fn test_subtract_negative() {
     let nodes = vec![
-        IRNode::Value(5.0),                                                // 0
-        IRNode::Value(10.0),                                               // 1
-        IRNode::OpCode(OpCode::Subtract(Subtract { inputs: vec![0, 1] })), // 2 = -5.0
+        IRNode::Value(5.0),                                              // 0
+        IRNode::Value(10.0),                                             // 1
+        IRNode::OpCode(OpCode::Subtract(Subtract { args: vec![0, 1] })), // 2 = -5.0
     ];
 
     let executors = get_available_executors();
@@ -241,7 +241,7 @@ fn test_multiply() {
     let nodes = vec![
         IRNode::Value(3.0),
         IRNode::Value(4.0),
-        IRNode::OpCode(OpCode::Multiply(Multiply { inputs: vec![0, 1] })),
+        IRNode::OpCode(OpCode::Multiply(Multiply { args: vec![0, 1] })),
     ];
 
     let executors = get_available_executors();
@@ -261,7 +261,7 @@ fn test_multiply_zero() {
     let nodes = vec![
         IRNode::Value(0.0),
         IRNode::Value(999.0),
-        IRNode::OpCode(OpCode::Multiply(Multiply { inputs: vec![0, 1] })),
+        IRNode::OpCode(OpCode::Multiply(Multiply { args: vec![0, 1] })),
     ];
 
     let executors = get_available_executors();
@@ -281,7 +281,7 @@ fn test_divide() {
     let nodes = vec![
         IRNode::Value(9.0),
         IRNode::Value(3.0),
-        IRNode::OpCode(OpCode::Divide(Divide { inputs: vec![0, 1] })),
+        IRNode::OpCode(OpCode::Divide(Divide { args: vec![0, 1] })),
     ];
 
     let executors = get_available_executors();
@@ -299,9 +299,9 @@ fn test_divide() {
 #[test]
 fn test_mod() {
     let nodes = vec![
-        IRNode::Value(-5.3),                                     // 0
-        IRNode::Value(2.0),                                      // 1
-        IRNode::OpCode(OpCode::Mod(Mod { inputs: vec![0, 1] })), // 2
+        IRNode::Value(-5.3),                                   // 0
+        IRNode::Value(2.0),                                    // 1
+        IRNode::OpCode(OpCode::Mod(Mod { args: vec![0, 1] })), // 2
     ];
 
     let executors = get_available_executors();
@@ -320,9 +320,9 @@ fn test_mod() {
 #[test]
 fn test_mod_negative_operand() {
     let nodes = vec![
-        IRNode::Value(17.0),                                     // 0
-        IRNode::Value(-12.0),                                    // 1
-        IRNode::OpCode(OpCode::Mod(Mod { inputs: vec![0, 1] })), // 2
+        IRNode::Value(17.0),                                   // 0
+        IRNode::Value(-12.0),                                  // 1
+        IRNode::OpCode(OpCode::Mod(Mod { args: vec![0, 1] })), // 2
     ];
 
     let executors = get_available_executors();
@@ -341,9 +341,9 @@ fn test_mod_negative_operand() {
 #[test]
 fn test_rem() {
     let nodes = vec![
-        IRNode::Value(-5.3),                                     // 0
-        IRNode::Value(2.0),                                      // 1
-        IRNode::OpCode(OpCode::Rem(Rem { inputs: vec![0, 1] })), // 2
+        IRNode::Value(-5.3),                                   // 0
+        IRNode::Value(2.0),                                    // 1
+        IRNode::OpCode(OpCode::Rem(Rem { args: vec![0, 1] })), // 2
     ];
 
     let executors = get_available_executors();
@@ -362,9 +362,9 @@ fn test_rem() {
 #[test]
 fn test_rem_negative_operand() {
     let nodes = vec![
-        IRNode::Value(17.0),                                     // 0
-        IRNode::Value(-12.0),                                    // 1
-        IRNode::OpCode(OpCode::Rem(Rem { inputs: vec![0, 1] })), // 2
+        IRNode::Value(17.0),                                   // 0
+        IRNode::Value(-12.0),                                  // 1
+        IRNode::OpCode(OpCode::Rem(Rem { args: vec![0, 1] })), // 2
     ];
 
     let executors = get_available_executors();
@@ -382,7 +382,7 @@ fn test_rem_negative_operand() {
 
 #[test]
 fn test_power_no_args_zero() {
-    let nodes = vec![IRNode::OpCode(OpCode::Power(Power { inputs: vec![] }))];
+    let nodes = vec![IRNode::OpCode(OpCode::Power(Power { args: vec![] }))];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
@@ -399,8 +399,8 @@ fn test_power_no_args_zero() {
 #[test]
 fn test_power_single_arg() {
     let nodes = vec![
-        IRNode::Value(5.0),                                       // 0
-        IRNode::OpCode(OpCode::Power(Power { inputs: vec![0] })), // 1 = 5
+        IRNode::Value(5.0),                                     // 0
+        IRNode::OpCode(OpCode::Power(Power { args: vec![0] })), // 1 = 5
     ];
 
     let executors = get_available_executors();
@@ -418,9 +418,9 @@ fn test_power_single_arg() {
 #[test]
 fn test_power_two_args() {
     let nodes = vec![
-        IRNode::Value(2.0),                                          // 0
-        IRNode::Value(3.0),                                          // 1
-        IRNode::OpCode(OpCode::Power(Power { inputs: vec![0, 1] })), // 2 = 2^3 = 8
+        IRNode::Value(2.0),                                        // 0
+        IRNode::Value(3.0),                                        // 1
+        IRNode::OpCode(OpCode::Power(Power { args: vec![0, 1] })), // 2 = 2^3 = 8
     ];
 
     let executors = get_available_executors();
@@ -443,7 +443,7 @@ fn test_power_three_args() {
         IRNode::Value(3.0), // 1
         IRNode::Value(2.0), // 2
         IRNode::OpCode(OpCode::Power(Power {
-            inputs: vec![0, 1, 2],
+            args: vec![0, 1, 2],
         })), // 3 = (2^3)^2 = 8^2 = 64
     ];
 
@@ -463,9 +463,9 @@ fn test_power_three_args() {
 #[test]
 fn test_power_negative_base_even_exponent() {
     let nodes = vec![
-        IRNode::Value(-2.0),                                         // 0
-        IRNode::Value(2.0),                                          // 1
-        IRNode::OpCode(OpCode::Power(Power { inputs: vec![0, 1] })), // 2 = (-2)^2 = 4
+        IRNode::Value(-2.0),                                       // 0
+        IRNode::Value(2.0),                                        // 1
+        IRNode::OpCode(OpCode::Power(Power { args: vec![0, 1] })), // 2 = (-2)^2 = 4
     ];
 
     let executors = get_available_executors();
@@ -484,9 +484,9 @@ fn test_power_negative_base_even_exponent() {
 #[test]
 fn test_power_zero_base() {
     let nodes = vec![
-        IRNode::Value(0.0),                                          // 0
-        IRNode::Value(5.0),                                          // 1
-        IRNode::OpCode(OpCode::Power(Power { inputs: vec![0, 1] })), // 2 = 0^5 = 0
+        IRNode::Value(0.0),                                        // 0
+        IRNode::Value(5.0),                                        // 1
+        IRNode::OpCode(OpCode::Power(Power { args: vec![0, 1] })), // 2 = 0^5 = 0
     ];
 
     let executors = get_available_executors();
@@ -505,9 +505,9 @@ fn test_power_zero_base() {
 #[test]
 fn test_power_negative_exponent() {
     let nodes = vec![
-        IRNode::Value(4.0),                                          // 0
-        IRNode::Value(-1.0),                                         // 1
-        IRNode::OpCode(OpCode::Power(Power { inputs: vec![0, 1] })), // 2 = 4^-1 = 0.25
+        IRNode::Value(4.0),                                        // 0
+        IRNode::Value(-1.0),                                       // 1
+        IRNode::OpCode(OpCode::Power(Power { args: vec![0, 1] })), // 2 = 4^-1 = 0.25
     ];
 
     let executors = get_available_executors();

@@ -6,7 +6,7 @@ use sonorust_ir::nodes::{self, *};
 impl<'s, 'b> CodegenContext<'s, 'b> {
     pub(crate) fn build_execute_ir(&mut self, node: &Execute) -> Value {
         let mut last_val = crate::ir_value_cranelift_const(self.builder.ins(), 0.0);
-        for &child_index in &node.nodes {
+        for &child_index in &node.args {
             last_val = self.build_node_ir(child_index);
         }
         last_val
@@ -14,7 +14,7 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
 
     pub(crate) fn build_execute0_ir(&mut self, node: &Execute0) -> Value {
         self.build_execute_ir(&Execute {
-            nodes: node.nodes.clone(),
+            args: node.args.clone(),
         });
         crate::ir_value_cranelift_const(self.builder.ins(), 0.0)
     }

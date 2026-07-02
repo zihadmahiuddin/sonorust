@@ -48,10 +48,7 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     }
 
     pub(crate) fn build_and_ir(&mut self, node: &And) -> Value {
-        assert!(
-            !node.inputs.is_empty(),
-            "And requires at least one argument"
-        );
+        assert!(!node.args.is_empty(), "And requires at least one argument");
 
         let result_block = self.builder.create_block();
         let result_param = self
@@ -61,12 +58,12 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         let zero = crate::ir_value_cranelift_const(self.builder.ins(), 0.0);
 
         let mut done = false;
-        for (i, arg) in node.inputs.iter().enumerate() {
+        for (i, arg) in node.args.iter().enumerate() {
             let val = self.build_node_ir(*arg);
 
             let cond = self.builder.ins().fcmp(FloatCC::Equal, val, zero);
 
-            if i == node.inputs.len() - 1 {
+            if i == node.args.len() - 1 {
                 self.builder
                     .ins()
                     .jump(result_block, &[BlockArg::Value(val)]);
@@ -99,7 +96,7 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     }
 
     pub(crate) fn build_or_ir(&mut self, node: &Or) -> Value {
-        assert!(!node.inputs.is_empty(), "Or requires at least one argument");
+        assert!(!node.args.is_empty(), "Or requires at least one argument");
 
         let result_block = self.builder.create_block();
         let result_param = self
@@ -109,12 +106,12 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         let zero = crate::ir_value_cranelift_const(self.builder.ins(), 0.0);
 
         let mut done = false;
-        for (i, arg) in node.inputs.iter().enumerate() {
+        for (i, arg) in node.args.iter().enumerate() {
             let val = self.build_node_ir(*arg);
 
             let cond = self.builder.ins().fcmp(FloatCC::NotEqual, val, zero);
 
-            if i == node.inputs.len() - 1 {
+            if i == node.args.len() - 1 {
                 self.builder
                     .ins()
                     .jump(result_block, &[BlockArg::Value(val)]);

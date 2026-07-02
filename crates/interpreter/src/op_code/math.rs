@@ -55,7 +55,7 @@ impl Executable for Add {
         nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
-        self.inputs
+        self.args
             .iter()
             .map(|idx| executor.execute(nodes, *idx, context))
             .sum()
@@ -69,14 +69,14 @@ impl Executable for Subtract {
         nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
-        let mut inputs = self.inputs.iter();
+        let mut args = self.args.iter();
 
-        let Some(first) = inputs.next() else {
+        let Some(first) = args.next() else {
             return 0.0;
         };
 
         let init = executor.execute(nodes, *first, context);
-        inputs.fold(init, |acc, &idx| {
+        args.fold(init, |acc, &idx| {
             acc - executor.execute(nodes, idx, context)
         })
     }
@@ -89,7 +89,7 @@ impl Executable for Multiply {
         nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
-        self.inputs
+        self.args
             .iter()
             .map(|idx| executor.execute(nodes, *idx, context))
             .product()
@@ -103,14 +103,14 @@ impl Executable for Divide {
         nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
-        let mut inputs = self.inputs.iter();
+        let mut args = self.args.iter();
 
-        let Some(first) = inputs.next() else {
+        let Some(first) = args.next() else {
             return 0.0;
         };
 
         let init = executor.execute(nodes, *first, context);
-        inputs.fold(init, |acc, &idx| {
+        args.fold(init, |acc, &idx| {
             acc / executor.execute(nodes, idx, context)
         })
     }
@@ -123,14 +123,14 @@ impl Executable for Mod {
         nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
-        let mut inputs = self.inputs.iter();
+        let mut args = self.args.iter();
 
-        let Some(first) = inputs.next() else {
+        let Some(first) = args.next() else {
             return 0.0;
         };
 
         let init = executor.execute(nodes, *first, context);
-        inputs.fold(init, |acc, &idx| {
+        args.fold(init, |acc, &idx| {
             modulo(acc, executor.execute(nodes, idx, context))
         })
     }
@@ -143,14 +143,14 @@ impl Executable for Rem {
         nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
-        let mut inputs = self.inputs.iter();
+        let mut args = self.args.iter();
 
-        let Some(first) = inputs.next() else {
+        let Some(first) = args.next() else {
             return 0.0;
         };
 
         let init = executor.execute(nodes, *first, context);
-        inputs.fold(init, |acc, &idx| {
+        args.fold(init, |acc, &idx| {
             acc % executor.execute(nodes, idx, context)
         })
     }
@@ -163,12 +163,12 @@ impl Executable for Power {
         nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
-        if self.inputs.is_empty() {
+        if self.args.is_empty() {
             return 0.0;
         }
 
         let values: Vec<IRValue> = self
-            .inputs
+            .args
             .iter()
             .map(|&idx| executor.execute(nodes, idx, context))
             .collect();

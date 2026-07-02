@@ -98,11 +98,11 @@ impl Executable for And {
     ) -> IRValue {
         let mut last_value = 0.0;
 
-        for &input in &self.inputs {
+        for &input in &self.args {
             let value = executor.execute(nodes, input, context);
 
             if value == 0.0
-            // && self.inputs[0] != 1171
+            // && self.args[0] != 1171
             {
                 return 0.0;
             }
@@ -112,15 +112,15 @@ impl Executable for And {
 
         last_value
 
-        // let mut inputs_iter = self.inputs.iter();
+        // let mut args_iter = self.args.iter();
 
-        // let first_value = if let Some(first_node) = inputs_iter.next() {
+        // let first_value = if let Some(first_node) = args_iter.next() {
         //     executor.execute(*first_node)
         // } else {
         //     return (executor, 0.0);
         // };
 
-        // inputs_iter.fold((executor, first_value), |(executor, acc), &idx| {
+        // args_iter.fold((executor, first_value), |(executor, acc), &idx| {
         //     let value = executor.execute(idx);
         //     (executor, (acc as i64 & value as i64) as f64)
         // })
@@ -134,7 +134,7 @@ impl Executable for Or {
         nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
-        for &input in &self.inputs {
+        for &input in &self.args {
             let value = executor.execute(nodes, input, context);
             if value != 0.0 {
                 return value;
@@ -142,15 +142,15 @@ impl Executable for Or {
         }
         0.0
 
-        // let mut inputs_iter = self.inputs.iter();
+        // let mut args_iter = self.args.iter();
 
-        // let first_value = if let Some(first_node) = inputs_iter.next() {
+        // let first_value = if let Some(first_node) = args_iter.next() {
         //     executor.execute(*first_node)
         // } else {
         //     return (executor, 0.0);
         // };
 
-        // inputs_iter.fold((executor, first_value), |(executor, acc), &idx| {
+        // args_iter.fold((executor, first_value), |(executor, acc), &idx| {
         //     let value = executor.execute(idx);
         //     (executor, (acc as i64 | value as i64) as f64)
         // })

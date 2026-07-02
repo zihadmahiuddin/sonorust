@@ -14,7 +14,7 @@ impl Executable for Execute {
     ) -> IRValue {
         let mut value: IRValue = 0.0;
 
-        for &node in &self.nodes {
+        for &node in &self.args {
             // Check the program flow before executing the next operation.
             if executor.control().is_break() {
                 // If a break is active, stop executing further opcodes in this sequence.
@@ -37,7 +37,7 @@ impl Executable for Execute0 {
         nodes: &[IRNode],
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
-        for &node in &self.nodes {
+        for &node in &self.args {
             // Check the program flow before executing the next operation.
             if executor.control().is_break() {
                 // If a break is active, stop executing further opcodes in this sequence.
