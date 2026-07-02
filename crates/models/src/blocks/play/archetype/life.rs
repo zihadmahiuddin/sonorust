@@ -1,15 +1,28 @@
+use std::collections::BTreeMap;
+
 use sonorust_ir::IRValue;
 use tracing::warn;
 
-use crate::blocks::{ReadableBlock, WritableBlock};
+use crate::{
+    blocks::{ReadableBlock, WritableBlock},
+    ids::ArchetypeId,
+};
 
 #[derive(Debug)]
 pub struct PlayArchetypeLife {
-    pub items: Vec<PlayArchetypeLifeItem>,
+    pub items: BTreeMap<ArchetypeId, PlayArchetypeLifeItem>,
 }
 
 impl PlayArchetypeLife {
     pub const BLOCK_ID: u64 = 5000;
+
+    pub fn new<'a>(entities: impl Iterator<Item = &'a ArchetypeId>) -> Self {
+        Self {
+            items: entities
+                .map(|id| (*id, PlayArchetypeLifeItem::default()))
+                .collect(),
+        }
+    }
 }
 
 #[derive(Debug, Default, Clone)]
@@ -67,7 +80,7 @@ impl ReadableBlock for PlayArchetypeLife {
     fn read(&self, index: usize) -> Option<IRValue> {
         let item_index = index / PlayArchetypeLifeItem::SIZE;
         let index_in_item = index % PlayArchetypeLifeItem::SIZE;
-        match self.items.get(item_index) {
+        match self.items.get(&ArchetypeId(item_index)) {
             Some(item) => item.read(index_in_item),
             None => {
                 warn!("Attempted to read PlayArchetypeLife of non-existent index {item_index}");
@@ -81,7 +94,7 @@ impl WritableBlock for PlayArchetypeLife {
     fn write(&mut self, index: usize, value: IRValue) -> bool {
         let item_index = index / PlayArchetypeLifeItem::SIZE;
         let index_in_item = index % PlayArchetypeLifeItem::SIZE;
-        match self.items.get_mut(item_index) {
+        match self.items.get_mut(&ArchetypeId(item_index)) {
             Some(item) => item.write(index_in_item, value),
             None => {
                 warn!("Attempted to write PlayArchetypeLife on non-existent index {item_index}");

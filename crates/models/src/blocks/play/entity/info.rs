@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 use sonorust_ir::IRValue;
 use tracing::warn;
@@ -10,7 +10,7 @@ use crate::{
 
 #[derive(Debug)]
 pub struct PlayEntityInfoArray {
-    pub items: HashMap<EntityId, PlayEntityInfo>,
+    pub items: BTreeMap<EntityId, PlayEntityInfo>,
 }
 
 impl PlayEntityInfoArray {

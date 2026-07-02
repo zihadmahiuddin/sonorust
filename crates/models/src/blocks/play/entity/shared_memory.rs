@@ -1,19 +1,26 @@
+use std::collections::BTreeMap;
+
 use sonorust_ir::IRValue;
 use tracing::warn;
 
-use crate::blocks::{ReadableBlock, WritableBlock};
+use crate::{
+    blocks::{ReadableBlock, WritableBlock},
+    ids::EntityId,
+};
 
 #[derive(Debug)]
 pub struct PlayEntitySharedMemoryArray {
-    pub items: Vec<PlayEntitySharedMemory>,
+    pub items: BTreeMap<EntityId, PlayEntitySharedMemory>,
 }
 
 impl PlayEntitySharedMemoryArray {
     pub const BLOCK_ID: u64 = 4102;
 
-    pub fn new(entity_count: usize) -> Self {
+    pub fn new<'a>(entities: impl Iterator<Item = &'a EntityId>) -> Self {
         Self {
-            items: vec![PlayEntitySharedMemory::default(); entity_count],
+            items: entities
+                .map(|id| (*id, PlayEntitySharedMemory::default()))
+                .collect(),
         }
     }
 }
@@ -36,7 +43,7 @@ impl ReadableBlock for PlayEntitySharedMemoryArray {
     fn read(&self, index: usize) -> Option<IRValue> {
         let item_index = index / PlayEntitySharedMemory::SIZE;
         let index_in_item = index % PlayEntitySharedMemory::SIZE;
-        match self.items.get(item_index) {
+        match self.items.get(&EntityId(item_index)) {
             Some(item) => item.read(index_in_item),
             None => {
                 warn!(
@@ -52,7 +59,7 @@ impl WritableBlock for PlayEntitySharedMemoryArray {
     fn write(&mut self, index: usize, value: IRValue) -> bool {
         let item_index = index / PlayEntitySharedMemory::SIZE;
         let index_in_item = index % PlayEntitySharedMemory::SIZE;
-        match self.items.get_mut(item_index) {
+        match self.items.get_mut(&EntityId(item_index)) {
             Some(item) => item.write(index_in_item, value),
             None => {
                 warn!(
