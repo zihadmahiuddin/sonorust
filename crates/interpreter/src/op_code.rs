@@ -1,6 +1,6 @@
 use sonorust_ir::{
     IRValue,
-    nodes::{OpCode, IRNode},
+    nodes::{IRNode, OpCode},
 };
 use sonorust_runtime::context::RuntimeContext;
 

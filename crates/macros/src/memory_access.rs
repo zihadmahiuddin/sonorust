@@ -146,11 +146,10 @@ fn extract_type_info(ty: &Type) -> Option<(Path, bool)> {
         let last_segment = type_path.path.segments.last()?;
 
         if last_segment.ident == "RefCell" {
-            if let syn::PathArguments::AngleBracketed(args) = &last_segment.arguments {
-                if let Some(syn::GenericArgument::Type(Type::Path(inner_path))) = args.args.first()
-                {
-                    return Some((inner_path.path.clone(), true));
-                }
+            if let syn::PathArguments::AngleBracketed(args) = &last_segment.arguments
+                && let Some(syn::GenericArgument::Type(Type::Path(inner_path))) = args.args.first()
+            {
+                return Some((inner_path.path.clone(), true));
             }
         } else {
             return Some((type_path.path.clone(), false));
