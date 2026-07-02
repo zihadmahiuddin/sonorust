@@ -292,3 +292,203 @@ pub struct PlayParallelMemoryAccess<'a> {
     #[memory]
     temporary_memory: &'a RwLock<TemporaryMemory>,
 }
+
+pub struct MemoryBlocks {
+    pub runtime_environment: RwLock<PlayRuntimeEnvironment>,
+    pub runtime_update: RwLock<PlayRuntimeUpdate>,
+    pub runtime_touch_array: RwLock<PlayRuntimeTouchArray>,
+    pub runtime_skin_transform: RwLock<PlayRuntimeSkinTransform>,
+    pub runtime_particle_transform: RwLock<PlayRuntimeParticleTransform>,
+    pub runtime_background: RwLock<PlayRuntimeBackground>,
+    pub runtime_ui: RwLock<PlayRuntimeUi>,
+    pub runtime_ui_configuration: RwLock<PlayRuntimeUiConfiguration>,
+
+    pub level_memory: RwLock<PlayLevelMemory>,
+    pub level_data: RwLock<PlayLevelData>,
+    pub level_option: RwLock<PlayLevelOption>,
+    pub level_bucket: RwLock<PlayLevelBucket>,
+    pub level_score: RwLock<PlayLevelScore>,
+    pub level_life: RwLock<PlayLevelLife>,
+
+    pub engine_rom: RwLock<PlayEngineRom>,
+
+    pub entity_memory: RwLock<PlayEntityMemoryArray>,
+    pub entity_data: RwLock<PlayEntityDataArray>,
+    pub entity_shared_memory: RwLock<PlayEntitySharedMemoryArray>,
+    pub entity_info: RwLock<PlayEntityInfoArray>,
+    pub entity_despawn: RwLock<PlayEntityDespawn>,
+    pub entity_input: RwLock<PlayEntityInput>,
+    pub entity_score: RwLock<PlayEntityScore>,
+    pub entity_life: RwLock<PlayEntityLife>,
+
+    pub archetype_score: RwLock<PlayArchetypeScore>,
+    pub archetype_life: RwLock<PlayArchetypeLife>,
+
+    pub temporary_memory: RwLock<TemporaryMemory>,
+}
+
+impl MemoryBlocks {
+    pub fn with_preprocess_access<F, R>(&self, f: F) -> R
+    where
+        F: FnOnce(PlayPreprocessMemoryAccess<'_>) -> R,
+    {
+        let access = PlayPreprocessMemoryAccess {
+            runtime_environment: &self.runtime_environment,
+            runtime_update: &self.runtime_update.read(),
+            runtime_touch_array: &self.runtime_touch_array.read(),
+            runtime_skin_transform: &self.runtime_skin_transform,
+            runtime_particle_transform: &self.runtime_particle_transform,
+            runtime_background: &self.runtime_background,
+            runtime_ui: &self.runtime_ui,
+            runtime_ui_configuration: &self.runtime_ui_configuration,
+
+            level_memory: &self.level_memory,
+            level_data: &self.level_data,
+            level_option: &self.level_option.read(),
+            level_bucket: &self.level_bucket,
+            level_score: &self.level_score,
+            level_life: &self.level_life,
+
+            engine_rom: &self.engine_rom.read(),
+
+            entity_memory: &self.entity_memory,
+            entity_data: &self.entity_data,
+            entity_shared_memory: &self.entity_shared_memory.read(),
+            entity_info: &self.entity_info.read(),
+            entity_despawn: &self.entity_despawn,
+            entity_input: &self.entity_input,
+            entity_score: &self.entity_score,
+            entity_life: &self.entity_life,
+
+            archetype_score: &self.archetype_score,
+            archetype_life: &self.archetype_life,
+
+            temporary_memory: &self.temporary_memory,
+        };
+
+        f(access)
+    }
+
+    pub fn with_initialization_access<F, R>(&self, f: F) -> R
+    where
+        F: FnOnce(PlayInitializationMemoryAccess<'_>) -> R,
+    {
+        let access = PlayInitializationMemoryAccess {
+            runtime_environment: &self.runtime_environment.read(),
+            runtime_update: &self.runtime_update.read(),
+            runtime_touch_array: &self.runtime_touch_array.read(),
+            runtime_skin_transform: &self.runtime_skin_transform.read(),
+            runtime_particle_transform: &self.runtime_particle_transform.read(),
+            runtime_background: &self.runtime_background.read(),
+            runtime_ui: &self.runtime_ui.read(),
+            runtime_ui_configuration: &self.runtime_ui_configuration.read(),
+
+            level_memory: &self.level_memory.read(),
+            level_data: &self.level_data.read(),
+            level_option: &self.level_option.read(),
+            level_bucket: &self.level_bucket.read(),
+            level_score: &self.level_score.read(),
+            level_life: &self.level_life.read(),
+
+            engine_rom: &self.engine_rom.read(),
+
+            entity_memory: &self.entity_memory,
+            entity_data: &self.entity_data.read(),
+            entity_shared_memory: &self.entity_shared_memory.read(),
+            entity_info: &self.entity_info.read(),
+            entity_despawn: &self.entity_despawn,
+            entity_input: &self.entity_input,
+            entity_score: &self.entity_score.read(),
+            entity_life: &self.entity_life.read(),
+
+            archetype_score: &self.archetype_score.read(),
+            archetype_life: &self.archetype_life.read(),
+
+            temporary_memory: &self.temporary_memory,
+        };
+
+        f(access)
+    }
+
+    pub fn with_sequential_access<F, R>(&self, f: F) -> R
+    where
+        F: FnOnce(PlaySequentialMemoryAccess<'_>) -> R,
+    {
+        let access = PlaySequentialMemoryAccess {
+            runtime_environment: &self.runtime_environment.read(),
+            runtime_update: &self.runtime_update.read(),
+            runtime_touch_array: &self.runtime_touch_array.read(),
+            runtime_skin_transform: &self.runtime_skin_transform,
+            runtime_particle_transform: &self.runtime_particle_transform,
+            runtime_background: &self.runtime_background,
+            runtime_ui: &self.runtime_ui.read(),
+            runtime_ui_configuration: &self.runtime_ui_configuration.read(),
+
+            level_memory: &self.level_memory,
+            level_data: &self.level_data.read(),
+            level_option: &self.level_option.read(),
+            level_bucket: &self.level_bucket.read(),
+            level_score: &self.level_score.read(),
+            level_life: &self.level_life.read(),
+
+            engine_rom: &self.engine_rom.read(),
+
+            entity_memory: &self.entity_memory,
+            entity_data: &self.entity_data.read(),
+            entity_shared_memory: &self.entity_shared_memory,
+            entity_info: &self.entity_info.read(),
+            entity_despawn: &self.entity_despawn,
+            entity_input: &self.entity_input,
+            entity_score: &self.entity_score.read(),
+            entity_life: &self.entity_life.read(),
+
+            archetype_score: &self.archetype_score.read(),
+            archetype_life: &self.archetype_life.read(),
+
+            temporary_memory: &self.temporary_memory,
+        };
+
+        f(access)
+    }
+
+    pub fn with_parallel_access<F, R>(&self, f: F) -> R
+    where
+        F: FnOnce(PlayParallelMemoryAccess<'_>) -> R,
+    {
+        let access = PlayParallelMemoryAccess {
+            runtime_environment: &self.runtime_environment.read(),
+            runtime_update: &self.runtime_update.read(),
+            runtime_touch_array: &self.runtime_touch_array.read(),
+            runtime_skin_transform: &self.runtime_skin_transform.read(),
+            runtime_particle_transform: &self.runtime_particle_transform.read(),
+            runtime_background: &self.runtime_background.read(),
+            runtime_ui: &self.runtime_ui.read(),
+            runtime_ui_configuration: &self.runtime_ui_configuration.read(),
+
+            level_memory: &self.level_memory.read(),
+            level_data: &self.level_data.read(),
+            level_option: &self.level_option.read(),
+            level_bucket: &self.level_bucket.read(),
+            level_score: &self.level_score.read(),
+            level_life: &self.level_life.read(),
+
+            engine_rom: &self.engine_rom.read(),
+
+            entity_memory: &self.entity_memory,
+            entity_data: &self.entity_data.read(),
+            entity_shared_memory: &self.entity_shared_memory.read(),
+            entity_info: &self.entity_info.read(),
+            entity_despawn: &self.entity_despawn,
+            entity_input: &self.entity_input,
+            entity_score: &self.entity_score.read(),
+            entity_life: &self.entity_life.read(),
+
+            archetype_score: &self.archetype_score.read(),
+            archetype_life: &self.archetype_life.read(),
+
+            temporary_memory: &self.temporary_memory,
+        };
+
+        f(access)
+    }
+}
