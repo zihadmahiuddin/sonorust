@@ -1,4 +1,4 @@
-use std::cell::RefCell;
+use std::sync::nonpoison::RwLock;
 
 use sonorust_macros::MemoryAccess;
 use sonorust_models::blocks::{
@@ -37,43 +37,43 @@ use crate::context::{MemoryAccess, RuntimeContext};
 #[derive(MemoryAccess)]
 pub struct PlayPreprocessMemoryAccess<'a> {
     #[memory]
-    runtime_environment: &'a RefCell<PlayRuntimeEnvironment>,
+    runtime_environment: &'a RwLock<PlayRuntimeEnvironment>,
     #[memory]
     runtime_update: &'a PlayRuntimeUpdate,
     #[memory]
     runtime_touch_array: &'a PlayRuntimeTouchArray,
     #[memory]
-    runtime_skin_transform: &'a RefCell<PlayRuntimeSkinTransform>,
+    runtime_skin_transform: &'a RwLock<PlayRuntimeSkinTransform>,
     #[memory]
-    runtime_particle_transform: &'a RefCell<PlayRuntimeParticleTransform>,
+    runtime_particle_transform: &'a RwLock<PlayRuntimeParticleTransform>,
     #[memory]
-    runtime_background: &'a RefCell<PlayRuntimeBackground>,
+    runtime_background: &'a RwLock<PlayRuntimeBackground>,
     #[memory]
-    runtime_ui: &'a RefCell<PlayRuntimeUi>,
+    runtime_ui: &'a RwLock<PlayRuntimeUi>,
     #[memory]
-    runtime_ui_configuration: &'a RefCell<PlayRuntimeUiConfiguration>,
+    runtime_ui_configuration: &'a RwLock<PlayRuntimeUiConfiguration>,
 
     #[memory]
-    level_memory: &'a RefCell<PlayLevelMemory>,
+    level_memory: &'a RwLock<PlayLevelMemory>,
     #[memory]
-    level_data: &'a RefCell<PlayLevelData>,
+    level_data: &'a RwLock<PlayLevelData>,
     #[memory]
     level_option: &'a PlayLevelOption,
     #[memory]
-    level_bucket: &'a RefCell<PlayLevelBucket>,
+    level_bucket: &'a RwLock<PlayLevelBucket>,
     #[memory]
-    level_score: &'a RefCell<PlayLevelScore>,
+    level_score: &'a RwLock<PlayLevelScore>,
     #[memory]
-    level_life: &'a RefCell<PlayLevelLife>,
+    level_life: &'a RwLock<PlayLevelLife>,
 
     #[memory]
     engine_rom: &'a PlayEngineRom,
 
     #[memory(index = "*ctx.current_entity.id * PlayEntityMemory::SIZE")]
-    entity_memory: &'a RefCell<PlayEntityMemoryArray>,
+    entity_memory: &'a RwLock<PlayEntityMemoryArray>,
     #[memory]
     #[memory(block = PlayEntityData, index = "*ctx.current_entity.id * PlayEntityData::SIZE")]
-    entity_data: &'a RefCell<PlayEntityDataArray>,
+    entity_data: &'a RwLock<PlayEntityDataArray>,
     #[memory]
     #[memory(block = PlayEntitySharedMemory, index = "*ctx.current_entity.id * PlayEntitySharedMemory::SIZE")]
     entity_shared_memory: &'a PlayEntitySharedMemoryArray,
@@ -81,21 +81,21 @@ pub struct PlayPreprocessMemoryAccess<'a> {
     #[memory(block = PlayEntityInfo, index = "*ctx.current_entity.id * PlayEntityInfo::SIZE")]
     entity_info: &'a PlayEntityInfoArray,
     #[memory]
-    entity_despawn: &'a RefCell<PlayEntityDespawn>,
+    entity_despawn: &'a RwLock<PlayEntityDespawn>,
     #[memory]
-    entity_input: &'a RefCell<PlayEntityInput>,
+    entity_input: &'a RwLock<PlayEntityInput>,
     #[memory]
-    entity_score: &'a RefCell<PlayEntityScore>,
+    entity_score: &'a RwLock<PlayEntityScore>,
     #[memory]
-    entity_life: &'a RefCell<PlayEntityLife>,
+    entity_life: &'a RwLock<PlayEntityLife>,
 
     #[memory]
-    archetype_score: &'a RefCell<PlayArchetypeScore>,
+    archetype_score: &'a RwLock<PlayArchetypeScore>,
     #[memory]
-    archetype_life: &'a RefCell<PlayArchetypeLife>,
+    archetype_life: &'a RwLock<PlayArchetypeLife>,
 
     #[memory]
-    temporary_memory: &'a RefCell<TemporaryMemory>,
+    temporary_memory: &'a RwLock<TemporaryMemory>,
 }
 
 /// This is used for the SpawnOrder, ShouldSpawn, and Initialize callbacks
@@ -135,7 +135,7 @@ pub struct PlayInitializationMemoryAccess<'a> {
     engine_rom: &'a PlayEngineRom,
 
     #[memory(index = "*ctx.current_entity.id * PlayEntityMemory::SIZE")]
-    entity_memory: &'a RefCell<PlayEntityMemoryArray>,
+    entity_memory: &'a RwLock<PlayEntityMemoryArray>,
     #[memory]
     #[memory(block = PlayEntityData, index = "*ctx.current_entity.id * PlayEntityData::SIZE")]
     entity_data: &'a PlayEntityDataArray,
@@ -146,9 +146,9 @@ pub struct PlayInitializationMemoryAccess<'a> {
     #[memory(block = PlayEntityInfo, index = "*ctx.current_entity.id * PlayEntityInfo::SIZE")]
     entity_info: &'a PlayEntityInfoArray,
     #[memory]
-    entity_despawn: &'a RefCell<PlayEntityDespawn>,
+    entity_despawn: &'a RwLock<PlayEntityDespawn>,
     #[memory]
-    entity_input: &'a RefCell<PlayEntityInput>,
+    entity_input: &'a RwLock<PlayEntityInput>,
     #[memory]
     entity_score: &'a PlayEntityScore,
     #[memory]
@@ -160,7 +160,7 @@ pub struct PlayInitializationMemoryAccess<'a> {
     archetype_life: &'a PlayArchetypeLife,
 
     #[memory]
-    temporary_memory: &'a RefCell<TemporaryMemory>,
+    temporary_memory: &'a RwLock<TemporaryMemory>,
 }
 
 /// This is used for the UpdateSequential and Touch callbacks
@@ -173,18 +173,18 @@ pub struct PlaySequentialMemoryAccess<'a> {
     #[memory]
     runtime_touch_array: &'a PlayRuntimeTouchArray,
     #[memory]
-    runtime_skin_transform: &'a RefCell<PlayRuntimeSkinTransform>,
+    runtime_skin_transform: &'a RwLock<PlayRuntimeSkinTransform>,
     #[memory]
-    runtime_particle_transform: &'a RefCell<PlayRuntimeParticleTransform>,
+    runtime_particle_transform: &'a RwLock<PlayRuntimeParticleTransform>,
     #[memory]
-    runtime_background: &'a RefCell<PlayRuntimeBackground>,
+    runtime_background: &'a RwLock<PlayRuntimeBackground>,
     #[memory]
     runtime_ui: &'a PlayRuntimeUi,
     #[memory]
     runtime_ui_configuration: &'a PlayRuntimeUiConfiguration,
 
     #[memory]
-    level_memory: &'a RefCell<PlayLevelMemory>,
+    level_memory: &'a RwLock<PlayLevelMemory>,
     #[memory]
     level_data: &'a PlayLevelData,
     #[memory]
@@ -200,20 +200,20 @@ pub struct PlaySequentialMemoryAccess<'a> {
     engine_rom: &'a PlayEngineRom,
 
     #[memory(index = "*ctx.current_entity.id * PlayEntityMemory::SIZE")]
-    entity_memory: &'a RefCell<PlayEntityMemoryArray>,
+    entity_memory: &'a RwLock<PlayEntityMemoryArray>,
     #[memory]
     #[memory(block = PlayEntityData, index = "*ctx.current_entity.id * PlayEntityData::SIZE")]
     entity_data: &'a PlayEntityDataArray,
     #[memory]
     #[memory(block = PlayEntitySharedMemory, index = "*ctx.current_entity.id * PlayEntitySharedMemory::SIZE")]
-    entity_shared_memory: &'a RefCell<PlayEntitySharedMemoryArray>,
+    entity_shared_memory: &'a RwLock<PlayEntitySharedMemoryArray>,
     #[memory]
     #[memory(block = PlayEntityInfo, index = "*ctx.current_entity.id * PlayEntityInfo::SIZE")]
     entity_info: &'a PlayEntityInfoArray,
     #[memory]
-    entity_despawn: &'a RefCell<PlayEntityDespawn>,
+    entity_despawn: &'a RwLock<PlayEntityDespawn>,
     #[memory]
-    entity_input: &'a RefCell<PlayEntityInput>,
+    entity_input: &'a RwLock<PlayEntityInput>,
     #[memory]
     entity_score: &'a PlayEntityScore,
     #[memory]
@@ -225,7 +225,7 @@ pub struct PlaySequentialMemoryAccess<'a> {
     archetype_life: &'a PlayArchetypeLife,
 
     #[memory]
-    temporary_memory: &'a RefCell<TemporaryMemory>,
+    temporary_memory: &'a RwLock<TemporaryMemory>,
 }
 
 /// This is used for the UpdateParallel and Terminate callbacks
@@ -265,7 +265,7 @@ pub struct PlayParallelMemoryAccess<'a> {
     engine_rom: &'a PlayEngineRom,
 
     #[memory(index = "*ctx.current_entity.id * PlayEntityMemory::SIZE")]
-    entity_memory: &'a RefCell<PlayEntityMemoryArray>,
+    entity_memory: &'a RwLock<PlayEntityMemoryArray>,
     #[memory]
     #[memory(block = PlayEntityData, index = "*ctx.current_entity.id * PlayEntityData::SIZE")]
     entity_data: &'a PlayEntityDataArray,
@@ -276,9 +276,9 @@ pub struct PlayParallelMemoryAccess<'a> {
     #[memory(block = PlayEntityInfo, index = "*ctx.current_entity.id * PlayEntityInfo::SIZE")]
     entity_info: &'a PlayEntityInfoArray,
     #[memory]
-    entity_despawn: &'a RefCell<PlayEntityDespawn>,
+    entity_despawn: &'a RwLock<PlayEntityDespawn>,
     #[memory]
-    entity_input: &'a RefCell<PlayEntityInput>,
+    entity_input: &'a RwLock<PlayEntityInput>,
     #[memory]
     entity_score: &'a PlayEntityScore,
     #[memory]
@@ -290,5 +290,5 @@ pub struct PlayParallelMemoryAccess<'a> {
     archetype_life: &'a PlayArchetypeLife,
 
     #[memory]
-    temporary_memory: &'a RefCell<TemporaryMemory>,
+    temporary_memory: &'a RwLock<TemporaryMemory>,
 }

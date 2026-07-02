@@ -25,7 +25,7 @@ pub(crate) fn derive_memory_access(input: DeriveInput) -> TokenStream {
         let field_ident = field.ident.as_ref().unwrap();
         let ty = &field.ty;
 
-        let (default_block, is_refcell) =
+        let (default_block, is_rwlock) =
             extract_type_info(ty).expect("Could not determine the inner type of the field");
 
         let mut parsed_attrs = Vec::new();
@@ -66,8 +66,8 @@ pub(crate) fn derive_memory_access(input: DeriveInput) -> TokenStream {
                 .index_expr
                 .unwrap_or_else(|| syn::parse_quote!(index));
 
-            let read_access = if is_refcell {
-                quote! { self.#field_ident.borrow().read(#index) }
+            let read_access = if is_rwlock {
+                quote! { self.#field_ident.read().read(#index) }
             } else {
                 quote! { self.#field_ident.read(#index) }
             };
@@ -76,11 +76,11 @@ pub(crate) fn derive_memory_access(input: DeriveInput) -> TokenStream {
                 #block_path::BLOCK_ID => { #read_access }
             });
 
-            if is_refcell {
+            if is_rwlock {
                 write_arms.extend(quote! {
                     #block_path::BLOCK_ID => {
                         self.#field_ident
-                            .borrow_mut()
+                            .write()
                             .write(#index, value)
                             .then_some(value)
                     }
@@ -145,7 +145,7 @@ fn extract_type_info(ty: &Type) -> Option<(Path, bool)> {
     if let Type::Path(type_path) = inner_ty {
         let last_segment = type_path.path.segments.last()?;
 
-        if last_segment.ident == "RefCell" {
+        if last_segment.ident == "RwLock" {
             if let syn::PathArguments::AngleBracketed(args) = &last_segment.arguments
                 && let Some(syn::GenericArgument::Type(Type::Path(inner_path))) = args.args.first()
             {

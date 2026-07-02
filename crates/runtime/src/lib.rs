@@ -1,3 +1,6 @@
+#![feature(sync_nonpoison)]
+#![feature(nonpoison_rwlock)]
+
 use crate::context::RuntimeContext;
 use sonorust_ir::{IRValue, nodes::IRNode};
 
