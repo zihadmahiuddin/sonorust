@@ -3,7 +3,7 @@ use tracing::warn;
 
 use crate::blocks::ReadableBlock;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct PlayLevelOption(pub Vec<IRValue>);
 
 impl PlayLevelOption {

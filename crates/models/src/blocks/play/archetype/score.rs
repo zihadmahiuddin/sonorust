@@ -15,14 +15,14 @@ pub struct PlayArchetypeScore {
 
 impl PlayArchetypeScore {
     pub const BLOCK_ID: u64 = 5001;
-    pub const DEFAULT_SCORE: IRValue = 1.0;
+    pub const DEFAULT: IRValue = 1.0;
 }
 
 impl PlayArchetypeScore {
-    pub fn new(archetype_count: usize) -> Self {
+    pub fn new<'a>(entities: impl Iterator<Item = &'a ArchetypeId>) -> Self {
         Self {
-            items: (0..archetype_count)
-                .map(|i| (ArchetypeId(i), PlayArchetypeScore::DEFAULT_SCORE))
+            items: entities
+                .map(|id| (*id, PlayArchetypeScore::DEFAULT))
                 .collect(),
         }
     }

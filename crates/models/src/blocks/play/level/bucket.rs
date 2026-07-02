@@ -3,7 +3,7 @@ use tracing::warn;
 
 use crate::blocks::{ReadableBlock, WritableBlock};
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct PlayLevelBucket(pub Vec<PlayLevelBucketItem>);
 
 #[derive(Debug)]

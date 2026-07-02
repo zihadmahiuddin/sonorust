@@ -10,6 +10,12 @@ impl PlayLevelMemory {
     pub const BLOCK_ID: u64 = 2000;
 }
 
+impl Default for PlayLevelMemory {
+    fn default() -> Self {
+        Self([0.0; 4096])
+    }
+}
+
 impl ReadableBlock for PlayLevelMemory {
     fn read(&self, index: usize) -> Option<IRValue> {
         match self.0.get(index) {

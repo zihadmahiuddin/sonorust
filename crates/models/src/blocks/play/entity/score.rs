@@ -8,7 +8,7 @@ use crate::{
     ids::EntityId,
 };
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct PlayEntityScore {
     pub items: BTreeMap<EntityId, IRValue>,
 }
@@ -19,11 +19,9 @@ impl PlayEntityScore {
 }
 
 impl PlayEntityScore {
-    pub fn new(entity_count: usize) -> Self {
+    pub fn new<'a>(entities: impl Iterator<Item = &'a EntityId>) -> Self {
         Self {
-            items: (0..entity_count)
-                .map(|i| (EntityId(i), PlayEntityScore::DEFAULT))
-                .collect(),
+            items: entities.map(|id| (*id, PlayEntityScore::DEFAULT)).collect(),
         }
     }
 

@@ -3,7 +3,7 @@ use tracing::warn;
 
 use crate::blocks::{ReadableBlock, WritableBlock};
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct PlayLevelLife {
     pub consecutive_perfect_increment: IRValue,
     pub consecutive_perfect_step: IRValue,

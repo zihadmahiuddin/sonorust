@@ -31,10 +31,10 @@ impl PlayEntityMemoryArray {
 }
 
 impl PlayEntityMemoryArray {
-    pub fn new(entities: impl Iterator<Item = EntityId>) -> Self {
+    pub fn new<'a>(entities: impl Iterator<Item = &'a EntityId>) -> Self {
         Self {
             items: entities
-                .map(|id| (id, PlayEntityMemory::default()))
+                .map(|id| (*id, PlayEntityMemory::default()))
                 .collect(),
         }
     }

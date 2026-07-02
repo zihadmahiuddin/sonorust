@@ -10,6 +10,12 @@ impl PlayLevelData {
     pub const BLOCK_ID: u64 = 2001;
 }
 
+impl Default for PlayLevelData {
+    fn default() -> Self {
+        Self([0.0; 4096])
+    }
+}
+
 impl ReadableBlock for PlayLevelData {
     fn read(&self, index: usize) -> Option<IRValue> {
         match self.0.get(index) {
