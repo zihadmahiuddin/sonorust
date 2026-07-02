@@ -11,6 +11,8 @@ pub struct PlayLevelLife {
     pub consecutive_great_step: IRValue,
     pub consecutive_good_increment: IRValue,
     pub consecutive_good_step: IRValue,
+    pub initial_life: IRValue,
+    pub max_life: IRValue,
 }
 
 impl PlayLevelLife {
@@ -22,6 +24,8 @@ impl PlayLevelLife {
     pub const INDEX_CONSECUTIVE_GREAT_STEP: usize = 3;
     pub const INDEX_CONSECUTIVE_GOOD_INCREMENT: usize = 4;
     pub const INDEX_CONSECUTIVE_GOOD_STEP: usize = 5;
+    pub const INDEX_INITIAL_LIFE: usize = 6;
+    pub const INDEX_MAX_LIFE: usize = 7;
 }
 
 impl ReadableBlock for PlayLevelLife {
@@ -33,6 +37,8 @@ impl ReadableBlock for PlayLevelLife {
             Self::INDEX_CONSECUTIVE_GREAT_STEP => Some(self.consecutive_great_step),
             Self::INDEX_CONSECUTIVE_GOOD_INCREMENT => Some(self.consecutive_good_increment),
             Self::INDEX_CONSECUTIVE_GOOD_STEP => Some(self.consecutive_good_step),
+            Self::INDEX_INITIAL_LIFE => Some(self.initial_life),
+            Self::INDEX_MAX_LIFE => Some(self.max_life),
             other => {
                 warn!("Attempted to read from out of bounds index {other} on PlayLevelLife");
                 None
@@ -66,6 +72,14 @@ impl WritableBlock for PlayLevelLife {
             }
             Self::INDEX_CONSECUTIVE_GOOD_STEP => {
                 self.consecutive_good_step = value;
+                true
+            }
+            Self::INDEX_INITIAL_LIFE => {
+                self.initial_life = value;
+                true
+            }
+            Self::INDEX_MAX_LIFE => {
+                self.max_life = value;
                 true
             }
             other => {
