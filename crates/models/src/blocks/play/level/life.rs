@@ -3,7 +3,7 @@ use tracing::warn;
 
 use crate::blocks::{ReadableBlock, WritableBlock};
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct PlayLevelLife {
     pub consecutive_perfect_increment: IRValue,
     pub consecutive_perfect_step: IRValue,
@@ -13,6 +13,21 @@ pub struct PlayLevelLife {
     pub consecutive_good_step: IRValue,
     pub initial_life: IRValue,
     pub max_life: IRValue,
+}
+
+impl Default for PlayLevelLife {
+    fn default() -> Self {
+        Self {
+            consecutive_perfect_increment: 0.0,
+            consecutive_perfect_step: 0.0,
+            consecutive_great_increment: 0.0,
+            consecutive_great_step: 0.0,
+            consecutive_good_increment: 0.0,
+            consecutive_good_step: 0.0,
+            initial_life: 1000.0,
+            max_life: 1000.0,
+        }
+    }
 }
 
 impl PlayLevelLife {
