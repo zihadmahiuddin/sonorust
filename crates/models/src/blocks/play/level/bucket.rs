@@ -3,7 +3,7 @@ use tracing::warn;
 
 use crate::blocks::{ReadableBlock, WritableBlock};
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct PlayLevelBucket(pub Vec<PlayLevelBucketItem>);
 
 #[derive(Debug)]
@@ -29,6 +29,21 @@ impl PlayLevelBucketItem {
 
 impl PlayLevelBucket {
     pub const BLOCK_ID: u64 = 2003;
+
+    pub fn new(bucket_count: usize) -> Self {
+        let mut items = Vec::with_capacity(bucket_count);
+        for _ in 0..bucket_count {
+            items.push(PlayLevelBucketItem {
+                min_perfect_window: 0.0,
+                max_perfect_window: 0.0,
+                min_great_window: 0.0,
+                max_great_window: 0.0,
+                min_good_window: 0.0,
+                max_good_window: 0.0,
+            });
+        }
+        Self(items)
+    }
 }
 
 impl ReadableBlock for PlayLevelBucketItem {
