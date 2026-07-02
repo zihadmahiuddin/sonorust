@@ -2,7 +2,7 @@ use cranelift::codegen::ir::BlockArg;
 use cranelift::prelude::*;
 
 use crate::codegen::CodegenContext;
-use sonorust_ir::nodes::*;
+use sonorust_ir::{IRValue, nodes::*};
 
 impl<'s, 'b> CodegenContext<'s, 'b> {
     pub(crate) fn build_power(&mut self, a: Value, b: Value) -> Value {
@@ -447,7 +447,7 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         let zero = crate::ir_value_cranelift_const(self.builder.ins(), 0.0);
         let one = crate::ir_value_cranelift_const(self.builder.ins(), 1.0);
         let neg_one = crate::ir_value_cranelift_const(self.builder.ins(), -1.0);
-        let nan_val = crate::ir_value_cranelift_const(self.builder.ins(), f32::NAN);
+        let nan_val = crate::ir_value_cranelift_const(self.builder.ins(), IRValue::NAN);
 
         let gt_zero = self.builder.ins().fcmp(FloatCC::GreaterThan, value, zero);
         let lt_zero = self.builder.ins().fcmp(FloatCC::LessThan, value, zero);

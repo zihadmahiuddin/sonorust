@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use sonorust_ir::IRValue;
 
 use crate::engine::play::archetype::data::EnginePlayDataArchetype;
 
@@ -15,7 +16,7 @@ pub struct EnginePlayData {
 #[serde(rename_all = "camelCase")]
 #[serde(untagged)]
 pub enum Node {
-    Literal { value: f64 },
+    Literal { value: IRValue },
     FunctionCall { func: String, args: Vec<usize> },
 }
 
@@ -41,11 +42,11 @@ pub struct Bucket {
 pub struct BucketSprite {
     id: i64,
     fallback_id: Option<i64>,
-    x: f64,
-    y: f64,
-    w: f64,
-    h: f64,
-    rotation: f64,
+    x: IRValue,
+    y: IRValue,
+    w: IRValue,
+    h: IRValue,
+    rotation: IRValue,
 }
 
 #[derive(Debug, Deserialize)]

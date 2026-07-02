@@ -62,7 +62,7 @@ impl SonorustIRExecutor for SonorustInterpreter {
     }
 }
 
-pub(crate) fn int_from_f64_checked<T>(n: IRValue) -> Option<T>
+pub(crate) fn int_from_float_checked<T>(n: IRValue) -> Option<T>
 where
     T: FromPrimitive,
 {

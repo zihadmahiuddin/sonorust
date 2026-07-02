@@ -56,7 +56,7 @@ impl CraneliftJitExecutor {
 
         let mut sig = Signature::new(module.isa().default_call_conv());
         sig.params.push(AbiParam::new(types::I64));
-        sig.returns.push(AbiParam::new(types::F32));
+        sig.returns.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE));
         let mut func = Function::with_name_signature(UserFuncName::user(0, 0), sig.clone());
 
         for &name in externals_addrs.keys() {
@@ -96,7 +96,7 @@ impl SonorustIRExecutor for CraneliftJitExecutor {
         nodes: &[IRNode],
         root_index: usize,
         runtime_context: &mut RuntimeContext,
-    ) -> f32 {
+    ) -> IRValue {
         let func = self
             .prepared_functions
             .get(&NodeIndex(root_index))
@@ -139,15 +139,15 @@ fn create_signature_for(name: &str, call_conv: CallConv) -> Signature {
             sig.params.push(AbiParam::new(types::I64)); // block_id
             sig.params.push(AbiParam::new(types::I64)); // index
 
-            sig.returns.push(AbiParam::new(types::F32));
+            sig.returns.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE));
         }
         "write_mem" => {
             sig.params.push(AbiParam::new(types::I64)); // ctx ptr
             sig.params.push(AbiParam::new(types::I64)); // block_id
             sig.params.push(AbiParam::new(types::I64)); // index
-            sig.params.push(AbiParam::new(types::F32)); // value
+            sig.params.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE)); // value
 
-            sig.returns.push(AbiParam::new(types::F32));
+            sig.returns.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE));
         }
         "copy_mem" => {
             sig.params.push(AbiParam::new(types::I64)); // ctx ptr
@@ -157,107 +157,107 @@ fn create_signature_for(name: &str, call_conv: CallConv) -> Signature {
             sig.params.push(AbiParam::new(types::I64)); // dst_index
             sig.params.push(AbiParam::new(types::I64)); // count
 
-            sig.returns.push(AbiParam::new(types::F32));
+            sig.returns.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE));
         }
         "pow" => {
             sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // a
-            sig.params.push(AbiParam::new(types::F32)); // b
+            sig.params.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE)); // a
+            sig.params.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE)); // b
 
-            sig.returns.push(AbiParam::new(types::F32));
+            sig.returns.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE));
         }
         "sin" => {
             sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
+            sig.params.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE)); // value
 
-            sig.returns.push(AbiParam::new(types::F32));
+            sig.returns.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE));
         }
         "cos" => {
             sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
+            sig.params.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE)); // value
 
-            sig.returns.push(AbiParam::new(types::F32));
+            sig.returns.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE));
         }
         "tan" => {
             sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
+            sig.params.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE)); // value
 
-            sig.returns.push(AbiParam::new(types::F32));
+            sig.returns.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE));
         }
         "sinh" => {
             sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
+            sig.params.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE)); // value
 
-            sig.returns.push(AbiParam::new(types::F32));
+            sig.returns.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE));
         }
         "cosh" => {
             sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
+            sig.params.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE)); // value
 
-            sig.returns.push(AbiParam::new(types::F32));
+            sig.returns.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE));
         }
         "tanh" => {
             sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
+            sig.params.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE)); // value
 
-            sig.returns.push(AbiParam::new(types::F32));
+            sig.returns.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE));
         }
         "arcsin" => {
             sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
+            sig.params.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE)); // value
 
-            sig.returns.push(AbiParam::new(types::F32));
+            sig.returns.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE));
         }
         "arccos" => {
             sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
+            sig.params.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE)); // value
 
-            sig.returns.push(AbiParam::new(types::F32));
+            sig.returns.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE));
         }
         "arctan" => {
             sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
+            sig.params.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE)); // value
 
-            sig.returns.push(AbiParam::new(types::F32));
+            sig.returns.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE));
         }
         "arctan2" => {
             sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // a
-            sig.params.push(AbiParam::new(types::F32)); // b
+            sig.params.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE)); // a
+            sig.params.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE)); // b
 
-            sig.returns.push(AbiParam::new(types::F32));
+            sig.returns.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE));
         }
         "degree" => {
             sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
+            sig.params.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE)); // value
 
-            sig.returns.push(AbiParam::new(types::F32));
+            sig.returns.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE));
         }
         "radian" => {
             sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
+            sig.params.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE)); // value
 
-            sig.returns.push(AbiParam::new(types::F32));
+            sig.returns.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE));
         }
         "log" => {
             sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // value
+            sig.params.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE)); // value
 
-            sig.returns.push(AbiParam::new(types::F32));
+            sig.returns.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE));
         }
         "random" => {
             sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // min
-            sig.params.push(AbiParam::new(types::F32)); // max
+            sig.params.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE)); // min
+            sig.params.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE)); // max
 
-            sig.returns.push(AbiParam::new(types::F32));
+            sig.returns.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE));
         }
         "random_integer" => {
             sig.params.push(AbiParam::new(types::I64)); // ctx ptr
-            sig.params.push(AbiParam::new(types::F32)); // min
-            sig.params.push(AbiParam::new(types::F32)); // max
+            sig.params.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE)); // min
+            sig.params.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE)); // max
 
-            sig.returns.push(AbiParam::new(types::F32));
+            sig.returns.push(AbiParam::new(IR_VALUE_CRANELIFT_TYPE));
         }
         _ => panic!("Unknown external function: {name}"),
     }

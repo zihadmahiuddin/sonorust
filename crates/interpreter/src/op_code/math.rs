@@ -167,7 +167,7 @@ impl Executable for Power {
             return 0.0;
         }
 
-        let values: Vec<f32> = self
+        let values: Vec<IRValue> = self
             .inputs
             .iter()
             .map(|&idx| executor.execute(nodes, idx, context))

@@ -319,8 +319,11 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     }
 
     pub(crate) fn build_switch_integer_ir(&mut self, node: &SwitchInteger) -> Value {
-        let test_value_f32 = self.build_node_ir(node.discriminant);
-        let test_value_i64 = self.builder.ins().fcvt_to_sint(types::I64, test_value_f32);
+        let test_value_float = self.build_node_ir(node.discriminant);
+        let test_value_i64 = self
+            .builder
+            .ins()
+            .fcvt_to_sint(types::I64, test_value_float);
 
         let mut switch = Switch::new();
         let mut case_blocks = Vec::new();
@@ -364,8 +367,11 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         &mut self,
         node: &SwitchIntegerWithDefault,
     ) -> Value {
-        let test_value_f32 = self.build_node_ir(node.discriminant);
-        let test_value_i64 = self.builder.ins().fcvt_to_sint(types::I64, test_value_f32);
+        let test_value_float = self.build_node_ir(node.discriminant);
+        let test_value_i64 = self
+            .builder
+            .ins()
+            .fcvt_to_sint(types::I64, test_value_float);
 
         let mut switch = Switch::new();
         let mut case_blocks = Vec::new();

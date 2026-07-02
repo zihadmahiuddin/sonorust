@@ -3,7 +3,7 @@ use std::ops::ControlFlow;
 use sonorust_ir::{IRValue, nodes::*};
 use sonorust_runtime::{SonorustIRExecutor, context::RuntimeContext};
 
-use crate::{Executable, SonorustInterpreter, int_from_f64_checked};
+use crate::{Executable, SonorustInterpreter, int_from_float_checked};
 
 impl Executable for Execute {
     fn execute(
@@ -80,7 +80,7 @@ impl Executable for Break {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let count = executor.execute(nodes, self.count, context);
-        let count = int_from_f64_checked(count)
+        let count = int_from_float_checked(count)
             .unwrap_or_else(|| panic!("Expected break count to be valid usize, found {count}"));
 
         let value = executor.execute(nodes, self.value, context);
@@ -150,7 +150,7 @@ impl Executable for Switch {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let discriminant = executor.execute(nodes, self.discriminant, context);
-        let discriminant: usize = int_from_f64_checked(discriminant).unwrap_or_else(|| {
+        let discriminant: usize = int_from_float_checked(discriminant).unwrap_or_else(|| {
             panic!("Expected Switch discriminant to be valid usize, found {discriminant}")
         });
 
@@ -160,7 +160,7 @@ impl Executable for Switch {
             let test = chunk[0];
             let consequent = chunk[1];
             result = executor.execute(nodes, test, context);
-            let result: usize = int_from_f64_checked(result)
+            let result: usize = int_from_float_checked(result)
                 .unwrap_or_else(|| panic!("Expected SwitchWithDefault discriminant to be valid usize, found {discriminant}"));
             if result == discriminant {
                 return executor.execute(nodes, consequent, context);
@@ -180,7 +180,7 @@ impl Executable for SwitchWithDefault {
     ) -> IRValue {
         let discriminant = executor.execute(nodes, self.discriminant, context);
         let discriminant = discriminant.round();
-        let discriminant: usize = int_from_f64_checked(discriminant).unwrap_or_else(|| {
+        let discriminant: usize = int_from_float_checked(discriminant).unwrap_or_else(|| {
             panic!(
                 "Expected SwitchWithDefault discriminant to be valid usize, found {discriminant}"
             )
@@ -192,7 +192,7 @@ impl Executable for SwitchWithDefault {
             let test = chunk[0];
             let consequent = chunk[1];
             result = executor.execute(nodes, test, context);
-            let result: usize = int_from_f64_checked(result)
+            let result: usize = int_from_float_checked(result)
                 .unwrap_or_else(|| panic!("Expected SwitchWithDefault discriminant to be valid usize, found {discriminant}"));
             if result == discriminant {
                 return executor.execute(nodes, consequent, context);
@@ -211,7 +211,7 @@ impl Executable for SwitchInteger {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let discriminant = executor.execute(nodes, self.discriminant, context);
-        let discriminant: usize = int_from_f64_checked(discriminant).unwrap_or_else(|| {
+        let discriminant: usize = int_from_float_checked(discriminant).unwrap_or_else(|| {
             panic!(
                 "Expected SwitchIntegerWith discriminant to be valid usize, found {discriminant}"
             )
@@ -234,7 +234,7 @@ impl Executable for SwitchIntegerWithDefault {
     ) -> IRValue {
         let discriminant = executor.execute(nodes, self.discriminant, context);
         let discriminant = discriminant.round();
-        let Some(discriminant) = int_from_f64_checked::<usize>(discriminant) else {
+        let Some(discriminant) = int_from_float_checked::<usize>(discriminant) else {
             return executor.execute(nodes, self.default_consequent, context);
         };
 

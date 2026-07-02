@@ -28,28 +28,28 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         index_node: usize,
         offset_node: usize,
     ) -> (Value, Value) {
-        let block_id_f32 = self.build_node_ir(block_id_node);
-        let block_id = self.builder.ins().fcvt_to_sint(types::I64, block_id_f32);
-        let index_f32 = self.build_node_ir(index_node);
-        let index = self.builder.ins().fcvt_to_sint(types::I64, index_f32);
-        let offset_f32 = self.build_node_ir(offset_node);
-        let offset = self.builder.ins().fcvt_to_sint(types::I64, offset_f32);
+        let block_id_float = self.build_node_ir(block_id_node);
+        let block_id = self.builder.ins().fcvt_to_sint(types::I64, block_id_float);
+        let index_float = self.build_node_ir(index_node);
+        let index = self.builder.ins().fcvt_to_sint(types::I64, index_float);
+        let offset_float = self.build_node_ir(offset_node);
+        let offset = self.builder.ins().fcvt_to_sint(types::I64, offset_float);
 
         // pointed_block_id = Get(block_id, index)
-        let pointed_block_id_f32 = self.build_read_mem(block_id, index);
+        let pointed_block_id_float = self.build_read_mem(block_id, index);
         let pointed_block_id = self
             .builder
             .ins()
-            .fcvt_to_sint(types::I64, pointed_block_id_f32);
+            .fcvt_to_sint(types::I64, pointed_block_id_float);
 
         // pointed_index = Get(block_id, index + 1)
         let one = self.builder.ins().iconst(types::I64, 1);
         let index_plus_one = self.builder.ins().iadd(index, one);
-        let pointed_base_f32 = self.build_read_mem(block_id, index_plus_one);
+        let pointed_base_float = self.build_read_mem(block_id, index_plus_one);
         let pointed_base = self
             .builder
             .ins()
-            .fcvt_to_sint(types::I64, pointed_base_f32);
+            .fcvt_to_sint(types::I64, pointed_base_float);
 
         // final_index = pointed_index + offset
         let final_index = self.builder.ins().iadd(pointed_base, offset);
@@ -64,17 +64,17 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         y_node: usize,
         s_node: usize,
     ) -> (Value, Value) {
-        let block_id_f32 = self.build_node_ir(block_id_node);
-        let block_id = self.builder.ins().fcvt_to_sint(types::I64, block_id_f32);
+        let block_id_float = self.build_node_ir(block_id_node);
+        let block_id = self.builder.ins().fcvt_to_sint(types::I64, block_id_float);
 
-        let x_f32 = self.build_node_ir(x_node);
-        let x = self.builder.ins().fcvt_to_sint(types::I64, x_f32);
+        let x_float = self.build_node_ir(x_node);
+        let x = self.builder.ins().fcvt_to_sint(types::I64, x_float);
 
-        let y_f32 = self.build_node_ir(y_node);
-        let y = self.builder.ins().fcvt_to_sint(types::I64, y_f32);
+        let y_float = self.build_node_ir(y_node);
+        let y = self.builder.ins().fcvt_to_sint(types::I64, y_float);
 
-        let s_f32 = self.build_node_ir(s_node);
-        let s = self.builder.ins().fcvt_to_sint(types::I64, s_f32);
+        let s_float = self.build_node_ir(s_node);
+        let s = self.builder.ins().fcvt_to_sint(types::I64, s_float);
 
         let y_mul_s = self.builder.ins().imul(y, s);
         let shifted_index = self.builder.ins().iadd(x, y_mul_s);
@@ -102,11 +102,11 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     where
         F: FnOnce(&mut Self, Value, Value) -> Value,
     {
-        let block_id_f32 = self.build_node_ir(block_id);
-        let block_id = self.builder.ins().fcvt_to_sint(types::I64, block_id_f32);
+        let block_id_float = self.build_node_ir(block_id);
+        let block_id = self.builder.ins().fcvt_to_sint(types::I64, block_id_float);
 
-        let index_f32 = self.build_node_ir(index);
-        let index = self.builder.ins().fcvt_to_sint(types::I64, index_f32);
+        let index_float = self.build_node_ir(index);
+        let index = self.builder.ins().fcvt_to_sint(types::I64, index_float);
 
         let val = self.build_node_ir(value);
         let current = self.build_read_mem(block_id, index);
@@ -116,10 +116,10 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     }
 
     pub(crate) fn build_get_ir(&mut self, node: &Get) -> Value {
-        let block_id_f32 = self.build_node_ir(node.block_id);
-        let block_id = self.builder.ins().fcvt_to_sint(types::I64, block_id_f32);
-        let index_f32 = self.build_node_ir(node.index);
-        let index = self.builder.ins().fcvt_to_sint(types::I64, index_f32);
+        let block_id_float = self.build_node_ir(node.block_id);
+        let block_id = self.builder.ins().fcvt_to_sint(types::I64, block_id_float);
+        let index_float = self.build_node_ir(node.index);
+        let index = self.builder.ins().fcvt_to_sint(types::I64, index_float);
         self.build_read_mem(block_id, index)
     }
 
@@ -137,10 +137,10 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     }
 
     pub(crate) fn build_set_ir(&mut self, node: &Set) -> Value {
-        let block_id_f32 = self.build_node_ir(node.block_id);
-        let block_id = self.builder.ins().fcvt_to_sint(types::I64, block_id_f32);
-        let index_f32 = self.build_node_ir(node.index);
-        let index = self.builder.ins().fcvt_to_sint(types::I64, index_f32);
+        let block_id_float = self.build_node_ir(node.block_id);
+        let block_id = self.builder.ins().fcvt_to_sint(types::I64, block_id_float);
+        let index_float = self.build_node_ir(node.index);
+        let index = self.builder.ins().fcvt_to_sint(types::I64, index_float);
         let value = self.build_node_ir(node.value);
         self.build_write_mem(block_id, index, value)
     }
@@ -250,10 +250,10 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     pub(crate) fn build_set_power_ir(&mut self, node: &SetPower) -> Value {
         self.build_set_like_op(
             |s| {
-                let block_id_f32 = s.build_node_ir(node.block_id);
-                let block_id = s.builder.ins().fcvt_to_sint(types::I64, block_id_f32);
-                let index_f32 = s.build_node_ir(node.index);
-                let index = s.builder.ins().fcvt_to_sint(types::I64, index_f32);
+                let block_id_float = s.build_node_ir(node.block_id);
+                let block_id = s.builder.ins().fcvt_to_sint(types::I64, block_id_float);
+                let index_float = s.build_node_ir(node.index);
+                let index = s.builder.ins().fcvt_to_sint(types::I64, index_float);
                 (block_id, index)
             },
             node.value,
@@ -280,10 +280,10 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     pub(crate) fn build_set_rem_ir(&mut self, node: &SetRem) -> Value {
         self.build_set_like_op(
             |s| {
-                let block_id_f32 = s.build_node_ir(node.block_id);
-                let block_id = s.builder.ins().fcvt_to_sint(types::I64, block_id_f32);
-                let index_f32 = s.build_node_ir(node.index);
-                let index = s.builder.ins().fcvt_to_sint(types::I64, index_f32);
+                let block_id_float = s.build_node_ir(node.block_id);
+                let block_id = s.builder.ins().fcvt_to_sint(types::I64, block_id_float);
+                let index_float = s.build_node_ir(node.index);
+                let index = s.builder.ins().fcvt_to_sint(types::I64, index_float);
                 (block_id, index)
             },
             node.value,
@@ -310,10 +310,10 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     pub(crate) fn build_set_mod_ir(&mut self, node: &SetMod) -> Value {
         self.build_set_like_op(
             |s| {
-                let block_id_f32 = s.build_node_ir(node.block_id);
-                let block_id = s.builder.ins().fcvt_to_sint(types::I64, block_id_f32);
-                let index_f32 = s.build_node_ir(node.index);
-                let index = s.builder.ins().fcvt_to_sint(types::I64, index_f32);
+                let block_id_float = s.build_node_ir(node.block_id);
+                let block_id = s.builder.ins().fcvt_to_sint(types::I64, block_id_float);
+                let index_float = s.build_node_ir(node.index);
+                let index = s.builder.ins().fcvt_to_sint(types::I64, index_float);
                 (block_id, index)
             },
             node.value,
@@ -338,22 +338,22 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     }
 
     pub(crate) fn build_copy_ir(&mut self, node: &Copy) -> Value {
-        let src_block_id_f32 = self.build_node_ir(node.src_block_id);
+        let src_block_id_float = self.build_node_ir(node.src_block_id);
         let src_block_id = self
             .builder
             .ins()
-            .fcvt_to_sint(types::I64, src_block_id_f32);
-        let src_index_f32 = self.build_node_ir(node.src_index);
-        let src_index = self.builder.ins().fcvt_to_sint(types::I64, src_index_f32);
-        let dst_block_id_f32 = self.build_node_ir(node.dst_block_id);
+            .fcvt_to_sint(types::I64, src_block_id_float);
+        let src_index_float = self.build_node_ir(node.src_index);
+        let src_index = self.builder.ins().fcvt_to_sint(types::I64, src_index_float);
+        let dst_block_id_float = self.build_node_ir(node.dst_block_id);
         let dst_block_id = self
             .builder
             .ins()
-            .fcvt_to_sint(types::I64, dst_block_id_f32);
-        let dst_index_f32 = self.build_node_ir(node.dst_index);
-        let dst_index = self.builder.ins().fcvt_to_sint(types::I64, dst_index_f32);
-        let count_f32 = self.build_node_ir(node.count);
-        let count = self.builder.ins().fcvt_to_sint(types::I64, count_f32);
+            .fcvt_to_sint(types::I64, dst_block_id_float);
+        let dst_index_float = self.build_node_ir(node.dst_index);
+        let dst_index = self.builder.ins().fcvt_to_sint(types::I64, dst_index_float);
+        let count_float = self.build_node_ir(node.count);
+        let count = self.builder.ins().fcvt_to_sint(types::I64, count_float);
 
         let fn_ref = self.externals_func_refs["copy_mem"];
         let fn_call = self.builder.ins().call(

@@ -1,7 +1,7 @@
 use sonorust_ir::{IRValue, modulo, nodes::*};
 use sonorust_runtime::{SonorustIRExecutor, context::RuntimeContext};
 
-use crate::{Executable, SonorustInterpreter, int_from_f64_checked};
+use crate::{Executable, SonorustInterpreter, int_from_float_checked};
 
 impl Executable for Copy {
     fn execute(
@@ -11,21 +11,21 @@ impl Executable for Copy {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let src_block_id = executor.execute(nodes, self.src_block_id, context);
-        let src_block_id = int_from_f64_checked(src_block_id)
+        let src_block_id = int_from_float_checked(src_block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {src_block_id}"));
         let src_index = executor.execute(nodes, self.src_index, context);
-        let src_index = int_from_f64_checked(src_index)
+        let src_index = int_from_float_checked(src_index)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {src_index}"));
 
         let dst_block_id = executor.execute(nodes, self.dst_block_id, context);
-        let dst_block_id = int_from_f64_checked(dst_block_id)
+        let dst_block_id = int_from_float_checked(dst_block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {dst_block_id}"));
         let dst_index = executor.execute(nodes, self.dst_index, context);
-        let dst_index = int_from_f64_checked(dst_index)
+        let dst_index = int_from_float_checked(dst_index)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {dst_index}"));
 
         let count = executor.execute(nodes, self.count, context);
-        let count = int_from_f64_checked(count)
+        let count = int_from_float_checked(count)
             .unwrap_or_else(|| panic!("Expected count to be valid usize, found {count}"));
 
         context.copy_memory(src_block_id, src_index, dst_block_id, dst_index, count)
@@ -40,11 +40,11 @@ impl Executable for Get {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let index = executor.execute(nodes, self.index, context);
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         context
@@ -62,11 +62,11 @@ impl Executable for GetPointed {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let index = executor.execute(nodes, self.index, context);
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let offset = executor.execute(nodes, self.offset, context);
@@ -75,7 +75,7 @@ impl Executable for GetPointed {
             .memory
             .read(context, block_id, index)
             .unwrap_or_default();
-        let final_block_id = int_from_f64_checked(final_block_id).unwrap_or_else(|| {
+        let final_block_id = int_from_float_checked(final_block_id).unwrap_or_else(|| {
             panic!("Expected final_block_id to be valid usize, found {final_block_id}")
         });
 
@@ -84,7 +84,7 @@ impl Executable for GetPointed {
             .read(context, block_id, index + 1)
             .unwrap_or_default()
             + offset;
-        let final_index = int_from_f64_checked(final_index).unwrap_or_else(|| {
+        let final_index = int_from_float_checked(final_index).unwrap_or_else(|| {
             panic!("Expected final_index to be valid usize, found {final_index}")
         });
 
@@ -103,7 +103,7 @@ impl Executable for GetShifted {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let x = executor.execute(nodes, self.x, context);
@@ -111,7 +111,7 @@ impl Executable for GetShifted {
         let s = executor.execute(nodes, self.s, context);
 
         let index = x + y * s;
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         context
@@ -129,11 +129,11 @@ impl Executable for Set {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let index = executor.execute(nodes, self.index, context);
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let value = executor.execute(nodes, self.value, context);
@@ -153,11 +153,11 @@ impl Executable for SetPointed {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let index = executor.execute(nodes, self.index, context);
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let offset = executor.execute(nodes, self.offset, context);
@@ -166,7 +166,7 @@ impl Executable for SetPointed {
             .memory
             .read(context, block_id, index)
             .unwrap_or_default();
-        let final_block_id = int_from_f64_checked(final_block_id).unwrap_or_else(|| {
+        let final_block_id = int_from_float_checked(final_block_id).unwrap_or_else(|| {
             panic!("Expected final_block_id to be valid usize, found {final_block_id}")
         });
 
@@ -175,7 +175,7 @@ impl Executable for SetPointed {
             .read(context, block_id, index + 1)
             .unwrap_or_default()
             + offset;
-        let final_index = int_from_f64_checked(final_index).unwrap_or_else(|| {
+        let final_index = int_from_float_checked(final_index).unwrap_or_else(|| {
             panic!("Expected final_index to be valid usize, found {final_index}")
         });
 
@@ -196,7 +196,7 @@ impl Executable for SetShifted {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let x = executor.execute(nodes, self.x, context);
@@ -204,7 +204,7 @@ impl Executable for SetShifted {
         let s = executor.execute(nodes, self.s, context);
 
         let index = x + y * s;
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let value = executor.execute(nodes, self.value, context);
@@ -224,11 +224,11 @@ impl Executable for SetAdd {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let index = executor.execute(nodes, self.index, context);
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let value = executor.execute(nodes, self.value, context);
@@ -253,11 +253,11 @@ impl Executable for SetAddPointed {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let index = executor.execute(nodes, self.index, context);
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let offset = executor.execute(nodes, self.offset, context);
@@ -266,7 +266,7 @@ impl Executable for SetAddPointed {
             .memory
             .read(context, block_id, index)
             .unwrap_or_default();
-        let final_block_id = int_from_f64_checked(final_block_id).unwrap_or_else(|| {
+        let final_block_id = int_from_float_checked(final_block_id).unwrap_or_else(|| {
             panic!("Expected final_block_id to be valid usize, found {final_block_id}")
         });
 
@@ -275,7 +275,7 @@ impl Executable for SetAddPointed {
             .read(context, block_id, index + 1)
             .unwrap_or_default()
             + offset;
-        let final_index = int_from_f64_checked(final_index).unwrap_or_else(|| {
+        let final_index = int_from_float_checked(final_index).unwrap_or_else(|| {
             panic!("Expected final_index to be valid usize, found {final_index}")
         });
 
@@ -301,7 +301,7 @@ impl Executable for SetAddShifted {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let x = executor.execute(nodes, self.x, context);
@@ -309,7 +309,7 @@ impl Executable for SetAddShifted {
         let s = executor.execute(nodes, self.s, context);
 
         let index = x + y * s;
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let value = executor.execute(nodes, self.value, context);
@@ -334,11 +334,11 @@ impl Executable for SetDivide {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let index = executor.execute(nodes, self.index, context);
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let value = executor.execute(nodes, self.value, context);
@@ -363,11 +363,11 @@ impl Executable for SetDividePointed {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let index = executor.execute(nodes, self.index, context);
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let offset = executor.execute(nodes, self.offset, context);
@@ -376,7 +376,7 @@ impl Executable for SetDividePointed {
             .memory
             .read(context, block_id, index)
             .unwrap_or_default();
-        let final_block_id = int_from_f64_checked(final_block_id).unwrap_or_else(|| {
+        let final_block_id = int_from_float_checked(final_block_id).unwrap_or_else(|| {
             panic!("Expected final_block_id to be valid usize, found {final_block_id}")
         });
 
@@ -385,7 +385,7 @@ impl Executable for SetDividePointed {
             .read(context, block_id, index + 1)
             .unwrap_or_default()
             + offset;
-        let final_index = int_from_f64_checked(final_index).unwrap_or_else(|| {
+        let final_index = int_from_float_checked(final_index).unwrap_or_else(|| {
             panic!("Expected final_index to be valid usize, found {final_index}")
         });
 
@@ -411,7 +411,7 @@ impl Executable for SetDivideShifted {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let x = executor.execute(nodes, self.x, context);
@@ -419,7 +419,7 @@ impl Executable for SetDivideShifted {
         let s = executor.execute(nodes, self.s, context);
 
         let index = x + y * s;
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let value = executor.execute(nodes, self.value, context);
@@ -444,11 +444,11 @@ impl Executable for SetMultiply {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let index = executor.execute(nodes, self.index, context);
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let value = executor.execute(nodes, self.value, context);
@@ -473,11 +473,11 @@ impl Executable for SetMultiplyPointed {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let index = executor.execute(nodes, self.index, context);
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let offset = executor.execute(nodes, self.offset, context);
@@ -486,7 +486,7 @@ impl Executable for SetMultiplyPointed {
             .memory
             .read(context, block_id, index)
             .unwrap_or_default();
-        let final_block_id = int_from_f64_checked(final_block_id).unwrap_or_else(|| {
+        let final_block_id = int_from_float_checked(final_block_id).unwrap_or_else(|| {
             panic!("Expected final_block_id to be valid usize, found {final_block_id}")
         });
 
@@ -495,7 +495,7 @@ impl Executable for SetMultiplyPointed {
             .read(context, block_id, index + 1)
             .unwrap_or_default()
             + offset;
-        let final_index = int_from_f64_checked(final_index).unwrap_or_else(|| {
+        let final_index = int_from_float_checked(final_index).unwrap_or_else(|| {
             panic!("Expected final_index to be valid usize, found {final_index}")
         });
 
@@ -521,7 +521,7 @@ impl Executable for SetMultiplyShifted {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let x = executor.execute(nodes, self.x, context);
@@ -529,7 +529,7 @@ impl Executable for SetMultiplyShifted {
         let s = executor.execute(nodes, self.s, context);
 
         let index = x + y * s;
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let value = executor.execute(nodes, self.value, context);
@@ -554,11 +554,11 @@ impl Executable for SetMod {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let index = executor.execute(nodes, self.index, context);
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let value = executor.execute(nodes, self.value, context);
@@ -583,11 +583,11 @@ impl Executable for SetModPointed {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let index = executor.execute(nodes, self.index, context);
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let offset = executor.execute(nodes, self.offset, context);
@@ -596,7 +596,7 @@ impl Executable for SetModPointed {
             .memory
             .read(context, block_id, index)
             .unwrap_or_default();
-        let final_block_id = int_from_f64_checked(final_block_id).unwrap_or_else(|| {
+        let final_block_id = int_from_float_checked(final_block_id).unwrap_or_else(|| {
             panic!("Expected final_block_id to be valid usize, found {final_block_id}")
         });
 
@@ -605,7 +605,7 @@ impl Executable for SetModPointed {
             .read(context, block_id, index + 1)
             .unwrap_or_default()
             + offset;
-        let final_index = int_from_f64_checked(final_index).unwrap_or_else(|| {
+        let final_index = int_from_float_checked(final_index).unwrap_or_else(|| {
             panic!("Expected final_index to be valid usize, found {final_index}")
         });
 
@@ -636,7 +636,7 @@ impl Executable for SetModShifted {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let x = executor.execute(nodes, self.x, context);
@@ -644,7 +644,7 @@ impl Executable for SetModShifted {
         let s = executor.execute(nodes, self.s, context);
 
         let index = x + y * s;
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let value = executor.execute(nodes, self.value, context);
@@ -669,11 +669,11 @@ impl Executable for SetRem {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let index = executor.execute(nodes, self.index, context);
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let value = executor.execute(nodes, self.value, context);
@@ -698,11 +698,11 @@ impl Executable for SetRemPointed {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let index = executor.execute(nodes, self.index, context);
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let offset = executor.execute(nodes, self.offset, context);
@@ -711,7 +711,7 @@ impl Executable for SetRemPointed {
             .memory
             .read(context, block_id, index)
             .unwrap_or_default();
-        let final_block_id = int_from_f64_checked(final_block_id).unwrap_or_else(|| {
+        let final_block_id = int_from_float_checked(final_block_id).unwrap_or_else(|| {
             panic!("Expected final_block_id to be valid usize, found {final_block_id}")
         });
 
@@ -720,7 +720,7 @@ impl Executable for SetRemPointed {
             .read(context, block_id, index + 1)
             .unwrap_or_default()
             + offset;
-        let final_index = int_from_f64_checked(final_index).unwrap_or_else(|| {
+        let final_index = int_from_float_checked(final_index).unwrap_or_else(|| {
             panic!("Expected final_index to be valid usize, found {final_index}")
         });
 
@@ -746,7 +746,7 @@ impl Executable for SetRemShifted {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let x = executor.execute(nodes, self.x, context);
@@ -754,7 +754,7 @@ impl Executable for SetRemShifted {
         let s = executor.execute(nodes, self.s, context);
 
         let index = x + y * s;
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let value = executor.execute(nodes, self.value, context);
@@ -779,11 +779,11 @@ impl Executable for SetPower {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let index = executor.execute(nodes, self.index, context);
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let value = executor.execute(nodes, self.value, context);
@@ -808,11 +808,11 @@ impl Executable for SetPowerPointed {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let index = executor.execute(nodes, self.index, context);
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let offset = executor.execute(nodes, self.offset, context);
@@ -821,7 +821,7 @@ impl Executable for SetPowerPointed {
             .memory
             .read(context, block_id, index)
             .unwrap_or_default();
-        let final_block_id = int_from_f64_checked(final_block_id).unwrap_or_else(|| {
+        let final_block_id = int_from_float_checked(final_block_id).unwrap_or_else(|| {
             panic!("Expected final_block_id to be valid usize, found {final_block_id}")
         });
 
@@ -830,7 +830,7 @@ impl Executable for SetPowerPointed {
             .read(context, block_id, index + 1)
             .unwrap_or_default()
             + offset;
-        let final_index = int_from_f64_checked(final_index).unwrap_or_else(|| {
+        let final_index = int_from_float_checked(final_index).unwrap_or_else(|| {
             panic!("Expected final_index to be valid usize, found {final_index}")
         });
 
@@ -856,7 +856,7 @@ impl Executable for SetPowerShifted {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let x = executor.execute(nodes, self.x, context);
@@ -864,7 +864,7 @@ impl Executable for SetPowerShifted {
         let s = executor.execute(nodes, self.s, context);
 
         let index = x + y * s;
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let value = executor.execute(nodes, self.value, context);
@@ -889,11 +889,11 @@ impl Executable for SetSubtract {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let index = executor.execute(nodes, self.index, context);
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let value = executor.execute(nodes, self.value, context);
@@ -918,11 +918,11 @@ impl Executable for SetSubtractPointed {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let index = executor.execute(nodes, self.index, context);
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let offset = executor.execute(nodes, self.offset, context);
@@ -931,7 +931,7 @@ impl Executable for SetSubtractPointed {
             .memory
             .read(context, block_id, index)
             .unwrap_or_default();
-        let final_block_id = int_from_f64_checked(final_block_id).unwrap_or_else(|| {
+        let final_block_id = int_from_float_checked(final_block_id).unwrap_or_else(|| {
             panic!("Expected final_block_id to be valid usize, found {final_block_id}")
         });
 
@@ -940,7 +940,7 @@ impl Executable for SetSubtractPointed {
             .read(context, block_id, index + 1)
             .unwrap_or_default()
             + offset;
-        let final_index = int_from_f64_checked(final_index).unwrap_or_else(|| {
+        let final_index = int_from_float_checked(final_index).unwrap_or_else(|| {
             panic!("Expected final_index to be valid usize, found {final_index}")
         });
 
@@ -966,7 +966,7 @@ impl Executable for SetSubtractShifted {
         executor: &mut SonorustInterpreter,
     ) -> IRValue {
         let block_id = executor.execute(nodes, self.block_id, context);
-        let block_id = int_from_f64_checked(block_id)
+        let block_id = int_from_float_checked(block_id)
             .unwrap_or_else(|| panic!("Expected block ID to be valid u16, found {block_id}"));
 
         let x = executor.execute(nodes, self.x, context);
@@ -974,7 +974,7 @@ impl Executable for SetSubtractShifted {
         let s = executor.execute(nodes, self.s, context);
 
         let index = x + y * s;
-        let index = int_from_f64_checked(index)
+        let index = int_from_float_checked(index)
             .unwrap_or_else(|| panic!("Expected index to be valid usize, found {index}"));
 
         let value = executor.execute(nodes, self.value, context);
