@@ -76,7 +76,7 @@ pub struct PlayPreprocessMemoryAccess<'a> {
     entity_data: &'a RwLock<PlayEntityDataArray>,
     #[memory]
     #[memory(block = PlayEntitySharedMemory, index = "*ctx.current_entity.id * PlayEntitySharedMemory::SIZE")]
-    entity_shared_memory: &'a PlayEntitySharedMemoryArray,
+    entity_shared_memory: &'a RwLock<PlayEntitySharedMemoryArray>,
     #[memory]
     #[memory(block = PlayEntityInfo, index = "*ctx.current_entity.id * PlayEntityInfo::SIZE")]
     entity_info: &'a PlayEntityInfoArray,
@@ -353,7 +353,7 @@ impl MemoryBlocks {
 
             entity_memory: &self.entity_memory,
             entity_data: &self.entity_data,
-            entity_shared_memory: &self.entity_shared_memory.read(),
+            entity_shared_memory: &self.entity_shared_memory,
             entity_info: &self.entity_info.read(),
             entity_despawn: &self.entity_despawn,
             entity_input: &self.entity_input,
