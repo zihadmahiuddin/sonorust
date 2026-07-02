@@ -485,6 +485,15 @@ name = "sonorust-ir"
 version = "0.1.0"
 
 [[package]]
+name = "sonorust-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "sonorust-models"
 version = "0.1.0"
 dependencies = [
@@ -500,6 +509,7 @@ version = "0.1.0"
 dependencies = [
  "rand",
  "sonorust-ir",
+ "sonorust-macros",
  "sonorust-models",
  "tracing",
 ]
