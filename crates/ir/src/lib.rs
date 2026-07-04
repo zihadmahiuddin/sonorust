@@ -4,14 +4,22 @@ use std::ops::{Deref, DerefMut};
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "wasm")]
 use tsify::Tsify;
+#[cfg(feature = "wasm")]
+use wasm_bindgen::prelude::wasm_bindgen;
 
 pub mod nodes;
 
 pub type IRValue = f32;
 
+#[cfg(feature = "wasm")]
+#[cfg_attr(feature = "wasm", wasm_bindgen(typescript_custom_section))]
+const TS_IR_VALUE_TYPE: &'static str = r#"
+export type IRValue = number;
+"#;
+
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Default, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[cfg_attr(feature = "wasm", derive(Tsify))]
+#[cfg_attr(feature = "wasm", derive(Tsify), wasm_bindgen)]
 pub struct IRIndex(usize);
 
 impl From<usize> for IRIndex {
