@@ -14,5 +14,5 @@ wasm-bindgen = { workspace = true, optional = true }
 
 [features]
 default = ["serde", "wasm"]
-serde = ["dep:serde", "glam/serde"]
-wasm = ["dep:wasm-bindgen", "dep:tsify"]
+serde = ["dep:serde", "glam/serde", "sonorust-ir/serde"]
+wasm = ["dep:wasm-bindgen", "dep:tsify", "sonorust-ir/wasm"]
