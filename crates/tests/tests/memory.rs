@@ -9,8 +9,8 @@ fn test_get() {
     let nodes = vec![
         IRNode::Value(0.0),
         IRNode::OpCode(OpCode::Get(Get {
-            block_id: 0,
-            index: 0,
+            block_id: 0.into(),
+            index: 0.into(),
         })),
     ];
 
@@ -20,7 +20,7 @@ fn test_get() {
         runtime_context
             .memory
             .write(&runtime_context.as_ctx(), 0, 0, 7.0);
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 7.0,
             "Assertion failed for executor: {}",
@@ -36,9 +36,9 @@ fn test_get_pointed() {
         IRNode::Value(0.0), // 1: index
         IRNode::Value(2.0), // 2: offset
         IRNode::OpCode(OpCode::GetPointed(GetPointed {
-            block_id: 0,
-            index: 1,
-            offset: 2,
+            block_id: 0.into(),
+            index: 1.into(),
+            offset: 2.into(),
         })),
     ];
 
@@ -59,7 +59,7 @@ fn test_get_pointed() {
             .memory
             .write(&runtime_context.as_ctx(), 3, 7, 123.45);
 
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 123.45,
             "Assertion failed for executor: {}",
@@ -76,10 +76,10 @@ fn test_get_shifted() {
         IRNode::Value(3.0), // 2: y
         IRNode::Value(4.0), // 3: s
         IRNode::OpCode(OpCode::GetShifted(GetShifted {
-            block_id: 0,
-            x: 1,
-            y: 2,
-            s: 3,
+            block_id: 0.into(),
+            x: 1.into(),
+            y: 2.into(),
+            s: 3.into(),
         })),
     ];
 
@@ -94,7 +94,7 @@ fn test_get_shifted() {
             .memory
             .write(&runtime_context.as_ctx(), 0, 2 + 3 * 4, 999.99); // index = 14
 
-        let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 4.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 999.99,
             "Assertion failed for executor: {}",
@@ -109,16 +109,16 @@ fn test_set() {
         IRNode::Value(0.0),
         IRNode::Value(7.0),
         IRNode::OpCode(OpCode::Set(Set {
-            block_id: 0,
-            index: 0,
-            value: 1,
+            block_id: 0.into(),
+            index: 0.into(),
+            value: 1.into(),
         })),
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 7.0,
             "Assertion failed for executor: {}",
@@ -135,10 +135,10 @@ fn test_set_pointed() {
         IRNode::Value(2.0),    // 2: offset
         IRNode::Value(123.45), // 3: value
         IRNode::OpCode(OpCode::SetPointed(SetPointed {
-            block_id: 0,
-            index: 1,
-            offset: 2,
-            value: 3,
+            block_id: 0.into(),
+            index: 1.into(),
+            offset: 2.into(),
+            value: 3.into(),
         })),
     ];
 
@@ -156,7 +156,7 @@ fn test_set_pointed() {
             .memory
             .write(&runtime_context.as_ctx(), 0, 1, 5.0);
 
-        let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 4.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 123.45,
             "Assertion failed for executor: {}",
@@ -180,11 +180,11 @@ fn test_set_shifted() {
         IRNode::Value(4.0),    // 3: s
         IRNode::Value(123.45), // 4: value
         IRNode::OpCode(OpCode::SetShifted(SetShifted {
-            block_id: 0,
-            x: 1,
-            y: 2,
-            s: 3,
-            value: 4,
+            block_id: 0.into(),
+            x: 1.into(),
+            y: 2.into(),
+            s: 3.into(),
+            value: 4.into(),
         })),
     ];
 
@@ -196,7 +196,7 @@ fn test_set_shifted() {
             .writable
             .insert(0, RefCell::new(vec![0.0; 4096]));
 
-        let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 5.into(), &mut runtime_context.as_ctx() as _);
 
         let index = 2 + 3 * 4; // 14
         assert_eq!(
@@ -222,9 +222,9 @@ fn test_set_add() {
         IRNode::Value(5.0), // index
         IRNode::Value(3.0), // value
         IRNode::OpCode(OpCode::SetAdd(SetAdd {
-            block_id: 0,
-            index: 1,
-            value: 2,
+            block_id: 0.into(),
+            index: 1.into(),
+            value: 2.into(),
         })),
     ];
 
@@ -239,7 +239,7 @@ fn test_set_add() {
             .memory
             .write(&runtime_context.as_ctx(), 0, 5, 7.0);
 
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 10.0,
@@ -263,10 +263,10 @@ fn test_set_add_pointed() {
         IRNode::Value(2.0), // offset
         IRNode::Value(3.0), // value
         IRNode::OpCode(OpCode::SetAddPointed(SetAddPointed {
-            block_id: 0,
-            index: 1,
-            offset: 2,
-            value: 3,
+            block_id: 0.into(),
+            index: 1.into(),
+            offset: 2.into(),
+            value: 3.into(),
         })),
     ];
 
@@ -288,7 +288,7 @@ fn test_set_add_pointed() {
             .memory
             .write(&runtime_context.as_ctx(), 3, 7, 7.0);
 
-        let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 4.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 10.0,
@@ -313,11 +313,11 @@ fn test_set_add_shifted() {
         IRNode::Value(4.0), // s
         IRNode::Value(5.0), // value
         IRNode::OpCode(OpCode::SetAddShifted(SetAddShifted {
-            block_id: 0,
-            x: 1,
-            y: 2,
-            s: 3,
-            value: 4,
+            block_id: 0.into(),
+            x: 1.into(),
+            y: 2.into(),
+            s: 3.into(),
+            value: 4.into(),
         })),
     ];
 
@@ -332,7 +332,7 @@ fn test_set_add_shifted() {
             .memory
             .write(&runtime_context.as_ctx(), 0, 14, 10.0); // 2 + 3 * 4 = 14
 
-        let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 5.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 15.0,
@@ -357,9 +357,9 @@ fn test_set_subtract() {
         IRNode::Value(5.0), // index
         IRNode::Value(3.0), // value (subtract)
         IRNode::OpCode(OpCode::SetSubtract(SetSubtract {
-            block_id: 0,
-            index: 1,
-            value: 2,
+            block_id: 0.into(),
+            index: 1.into(),
+            value: 2.into(),
         })),
     ];
 
@@ -371,7 +371,7 @@ fn test_set_subtract() {
             .writable
             .insert(0, RefCell::new(vec![10.0; 4096]));
 
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 7.0,
@@ -395,10 +395,10 @@ fn test_set_subtract_pointed() {
         IRNode::Value(2.0), // offset
         IRNode::Value(3.0), // value (subtract)
         IRNode::OpCode(OpCode::SetSubtractPointed(SetSubtractPointed {
-            block_id: 0,
-            index: 1,
-            offset: 2,
-            value: 3,
+            block_id: 0.into(),
+            index: 1.into(),
+            offset: 2.into(),
+            value: 3.into(),
         })),
     ];
 
@@ -419,7 +419,7 @@ fn test_set_subtract_pointed() {
             .memory
             .write(&runtime_context.as_ctx(), 3, 7, 10.0);
 
-        let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 4.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 7.0,
@@ -444,11 +444,11 @@ fn test_set_subtract_shifted() {
         IRNode::Value(4.0), // s
         IRNode::Value(3.0), // value (subtract)
         IRNode::OpCode(OpCode::SetSubtractShifted(SetSubtractShifted {
-            block_id: 0,
-            x: 1,
-            y: 2,
-            s: 3,
-            value: 4,
+            block_id: 0.into(),
+            x: 1.into(),
+            y: 2.into(),
+            s: 3.into(),
+            value: 4.into(),
         })),
     ];
 
@@ -463,7 +463,7 @@ fn test_set_subtract_shifted() {
             .memory
             .write(&runtime_context.as_ctx(), 0, 14, 10.0); // 2 + 3 * 4 = 14
 
-        let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 5.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 7.0,
@@ -488,9 +488,9 @@ fn test_set_multiply() {
         IRNode::Value(5.0), // index
         IRNode::Value(2.0), // value (multiplier)
         IRNode::OpCode(OpCode::SetMultiply(SetMultiply {
-            block_id: 0,
-            index: 1,
-            value: 2,
+            block_id: 0.into(),
+            index: 1.into(),
+            value: 2.into(),
         })),
     ];
 
@@ -502,7 +502,7 @@ fn test_set_multiply() {
             .writable
             .insert(0, RefCell::new(vec![10.0; 4096]));
 
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 20.0,
@@ -526,10 +526,10 @@ fn test_set_multiply_pointed() {
         IRNode::Value(2.0), // offset
         IRNode::Value(2.0), // value (multiplier)
         IRNode::OpCode(OpCode::SetMultiplyPointed(SetMultiplyPointed {
-            block_id: 0,
-            index: 1,
-            offset: 2,
-            value: 3,
+            block_id: 0.into(),
+            index: 1.into(),
+            offset: 2.into(),
+            value: 3.into(),
         })),
     ];
 
@@ -550,7 +550,7 @@ fn test_set_multiply_pointed() {
             .memory
             .write(&runtime_context.as_ctx(), 3, 7, 10.0);
 
-        let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 4.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 20.0,
@@ -575,11 +575,11 @@ fn test_set_multiply_shifted() {
         IRNode::Value(4.0), // s
         IRNode::Value(2.0), // value (multiplier)
         IRNode::OpCode(OpCode::SetMultiplyShifted(SetMultiplyShifted {
-            block_id: 0,
-            x: 1,
-            y: 2,
-            s: 3,
-            value: 4,
+            block_id: 0.into(),
+            x: 1.into(),
+            y: 2.into(),
+            s: 3.into(),
+            value: 4.into(),
         })),
     ];
 
@@ -594,7 +594,7 @@ fn test_set_multiply_shifted() {
             .memory
             .write(&runtime_context.as_ctx(), 0, 14, 10.0); // 2 + 3 * 4 = 14
 
-        let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 5.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 20.0,
@@ -619,9 +619,9 @@ fn test_set_divide() {
         IRNode::Value(5.0),  // index
         IRNode::Value(10.0), // value (divisor)
         IRNode::OpCode(OpCode::SetDivide(SetDivide {
-            block_id: 0,
-            index: 1,
-            value: 2,
+            block_id: 0.into(),
+            index: 1.into(),
+            value: 2.into(),
         })),
     ];
 
@@ -633,7 +633,7 @@ fn test_set_divide() {
             .writable
             .insert(0, RefCell::new(vec![20.0; 4096]));
 
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 2.0,
@@ -657,10 +657,10 @@ fn test_set_divide_pointed() {
         IRNode::Value(2.0), // offset
         IRNode::Value(2.0), // value (divisor)
         IRNode::OpCode(OpCode::SetDividePointed(SetDividePointed {
-            block_id: 0,
-            index: 1,
-            offset: 2,
-            value: 3,
+            block_id: 0.into(),
+            index: 1.into(),
+            offset: 2.into(),
+            value: 3.into(),
         })),
     ];
 
@@ -681,7 +681,7 @@ fn test_set_divide_pointed() {
             .memory
             .write(&runtime_context.as_ctx(), 3, 7, 20.0);
 
-        let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 4.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 10.0,
@@ -706,11 +706,11 @@ fn test_set_divide_shifted() {
         IRNode::Value(4.0), // s
         IRNode::Value(2.0), // value (divisor)
         IRNode::OpCode(OpCode::SetDivideShifted(SetDivideShifted {
-            block_id: 0,
-            x: 1,
-            y: 2,
-            s: 3,
-            value: 4,
+            block_id: 0.into(),
+            x: 1.into(),
+            y: 2.into(),
+            s: 3.into(),
+            value: 4.into(),
         })),
     ];
 
@@ -725,7 +725,7 @@ fn test_set_divide_shifted() {
             .memory
             .write(&runtime_context.as_ctx(), 0, 14, 40.0); // 2 + 3 * 4 = 14
 
-        let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 5.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 20.0,
@@ -750,9 +750,9 @@ fn test_set_power() {
         IRNode::Value(5.0), // index
         IRNode::Value(3.0), // value (exponent)
         IRNode::OpCode(OpCode::SetPower(SetPower {
-            block_id: 0,
-            index: 1,
-            value: 2,
+            block_id: 0.into(),
+            index: 1.into(),
+            value: 2.into(),
         })),
     ];
 
@@ -764,7 +764,7 @@ fn test_set_power() {
             .writable
             .insert(0, RefCell::new(vec![2.0; 4096]));
 
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 8.0,
@@ -788,10 +788,10 @@ fn test_set_power_pointed() {
         IRNode::Value(2.0), // offset
         IRNode::Value(3.0), // value (exponent)
         IRNode::OpCode(OpCode::SetPowerPointed(SetPowerPointed {
-            block_id: 0,
-            index: 1,
-            offset: 2,
-            value: 3,
+            block_id: 0.into(),
+            index: 1.into(),
+            offset: 2.into(),
+            value: 3.into(),
         })),
     ];
 
@@ -812,7 +812,7 @@ fn test_set_power_pointed() {
             .memory
             .write(&runtime_context.as_ctx(), 3, 7, 2.0);
 
-        let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 4.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 8.0,
@@ -837,11 +837,11 @@ fn test_set_power_shifted() {
         IRNode::Value(4.0), // s
         IRNode::Value(3.0), // value (exponent)
         IRNode::OpCode(OpCode::SetPowerShifted(SetPowerShifted {
-            block_id: 0,
-            x: 1,
-            y: 2,
-            s: 3,
-            value: 4,
+            block_id: 0.into(),
+            x: 1.into(),
+            y: 2.into(),
+            s: 3.into(),
+            value: 4.into(),
         })),
     ];
 
@@ -856,7 +856,7 @@ fn test_set_power_shifted() {
             .memory
             .write(&runtime_context.as_ctx(), 0, 14, 2.0); // 2 + 3 * 4 = 14
 
-        let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 5.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 8.0,
@@ -881,9 +881,9 @@ fn test_set_rem() {
         IRNode::Value(5.0), // index
         IRNode::Value(3.0), // value (divisor)
         IRNode::OpCode(OpCode::SetRem(SetRem {
-            block_id: 0,
-            index: 1,
-            value: 2,
+            block_id: 0.into(),
+            index: 1.into(),
+            value: 2.into(),
         })),
     ];
 
@@ -895,7 +895,7 @@ fn test_set_rem() {
             .writable
             .insert(0, RefCell::new(vec![10.0; 4096]));
 
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 1.0,
@@ -919,10 +919,10 @@ fn test_set_rem_pointed() {
         IRNode::Value(2.0), // offset
         IRNode::Value(3.0), // value (divisor)
         IRNode::OpCode(OpCode::SetRemPointed(SetRemPointed {
-            block_id: 0,
-            index: 1,
-            offset: 2,
-            value: 3,
+            block_id: 0.into(),
+            index: 1.into(),
+            offset: 2.into(),
+            value: 3.into(),
         })),
     ];
 
@@ -943,7 +943,7 @@ fn test_set_rem_pointed() {
             .memory
             .write(&runtime_context.as_ctx(), 3, 7, 10.0);
 
-        let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 4.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 1.0,
@@ -968,11 +968,11 @@ fn test_set_rem_shifted() {
         IRNode::Value(4.0), // s
         IRNode::Value(3.0), // value (divisor)
         IRNode::OpCode(OpCode::SetRemShifted(SetRemShifted {
-            block_id: 0,
-            x: 1,
-            y: 2,
-            s: 3,
-            value: 4,
+            block_id: 0.into(),
+            x: 1.into(),
+            y: 2.into(),
+            s: 3.into(),
+            value: 4.into(),
         })),
     ];
 
@@ -987,7 +987,7 @@ fn test_set_rem_shifted() {
             .memory
             .write(&runtime_context.as_ctx(), 0, 14, 10.0); // 2 + 3 * 4 = 14
 
-        let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 5.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 1.0,
@@ -1012,9 +1012,9 @@ fn test_set_mod() {
         IRNode::Value(5.0), // index
         IRNode::Value(3.0), // value (mod divisor)
         IRNode::OpCode(OpCode::SetMod(SetMod {
-            block_id: 0,
-            index: 1,
-            value: 2,
+            block_id: 0.into(),
+            index: 1.into(),
+            value: 2.into(),
         })),
     ];
 
@@ -1026,7 +1026,7 @@ fn test_set_mod() {
             .writable
             .insert(0, RefCell::new(vec![10.0; 4096]));
 
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 1.0,
@@ -1050,10 +1050,10 @@ fn test_set_mod_pointed() {
         IRNode::Value(2.0), // offset
         IRNode::Value(3.0), // value (mod divisor)
         IRNode::OpCode(OpCode::SetModPointed(SetModPointed {
-            block_id: 0,
-            index: 1,
-            offset: 2,
-            value: 3,
+            block_id: 0.into(),
+            index: 1.into(),
+            offset: 2.into(),
+            value: 3.into(),
         })),
     ];
 
@@ -1074,7 +1074,7 @@ fn test_set_mod_pointed() {
             .memory
             .write(&runtime_context.as_ctx(), 3, 7, 10.0);
 
-        let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 4.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 1.0,
@@ -1099,11 +1099,11 @@ fn test_set_mod_shifted() {
         IRNode::Value(4.0), // s
         IRNode::Value(3.0), // value (mod divisor)
         IRNode::OpCode(OpCode::SetModShifted(SetModShifted {
-            block_id: 0,
-            x: 1,
-            y: 2,
-            s: 3,
-            value: 4,
+            block_id: 0.into(),
+            x: 1.into(),
+            y: 2.into(),
+            s: 3.into(),
+            value: 4.into(),
         })),
     ];
 
@@ -1118,7 +1118,7 @@ fn test_set_mod_shifted() {
             .memory
             .write(&runtime_context.as_ctx(), 0, 14, 10.0); // 2 + 3 * 4 = 14
 
-        let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 5.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 1.0,
@@ -1145,11 +1145,11 @@ fn test_copy_basic() {
         IRNode::Value(1.0), // dst_index
         IRNode::Value(3.0), // count
         IRNode::OpCode(OpCode::Copy(Copy {
-            src_block_id: 0,
-            src_index: 1,
-            dst_block_id: 2,
-            dst_index: 3,
-            count: 4,
+            src_block_id: 0.into(),
+            src_index: 1.into(),
+            dst_block_id: 2.into(),
+            dst_index: 3.into(),
+            count: 4.into(),
         })),
     ];
 
@@ -1165,7 +1165,7 @@ fn test_copy_basic() {
             .writable
             .insert(1, RefCell::new(vec![0.0; 5]));
 
-        let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 5.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 0.0,
@@ -1202,11 +1202,11 @@ fn test_copy_overlap_forward() {
         IRNode::Value(1.0),
         IRNode::Value(3.0),
         IRNode::OpCode(OpCode::Copy(Copy {
-            src_block_id: 0,
-            src_index: 1,
-            dst_block_id: 2,
-            dst_index: 3,
-            count: 4,
+            src_block_id: 0.into(),
+            src_index: 1.into(),
+            dst_block_id: 2.into(),
+            dst_index: 3.into(),
+            count: 4.into(),
         })),
     ];
 
@@ -1218,7 +1218,7 @@ fn test_copy_overlap_forward() {
             .writable
             .insert(0, RefCell::new(vec![1.0, 2.0, 3.0, 4.0, 5.0]));
 
-        let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 5.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 0.0,
@@ -1261,11 +1261,11 @@ fn test_copy_overlap_backward() {
         IRNode::Value(0.0),
         IRNode::Value(3.0),
         IRNode::OpCode(OpCode::Copy(Copy {
-            src_block_id: 0,
-            src_index: 1,
-            dst_block_id: 2,
-            dst_index: 3,
-            count: 4,
+            src_block_id: 0.into(),
+            src_index: 1.into(),
+            dst_block_id: 2.into(),
+            dst_index: 3.into(),
+            count: 4.into(),
         })),
     ];
 
@@ -1277,7 +1277,7 @@ fn test_copy_overlap_backward() {
             .writable
             .insert(0, RefCell::new(vec![10.0, 11.0, 12.0, 13.0, 14.0]));
 
-        let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 5.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 0.0,
@@ -1313,11 +1313,11 @@ fn test_copy_zero_count() {
         IRNode::Value(0.0),
         IRNode::Value(0.0),
         IRNode::OpCode(OpCode::Copy(Copy {
-            src_block_id: 0,
-            src_index: 1,
-            dst_block_id: 2,
-            dst_index: 3,
-            count: 4,
+            src_block_id: 0.into(),
+            src_index: 1.into(),
+            dst_block_id: 2.into(),
+            dst_index: 3.into(),
+            count: 4.into(),
         })),
     ];
 
@@ -1333,7 +1333,7 @@ fn test_copy_zero_count() {
             .writable
             .insert(1, RefCell::new(vec![9.0]));
 
-        let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 5.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 0.0,

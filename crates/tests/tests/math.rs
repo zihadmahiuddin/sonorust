@@ -5,14 +5,14 @@ use sonorust_tests::get_available_executors;
 #[test]
 fn test_abs_negative() {
     let nodes = vec![
-        IRNode::Value(-3.5),                           // 0
-        IRNode::OpCode(OpCode::Abs(Abs { value: 0 })), // 1
+        IRNode::Value(-3.5),                                  // 0
+        IRNode::OpCode(OpCode::Abs(Abs { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 3.5,
             "Assertion failed for executor: {}",
@@ -24,14 +24,14 @@ fn test_abs_negative() {
 #[test]
 fn test_abs_positive() {
     let nodes = vec![
-        IRNode::Value(3.5),                            // 0
-        IRNode::OpCode(OpCode::Abs(Abs { value: 0 })), // 1
+        IRNode::Value(3.5),                                   // 0
+        IRNode::OpCode(OpCode::Abs(Abs { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 3.5,
             "Assertion failed for executor: {}",
@@ -43,14 +43,14 @@ fn test_abs_positive() {
 #[test]
 fn test_frac_negative() {
     let nodes = vec![
-        IRNode::Value(-5.75),                            // 0
-        IRNode::OpCode(OpCode::Frac(Frac { value: 0 })), // 1
+        IRNode::Value(-5.75),                                   // 0
+        IRNode::OpCode(OpCode::Frac(Frac { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, -0.75,
             "Assertion failed for executor: {}",
@@ -62,14 +62,14 @@ fn test_frac_negative() {
 #[test]
 fn test_frac_positive() {
     let nodes = vec![
-        IRNode::Value(5.75),                             // 0
-        IRNode::OpCode(OpCode::Frac(Frac { value: 0 })), // 1
+        IRNode::Value(5.75),                                    // 0
+        IRNode::OpCode(OpCode::Frac(Frac { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 0.75,
             "Assertion failed for executor: {}",
@@ -81,14 +81,14 @@ fn test_frac_positive() {
 #[test]
 fn test_trunc_negative() {
     let nodes = vec![
-        IRNode::Value(-4.8),                               // 0
-        IRNode::OpCode(OpCode::Trunc(Trunc { value: 0 })), // 1
+        IRNode::Value(-4.8),                                      // 0
+        IRNode::OpCode(OpCode::Trunc(Trunc { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, -4.0,
             "Assertion failed for executor: {}",
@@ -100,14 +100,14 @@ fn test_trunc_negative() {
 #[test]
 fn test_trunc_positive() {
     let nodes = vec![
-        IRNode::Value(4.8),                                // 0
-        IRNode::OpCode(OpCode::Trunc(Trunc { value: 0 })), // 1
+        IRNode::Value(4.8),                                       // 0
+        IRNode::OpCode(OpCode::Trunc(Trunc { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 4.0,
             "Assertion failed for executor: {}",
@@ -119,14 +119,14 @@ fn test_trunc_positive() {
 #[test]
 fn test_negate_negative() {
     let nodes = vec![
-        IRNode::Value(-6.25),                                // 0
-        IRNode::OpCode(OpCode::Negate(Negate { value: 0 })), // 1
+        IRNode::Value(-6.25),                                       // 0
+        IRNode::OpCode(OpCode::Negate(Negate { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 6.25,
             "Assertion failed for executor: {}",
@@ -138,14 +138,14 @@ fn test_negate_negative() {
 #[test]
 fn test_negate_positive() {
     let nodes = vec![
-        IRNode::Value(6.25),                                 // 0
-        IRNode::OpCode(OpCode::Negate(Negate { value: 0 })), // 1
+        IRNode::Value(6.25),                                        // 0
+        IRNode::OpCode(OpCode::Negate(Negate { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, -6.25,
             "Assertion failed for executor: {}",
@@ -157,15 +157,17 @@ fn test_negate_positive() {
 #[test]
 fn test_add() {
     let nodes = vec![
-        IRNode::Value(2.0),                                    // 0
-        IRNode::Value(3.5),                                    // 1
-        IRNode::OpCode(OpCode::Add(Add { args: vec![0, 1] })), // 2
+        IRNode::Value(2.0), // 0
+        IRNode::Value(3.5), // 1
+        IRNode::OpCode(OpCode::Add(Add {
+            args: vec![0.into(), 1.into()],
+        })), // 2
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 5.5,
             "Assertion failed for executor: {}",
@@ -177,17 +179,21 @@ fn test_add() {
 #[test]
 fn test_add_chain() {
     let nodes = vec![
-        IRNode::Value(1.0),                                    // 0
-        IRNode::Value(2.0),                                    // 1
-        IRNode::Value(3.0),                                    // 2
-        IRNode::OpCode(OpCode::Add(Add { args: vec![0, 1] })), // 3 = 3.0
-        IRNode::OpCode(OpCode::Add(Add { args: vec![3, 2] })), // 4 = 6.0
+        IRNode::Value(1.0), // 0
+        IRNode::Value(2.0), // 1
+        IRNode::Value(3.0), // 2
+        IRNode::OpCode(OpCode::Add(Add {
+            args: vec![0.into(), 1.into()],
+        })), // 3 = 3.0
+        IRNode::OpCode(OpCode::Add(Add {
+            args: vec![3.into(), 2.into()],
+        })), // 4 = 6.0
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 4, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 4.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 6.0,
             "Assertion failed for executor: {}",
@@ -201,13 +207,15 @@ fn test_subtract() {
     let nodes = vec![
         IRNode::Value(10.0),
         IRNode::Value(4.0),
-        IRNode::OpCode(OpCode::Subtract(Subtract { args: vec![0, 1] })),
+        IRNode::OpCode(OpCode::Subtract(Subtract {
+            args: vec![0.into(), 1.into()],
+        })),
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 6.0,
             "Assertion failed for executor: {}",
@@ -219,15 +227,17 @@ fn test_subtract() {
 #[test]
 fn test_subtract_negative() {
     let nodes = vec![
-        IRNode::Value(5.0),                                              // 0
-        IRNode::Value(10.0),                                             // 1
-        IRNode::OpCode(OpCode::Subtract(Subtract { args: vec![0, 1] })), // 2 = -5.0
+        IRNode::Value(5.0),  // 0
+        IRNode::Value(10.0), // 1
+        IRNode::OpCode(OpCode::Subtract(Subtract {
+            args: vec![0.into(), 1.into()],
+        })), // 2 = -5.0
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, -5.0,
             "Assertion failed for executor: {}",
@@ -241,13 +251,15 @@ fn test_multiply() {
     let nodes = vec![
         IRNode::Value(3.0),
         IRNode::Value(4.0),
-        IRNode::OpCode(OpCode::Multiply(Multiply { args: vec![0, 1] })),
+        IRNode::OpCode(OpCode::Multiply(Multiply {
+            args: vec![0.into(), 1.into()],
+        })),
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 12.0,
             "Assertion failed for executor: {}",
@@ -261,13 +273,15 @@ fn test_multiply_zero() {
     let nodes = vec![
         IRNode::Value(0.0),
         IRNode::Value(999.0),
-        IRNode::OpCode(OpCode::Multiply(Multiply { args: vec![0, 1] })),
+        IRNode::OpCode(OpCode::Multiply(Multiply {
+            args: vec![0.into(), 1.into()],
+        })),
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 0.0,
             "Assertion failed for executor: {}",
@@ -281,13 +295,15 @@ fn test_divide() {
     let nodes = vec![
         IRNode::Value(9.0),
         IRNode::Value(3.0),
-        IRNode::OpCode(OpCode::Divide(Divide { args: vec![0, 1] })),
+        IRNode::OpCode(OpCode::Divide(Divide {
+            args: vec![0.into(), 1.into()],
+        })),
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 3.0,
             "Assertion failed for executor: {}",
@@ -299,15 +315,17 @@ fn test_divide() {
 #[test]
 fn test_mod() {
     let nodes = vec![
-        IRNode::Value(-5.3),                                   // 0
-        IRNode::Value(2.0),                                    // 1
-        IRNode::OpCode(OpCode::Mod(Mod { args: vec![0, 1] })), // 2
+        IRNode::Value(-5.3), // 0
+        IRNode::Value(2.0),  // 1
+        IRNode::OpCode(OpCode::Mod(Mod {
+            args: vec![0.into(), 1.into()],
+        })), // 2
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = 0.7;
         assert!(
@@ -320,15 +338,17 @@ fn test_mod() {
 #[test]
 fn test_mod_negative_operand() {
     let nodes = vec![
-        IRNode::Value(17.0),                                   // 0
-        IRNode::Value(-12.0),                                  // 1
-        IRNode::OpCode(OpCode::Mod(Mod { args: vec![0, 1] })), // 2
+        IRNode::Value(17.0),  // 0
+        IRNode::Value(-12.0), // 1
+        IRNode::OpCode(OpCode::Mod(Mod {
+            args: vec![0.into(), 1.into()],
+        })), // 2
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = -7.0;
         assert!(
@@ -341,15 +361,17 @@ fn test_mod_negative_operand() {
 #[test]
 fn test_rem() {
     let nodes = vec![
-        IRNode::Value(-5.3),                                   // 0
-        IRNode::Value(2.0),                                    // 1
-        IRNode::OpCode(OpCode::Rem(Rem { args: vec![0, 1] })), // 2
+        IRNode::Value(-5.3), // 0
+        IRNode::Value(2.0),  // 1
+        IRNode::OpCode(OpCode::Rem(Rem {
+            args: vec![0.into(), 1.into()],
+        })), // 2
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = -1.3;
         assert!(
@@ -362,15 +384,17 @@ fn test_rem() {
 #[test]
 fn test_rem_negative_operand() {
     let nodes = vec![
-        IRNode::Value(17.0),                                   // 0
-        IRNode::Value(-12.0),                                  // 1
-        IRNode::OpCode(OpCode::Rem(Rem { args: vec![0, 1] })), // 2
+        IRNode::Value(17.0),  // 0
+        IRNode::Value(-12.0), // 1
+        IRNode::OpCode(OpCode::Rem(Rem {
+            args: vec![0.into(), 1.into()],
+        })), // 2
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = 5.0;
         assert!(
@@ -387,7 +411,7 @@ fn test_power_no_args_zero() {
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 0, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 0.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 0.0,
@@ -399,14 +423,16 @@ fn test_power_no_args_zero() {
 #[test]
 fn test_power_single_arg() {
     let nodes = vec![
-        IRNode::Value(5.0),                                     // 0
-        IRNode::OpCode(OpCode::Power(Power { args: vec![0] })), // 1 = 5
+        IRNode::Value(5.0), // 0
+        IRNode::OpCode(OpCode::Power(Power {
+            args: vec![0.into()],
+        })), // 1 = 5
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
 
         assert_eq!(
             result, 5.0,
@@ -418,15 +444,17 @@ fn test_power_single_arg() {
 #[test]
 fn test_power_two_args() {
     let nodes = vec![
-        IRNode::Value(2.0),                                        // 0
-        IRNode::Value(3.0),                                        // 1
-        IRNode::OpCode(OpCode::Power(Power { args: vec![0, 1] })), // 2 = 2^3 = 8
+        IRNode::Value(2.0), // 0
+        IRNode::Value(3.0), // 1
+        IRNode::OpCode(OpCode::Power(Power {
+            args: vec![0.into(), 1.into()],
+        })), // 2 = 2^3 = 8
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = 8.0;
         assert!(
@@ -443,14 +471,14 @@ fn test_power_three_args() {
         IRNode::Value(3.0), // 1
         IRNode::Value(2.0), // 2
         IRNode::OpCode(OpCode::Power(Power {
-            args: vec![0, 1, 2],
+            args: vec![0.into(), 1.into(), 2.into()],
         })), // 3 = (2^3)^2 = 8^2 = 64
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = 64.0;
         assert!(
@@ -463,15 +491,17 @@ fn test_power_three_args() {
 #[test]
 fn test_power_negative_base_even_exponent() {
     let nodes = vec![
-        IRNode::Value(-2.0),                                       // 0
-        IRNode::Value(2.0),                                        // 1
-        IRNode::OpCode(OpCode::Power(Power { args: vec![0, 1] })), // 2 = (-2)^2 = 4
+        IRNode::Value(-2.0), // 0
+        IRNode::Value(2.0),  // 1
+        IRNode::OpCode(OpCode::Power(Power {
+            args: vec![0.into(), 1.into()],
+        })), // 2 = (-2)^2 = 4
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = 4.0;
         assert!(
@@ -484,15 +514,17 @@ fn test_power_negative_base_even_exponent() {
 #[test]
 fn test_power_zero_base() {
     let nodes = vec![
-        IRNode::Value(0.0),                                        // 0
-        IRNode::Value(5.0),                                        // 1
-        IRNode::OpCode(OpCode::Power(Power { args: vec![0, 1] })), // 2 = 0^5 = 0
+        IRNode::Value(0.0), // 0
+        IRNode::Value(5.0), // 1
+        IRNode::OpCode(OpCode::Power(Power {
+            args: vec![0.into(), 1.into()],
+        })), // 2 = 0^5 = 0
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = 0.0;
         assert!(
@@ -505,15 +537,17 @@ fn test_power_zero_base() {
 #[test]
 fn test_power_negative_exponent() {
     let nodes = vec![
-        IRNode::Value(4.0),                                        // 0
-        IRNode::Value(-1.0),                                       // 1
-        IRNode::OpCode(OpCode::Power(Power { args: vec![0, 1] })), // 2 = 4^-1 = 0.25
+        IRNode::Value(4.0),  // 0
+        IRNode::Value(-1.0), // 1
+        IRNode::OpCode(OpCode::Power(Power {
+            args: vec![0.into(), 1.into()],
+        })), // 2 = 4^-1 = 0.25
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = 0.25;
         assert!(
@@ -530,16 +564,16 @@ fn test_clamp_within_bounds() {
         IRNode::Value(5.0), // 1 = max
         IRNode::Value(3.5), // 2 = value
         IRNode::OpCode(OpCode::Clamp(Clamp {
-            min: 0,
-            max: 1,
-            value: 2,
+            min: 0.into(),
+            max: 1.into(),
+            value: 2.into(),
         })), // 3
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = 3.5;
         assert!(
@@ -556,16 +590,16 @@ fn test_clamp_below_min() {
         IRNode::Value(5.0), // 1 = max
         IRNode::Value(1.0), // 2 = value
         IRNode::OpCode(OpCode::Clamp(Clamp {
-            min: 0,
-            max: 1,
-            value: 2,
+            min: 0.into(),
+            max: 1.into(),
+            value: 2.into(),
         })), // 3
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = 2.0;
         assert!(
@@ -582,16 +616,16 @@ fn test_clamp_above_max() {
         IRNode::Value(5.0), // 1 = max
         IRNode::Value(6.0), // 2 = value
         IRNode::OpCode(OpCode::Clamp(Clamp {
-            min: 0,
-            max: 1,
-            value: 2,
+            min: 0.into(),
+            max: 1.into(),
+            value: 2.into(),
         })), // 3
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = 5.0;
         assert!(
@@ -608,16 +642,16 @@ fn test_lerp_zero() {
         IRNode::Value(20.0), // 1 = max
         IRNode::Value(0.0),  // 2 = value
         IRNode::OpCode(OpCode::Lerp(Lerp {
-            min: 0,
-            max: 1,
-            value: 2,
+            min: 0.into(),
+            max: 1.into(),
+            value: 2.into(),
         })), // 3
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = 10.0;
         assert!(
@@ -634,16 +668,16 @@ fn test_lerp_one() {
         IRNode::Value(20.0), // 1 = max
         IRNode::Value(1.0),  // 2 = value
         IRNode::OpCode(OpCode::Lerp(Lerp {
-            min: 0,
-            max: 1,
-            value: 2,
+            min: 0.into(),
+            max: 1.into(),
+            value: 2.into(),
         })), // 3
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = 20.0;
         assert!(
@@ -660,16 +694,16 @@ fn test_lerp_half() {
         IRNode::Value(20.0), // 1 = max
         IRNode::Value(0.5),  // 2 = value
         IRNode::OpCode(OpCode::Lerp(Lerp {
-            min: 0,
-            max: 1,
-            value: 2,
+            min: 0.into(),
+            max: 1.into(),
+            value: 2.into(),
         })), // 3
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = 15.0;
         assert!(
@@ -686,16 +720,16 @@ fn test_lerp_past_one() {
         IRNode::Value(20.0), // 1 = max
         IRNode::Value(1.5),  // 2 = value
         IRNode::OpCode(OpCode::Lerp(Lerp {
-            min: 0,
-            max: 1,
-            value: 2,
+            min: 0.into(),
+            max: 1.into(),
+            value: 2.into(),
         })), // 3
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = 25.0;
         assert!(
@@ -712,16 +746,16 @@ fn test_lerp_clamped_below_zero() {
         IRNode::Value(200.0), // 1 = max
         IRNode::Value(-1.0),  // 2 = value (t < 0)
         IRNode::OpCode(OpCode::LerpClamped(LerpClamped {
-            min: 0,
-            max: 1,
-            value: 2,
+            min: 0.into(),
+            max: 1.into(),
+            value: 2.into(),
         })), // 3
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         // clamped to 0.0 → lerp(min, max, 0.0) = min
         let expected = 100.0;
@@ -739,16 +773,16 @@ fn test_lerp_clamped_above_one() {
         IRNode::Value(200.0), // 1 = max
         IRNode::Value(2.0),   // 2 = value (t > 1)
         IRNode::OpCode(OpCode::LerpClamped(LerpClamped {
-            min: 0,
-            max: 1,
-            value: 2,
+            min: 0.into(),
+            max: 1.into(),
+            value: 2.into(),
         })), // 3
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         // clamped to 1.0 → lerp(min, max, 1.0) = max
         let expected = 200.0;
@@ -766,16 +800,16 @@ fn test_lerp_clamped_midpoint() {
         IRNode::Value(200.0), // 1 = max
         IRNode::Value(0.5),   // 2 = value (t = 0.5)
         IRNode::OpCode(OpCode::LerpClamped(LerpClamped {
-            min: 0,
-            max: 1,
-            value: 2,
+            min: 0.into(),
+            max: 1.into(),
+            value: 2.into(),
         })), // 3
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         // lerp(min, max, 0.5)
         let expected = 150.0;
@@ -793,16 +827,16 @@ fn test_lerp_clamped_exact_zero() {
         IRNode::Value(20.0), // 1 = max
         IRNode::Value(0.0),  // 2 = value
         IRNode::OpCode(OpCode::LerpClamped(LerpClamped {
-            min: 0,
-            max: 1,
-            value: 2,
+            min: 0.into(),
+            max: 1.into(),
+            value: 2.into(),
         })), // 3
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         // no clamping needed
         let expected = 10.0;
@@ -820,16 +854,16 @@ fn test_lerp_clamped_exact_one() {
         IRNode::Value(20.0), // 1 = max
         IRNode::Value(1.0),  // 2 = value
         IRNode::OpCode(OpCode::LerpClamped(LerpClamped {
-            min: 0,
-            max: 1,
-            value: 2,
+            min: 0.into(),
+            max: 1.into(),
+            value: 2.into(),
         })), // 3
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         // no clamping needed
         let expected = 20.0;
@@ -847,16 +881,16 @@ fn test_unlerp_zero() {
         IRNode::Value(20.0), // 1 = max
         IRNode::Value(10.0), // 2 = value
         IRNode::OpCode(OpCode::Unlerp(Unlerp {
-            min: 0,
-            max: 1,
-            value: 2,
+            min: 0.into(),
+            max: 1.into(),
+            value: 2.into(),
         })), // 3
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = 0.0;
         assert!(
@@ -873,16 +907,16 @@ fn test_unlerp_one() {
         IRNode::Value(20.0), // 1 = max
         IRNode::Value(20.0), // 2 = value
         IRNode::OpCode(OpCode::Unlerp(Unlerp {
-            min: 0,
-            max: 1,
-            value: 2,
+            min: 0.into(),
+            max: 1.into(),
+            value: 2.into(),
         })), // 3
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = 1.0;
         assert!(
@@ -899,16 +933,16 @@ fn test_unlerp_half() {
         IRNode::Value(2.0), // 1 = max
         IRNode::Value(1.0), // 2 = value
         IRNode::OpCode(OpCode::Unlerp(Unlerp {
-            min: 0,
-            max: 1,
-            value: 2,
+            min: 0.into(),
+            max: 1.into(),
+            value: 2.into(),
         })), // 3
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = 0.5;
         assert!(
@@ -925,16 +959,16 @@ fn test_unlerp_below_min() {
         IRNode::Value(10.0), // 1 = max
         IRNode::Value(0.0),  // 2 = value
         IRNode::OpCode(OpCode::Unlerp(Unlerp {
-            min: 0,
-            max: 1,
-            value: 2,
+            min: 0.into(),
+            max: 1.into(),
+            value: 2.into(),
         })), // 3
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = -1.0;
         assert!(
@@ -951,16 +985,16 @@ fn test_unlerp_above_max() {
         IRNode::Value(10.0), // 1 = max
         IRNode::Value(15.0), // 2 = value
         IRNode::OpCode(OpCode::Unlerp(Unlerp {
-            min: 0,
-            max: 1,
-            value: 2,
+            min: 0.into(),
+            max: 1.into(),
+            value: 2.into(),
         })), // 3
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = 2.0;
         assert!(
@@ -977,16 +1011,16 @@ fn test_unlerp_clamped_within_range() {
         IRNode::Value(10.0), // 1 = max
         IRNode::Value(5.0),  // 2 = value
         IRNode::OpCode(OpCode::UnlerpClamped(UnlerpClamped {
-            min: 0,
-            max: 1,
-            value: 2,
+            min: 0.into(),
+            max: 1.into(),
+            value: 2.into(),
         })), // 3
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = 0.5;
         assert!(
@@ -1003,16 +1037,16 @@ fn test_unlerp_clamped_below_min() {
         IRNode::Value(10.0), // 1 = max
         IRNode::Value(-5.0), // 2 = value
         IRNode::OpCode(OpCode::UnlerpClamped(UnlerpClamped {
-            min: 0,
-            max: 1,
-            value: 2,
+            min: 0.into(),
+            max: 1.into(),
+            value: 2.into(),
         })), // 3
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
 
         let expected = 0.0;
         assert!(
@@ -1029,16 +1063,16 @@ fn test_unlerp_clamped_above_max() {
         IRNode::Value(10.0), // 1 = max
         IRNode::Value(15.0), // 2 = value
         IRNode::OpCode(OpCode::UnlerpClamped(UnlerpClamped {
-            min: 0,
-            max: 1,
-            value: 2,
+            min: 0.into(),
+            max: 1.into(),
+            value: 2.into(),
         })), // 3
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 1.0,
             "Assertion failed for executor: {}",
@@ -1054,16 +1088,16 @@ fn test_unlerp_clamped_min_equals_max() {
         IRNode::Value(10.0), // 1 = max
         IRNode::Value(15.0), // 2 = value (irrelevant)
         IRNode::OpCode(OpCode::UnlerpClamped(UnlerpClamped {
-            min: 0,
-            max: 1,
-            value: 2,
+            min: 0.into(),
+            max: 1.into(),
+            value: 2.into(),
         })), // 3
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 3, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 3.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 0.0,
             "Assertion failed for executor: {}",
@@ -1075,15 +1109,18 @@ fn test_unlerp_clamped_min_equals_max() {
 #[test]
 fn test_min_left_smaller() {
     let nodes = vec![
-        IRNode::Value(2.0),                              // 0 = x
-        IRNode::Value(5.0),                              // 1 = y
-        IRNode::OpCode(OpCode::Min(Min { x: 0, y: 1 })), // 2
+        IRNode::Value(2.0), // 0 = x
+        IRNode::Value(5.0), // 1 = y
+        IRNode::OpCode(OpCode::Min(Min {
+            x: 0.into(),
+            y: 1.into(),
+        })), // 2
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 2.0,
             "Assertion failed for executor: {}",
@@ -1095,15 +1132,18 @@ fn test_min_left_smaller() {
 #[test]
 fn test_min_right_smaller() {
     let nodes = vec![
-        IRNode::Value(7.0),                              // 0 = x
-        IRNode::Value(3.0),                              // 1 = y
-        IRNode::OpCode(OpCode::Min(Min { x: 0, y: 1 })), // 2
+        IRNode::Value(7.0), // 0 = x
+        IRNode::Value(3.0), // 1 = y
+        IRNode::OpCode(OpCode::Min(Min {
+            x: 0.into(),
+            y: 1.into(),
+        })), // 2
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 3.0,
             "Assertion failed for executor: {}",
@@ -1115,15 +1155,18 @@ fn test_min_right_smaller() {
 #[test]
 fn test_min_equal() {
     let nodes = vec![
-        IRNode::Value(4.0),                              // 0 = x
-        IRNode::Value(4.0),                              // 1 = y
-        IRNode::OpCode(OpCode::Min(Min { x: 0, y: 1 })), // 2
+        IRNode::Value(4.0), // 0 = x
+        IRNode::Value(4.0), // 1 = y
+        IRNode::OpCode(OpCode::Min(Min {
+            x: 0.into(),
+            y: 1.into(),
+        })), // 2
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 4.0,
             "Assertion failed for executor: {}",
@@ -1135,15 +1178,18 @@ fn test_min_equal() {
 #[test]
 fn test_max_left_greater() {
     let nodes = vec![
-        IRNode::Value(8.0),                              // 0 = x
-        IRNode::Value(6.0),                              // 1 = y
-        IRNode::OpCode(OpCode::Max(Max { x: 0, y: 1 })), // 2
+        IRNode::Value(8.0), // 0 = x
+        IRNode::Value(6.0), // 1 = y
+        IRNode::OpCode(OpCode::Max(Max {
+            x: 0.into(),
+            y: 1.into(),
+        })), // 2
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 8.0,
             "Assertion failed for executor: {}",
@@ -1155,15 +1201,18 @@ fn test_max_left_greater() {
 #[test]
 fn test_max_right_greater() {
     let nodes = vec![
-        IRNode::Value(1.0),                              // 0 = x
-        IRNode::Value(9.0),                              // 1 = y
-        IRNode::OpCode(OpCode::Max(Max { x: 0, y: 1 })), // 2
+        IRNode::Value(1.0), // 0 = x
+        IRNode::Value(9.0), // 1 = y
+        IRNode::OpCode(OpCode::Max(Max {
+            x: 0.into(),
+            y: 1.into(),
+        })), // 2
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 9.0,
             "Assertion failed for executor: {}",
@@ -1175,15 +1224,18 @@ fn test_max_right_greater() {
 #[test]
 fn test_max_equal() {
     let nodes = vec![
-        IRNode::Value(7.0),                              // 0 = x
-        IRNode::Value(7.0),                              // 1 = y
-        IRNode::OpCode(OpCode::Max(Max { x: 0, y: 1 })), // 2
+        IRNode::Value(7.0), // 0 = x
+        IRNode::Value(7.0), // 1 = y
+        IRNode::OpCode(OpCode::Max(Max {
+            x: 0.into(),
+            y: 1.into(),
+        })), // 2
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 7.0,
             "Assertion failed for executor: {}",
@@ -1201,18 +1253,18 @@ fn test_remap_basic() {
         IRNode::Value(100.0), // 3 = to_max
         IRNode::Value(5.0),   // 4 = value
         IRNode::OpCode(OpCode::Remap(Remap {
-            from_min: 0,
-            from_max: 1,
-            to_min: 2,
-            to_max: 3,
-            value: 4,
+            from_min: 0.into(),
+            from_max: 1.into(),
+            to_min: 2.into(),
+            to_max: 3.into(),
+            value: 4.into(),
         })), // 5
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 5.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 50.0,
             "Assertion failed for executor: {}",
@@ -1230,18 +1282,18 @@ fn test_remap_value_below_min() {
         IRNode::Value(100.0), // 3 = to_max
         IRNode::Value(-5.0),  // 4 = value
         IRNode::OpCode(OpCode::Remap(Remap {
-            from_min: 0,
-            from_max: 1,
-            to_min: 2,
-            to_max: 3,
-            value: 4,
+            from_min: 0.into(),
+            from_max: 1.into(),
+            to_min: 2.into(),
+            to_max: 3.into(),
+            value: 4.into(),
         })), // 5
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 5.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, -50.0,
             "Assertion failed for executor: {}",
@@ -1259,18 +1311,18 @@ fn test_remap_from_min_equals_max() {
         IRNode::Value(4.0), // 3 = to_max
         IRNode::Value(1.0), // 4 = value
         IRNode::OpCode(OpCode::Remap(Remap {
-            from_min: 0,
-            from_max: 1,
-            to_min: 2,
-            to_max: 3,
-            value: 4,
+            from_min: 0.into(),
+            from_max: 1.into(),
+            to_min: 2.into(),
+            to_max: 3.into(),
+            value: 4.into(),
         })), // 5
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 5.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 2.0,
             "Assertion failed for executor: {}",
@@ -1288,18 +1340,18 @@ fn test_remap_clamped_in_range() {
         IRNode::Value(100.0), // 3 = to_max
         IRNode::Value(5.0),   // 4 = value
         IRNode::OpCode(OpCode::RemapClamped(RemapClamped {
-            from_min: 0,
-            from_max: 1,
-            to_min: 2,
-            to_max: 3,
-            value: 4,
+            from_min: 0.into(),
+            from_max: 1.into(),
+            to_min: 2.into(),
+            to_max: 3.into(),
+            value: 4.into(),
         })), // 5
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 5.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 50.0,
             "Assertion failed for executor: {}",
@@ -1317,18 +1369,18 @@ fn test_remap_clamped_below_min() {
         IRNode::Value(100.0),
         IRNode::Value(-5.0),
         IRNode::OpCode(OpCode::RemapClamped(RemapClamped {
-            from_min: 0,
-            from_max: 1,
-            to_min: 2,
-            to_max: 3,
-            value: 4,
+            from_min: 0.into(),
+            from_max: 1.into(),
+            to_min: 2.into(),
+            to_max: 3.into(),
+            value: 4.into(),
         })),
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 5.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 0.0,
             "Assertion failed for executor: {}",
@@ -1346,18 +1398,18 @@ fn test_remap_clamped_above_max() {
         IRNode::Value(100.0),
         IRNode::Value(20.0),
         IRNode::OpCode(OpCode::RemapClamped(RemapClamped {
-            from_min: 0,
-            from_max: 1,
-            to_min: 2,
-            to_max: 3,
-            value: 4,
+            from_min: 0.into(),
+            from_max: 1.into(),
+            to_min: 2.into(),
+            to_max: 3.into(),
+            value: 4.into(),
         })),
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 5.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 100.0,
             "Assertion failed for executor: {}",
@@ -1375,18 +1427,18 @@ fn test_remap_clamped_min_equals_max() {
         IRNode::Value(20.0),
         IRNode::Value(1.0),
         IRNode::OpCode(OpCode::RemapClamped(RemapClamped {
-            from_min: 0,
-            from_max: 1,
-            to_min: 2,
-            to_max: 3,
-            value: 4,
+            from_min: 0.into(),
+            from_max: 1.into(),
+            to_min: 2.into(),
+            to_max: 3.into(),
+            value: 4.into(),
         })),
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 5, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 5.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 10.0,
             "Assertion failed for executor: {}",
@@ -1398,14 +1450,14 @@ fn test_remap_clamped_min_equals_max() {
 #[test]
 fn test_round_half_up_even() {
     let nodes = vec![
-        IRNode::Value(2.5),                                // 0
-        IRNode::OpCode(OpCode::Round(Round { value: 0 })), // 1
+        IRNode::Value(2.5),                                       // 0
+        IRNode::OpCode(OpCode::Round(Round { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 2.0,
             "Assertion failed for executor: {}",
@@ -1417,14 +1469,14 @@ fn test_round_half_up_even() {
 #[test]
 fn test_round_half_up_odd() {
     let nodes = vec![
-        IRNode::Value(3.5),                                // 0
-        IRNode::OpCode(OpCode::Round(Round { value: 0 })), // 1
+        IRNode::Value(3.5),                                       // 0
+        IRNode::OpCode(OpCode::Round(Round { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 4.0,
             "Assertion failed for executor: {}",
@@ -1436,14 +1488,14 @@ fn test_round_half_up_odd() {
 #[test]
 fn test_round_negative_half() {
     let nodes = vec![
-        IRNode::Value(-1.5),                               // 0
-        IRNode::OpCode(OpCode::Round(Round { value: 0 })), // 1
+        IRNode::Value(-1.5),                                      // 0
+        IRNode::OpCode(OpCode::Round(Round { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, -2.0,
             "Assertion failed for executor: {}",
@@ -1455,14 +1507,14 @@ fn test_round_negative_half() {
 #[test]
 fn test_floor_positive() {
     let nodes = vec![
-        IRNode::Value(3.7),                                // 0
-        IRNode::OpCode(OpCode::Floor(Floor { value: 0 })), // 1
+        IRNode::Value(3.7),                                       // 0
+        IRNode::OpCode(OpCode::Floor(Floor { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 3.0,
             "Assertion failed for executor: {}",
@@ -1474,14 +1526,14 @@ fn test_floor_positive() {
 #[test]
 fn test_floor_negative() {
     let nodes = vec![
-        IRNode::Value(-1.2),                               // 0
-        IRNode::OpCode(OpCode::Floor(Floor { value: 0 })), // 1
+        IRNode::Value(-1.2),                                      // 0
+        IRNode::OpCode(OpCode::Floor(Floor { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, -2.0,
             "Assertion failed for executor: {}",
@@ -1493,14 +1545,14 @@ fn test_floor_negative() {
 #[test]
 fn test_ceil_positive() {
     let nodes = vec![
-        IRNode::Value(2.1),                              // 0
-        IRNode::OpCode(OpCode::Ceil(Ceil { value: 0 })), // 1
+        IRNode::Value(2.1),                                     // 0
+        IRNode::OpCode(OpCode::Ceil(Ceil { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 3.0,
             "Assertion failed for executor: {}",
@@ -1512,14 +1564,14 @@ fn test_ceil_positive() {
 #[test]
 fn test_ceil_negative() {
     let nodes = vec![
-        IRNode::Value(-3.9),                             // 0
-        IRNode::OpCode(OpCode::Ceil(Ceil { value: 0 })), // 1
+        IRNode::Value(-3.9),                                    // 0
+        IRNode::OpCode(OpCode::Ceil(Ceil { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, -3.0,
             "Assertion failed for executor: {}",
@@ -1537,13 +1589,13 @@ fn test_sin() {
     for (&x, &y) in inputs.iter().zip(expected.iter()) {
         let nodes = vec![
             IRNode::Value(x),
-            IRNode::OpCode(OpCode::Sin(Sin { value: 0 })),
+            IRNode::OpCode(OpCode::Sin(Sin { value: 0.into() })),
         ];
 
         let executors = get_available_executors();
         for (executor_name, mut executor) in executors {
             let runtime_context = TestingRuntimeContext::default();
-            let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+            let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
             assert!(
                 (result - y).abs() < 1e-6,
                 "Assertion failed for executor: {executor_name}, sin({x}) = {result}, expected {y}",
@@ -1561,13 +1613,13 @@ fn test_cos() {
     for (&x, &y) in inputs.iter().zip(expected.iter()) {
         let nodes = vec![
             IRNode::Value(x),
-            IRNode::OpCode(OpCode::Cos(Cos { value: 0 })),
+            IRNode::OpCode(OpCode::Cos(Cos { value: 0.into() })),
         ];
 
         let executors = get_available_executors();
         for (executor_name, mut executor) in executors {
             let runtime_context = TestingRuntimeContext::default();
-            let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+            let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
             assert!(
                 (result - y).abs() < 1e-6,
                 "Assertion failed for executor: {executor_name}, cos({x}) = {result}, expected {y}",
@@ -1585,13 +1637,13 @@ fn test_tan() {
     for (&x, &y) in inputs.iter().zip(expected.iter()) {
         let nodes = vec![
             IRNode::Value(x),
-            IRNode::OpCode(OpCode::Tan(Tan { value: 0 })),
+            IRNode::OpCode(OpCode::Tan(Tan { value: 0.into() })),
         ];
 
         let executors = get_available_executors();
         for (executor_name, mut executor) in executors {
             let runtime_context = TestingRuntimeContext::default();
-            let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+            let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
             assert!(
                 (result - y).abs() < 1e-6,
                 "Assertion failed for executor: {executor_name}, tan({x}) = {result}, expected {y}",
@@ -1609,13 +1661,13 @@ fn test_sinh() {
     for (&x, &y) in inputs.iter().zip(expected.iter()) {
         let nodes = vec![
             IRNode::Value(x),
-            IRNode::OpCode(OpCode::Sinh(Sinh { value: 0 })),
+            IRNode::OpCode(OpCode::Sinh(Sinh { value: 0.into() })),
         ];
 
         let executors = get_available_executors();
         for (executor_name, mut executor) in executors {
             let runtime_context = TestingRuntimeContext::default();
-            let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+            let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
             assert!(
                 (result - y).abs() < 1e-6,
                 "Assertion failed for executor: {executor_name}, sinh({x}) = {result}, expected {y}",
@@ -1633,13 +1685,13 @@ fn test_cosh() {
     for (&x, &y) in inputs.iter().zip(expected.iter()) {
         let nodes = vec![
             IRNode::Value(x),
-            IRNode::OpCode(OpCode::Cosh(Cosh { value: 0 })),
+            IRNode::OpCode(OpCode::Cosh(Cosh { value: 0.into() })),
         ];
 
         let executors = get_available_executors();
         for (executor_name, mut executor) in executors {
             let runtime_context = TestingRuntimeContext::default();
-            let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+            let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
             assert!(
                 (result - y).abs() < 1e-6,
                 "Assertion failed for executor: {executor_name}, cosh({x}) = {result}, expected {y}",
@@ -1657,13 +1709,13 @@ fn test_tanh() {
     for (&x, &y) in inputs.iter().zip(expected.iter()) {
         let nodes = vec![
             IRNode::Value(x),
-            IRNode::OpCode(OpCode::Tanh(Tanh { value: 0 })),
+            IRNode::OpCode(OpCode::Tanh(Tanh { value: 0.into() })),
         ];
 
         let executors = get_available_executors();
         for (executor_name, mut executor) in executors {
             let runtime_context = TestingRuntimeContext::default();
-            let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+            let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
             assert!(
                 (result - y).abs() < 1e-6,
                 "Assertion failed for executor: {executor_name}, tanh({x}) = {result}, expected {y}",
@@ -1686,13 +1738,13 @@ fn test_asin() {
     for (&x, &y) in inputs.iter().zip(expected.iter()) {
         let nodes = vec![
             IRNode::Value(x),
-            IRNode::OpCode(OpCode::Arcsin(Arcsin { value: 0 })),
+            IRNode::OpCode(OpCode::Arcsin(Arcsin { value: 0.into() })),
         ];
 
         let executors = get_available_executors();
         for (executor_name, mut executor) in executors {
             let runtime_context = TestingRuntimeContext::default();
-            let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+            let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
             assert!(
                 (result - y).abs() < 1e-6,
                 "Assertion failed for executor: {executor_name}, asin({x}) = {result}, expected {y}",
@@ -1716,13 +1768,13 @@ fn test_acos() {
     for (&x, &y) in inputs.iter().zip(expected.iter()) {
         let nodes = vec![
             IRNode::Value(x),
-            IRNode::OpCode(OpCode::Arccos(Arccos { value: 0 })),
+            IRNode::OpCode(OpCode::Arccos(Arccos { value: 0.into() })),
         ];
 
         let executors = get_available_executors();
         for (executor_name, mut executor) in executors {
             let runtime_context = TestingRuntimeContext::default();
-            let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+            let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
             assert!(
                 (result - y).abs() < 1e-6,
                 "Assertion failed for executor: {executor_name}, acos({x}) = {result}, expected {y}",
@@ -1747,13 +1799,13 @@ fn test_atan() {
     for (&x, &y) in inputs.iter().zip(expected.iter()) {
         let nodes = vec![
             IRNode::Value(x),
-            IRNode::OpCode(OpCode::Arctan(Arctan { value: 0 })),
+            IRNode::OpCode(OpCode::Arctan(Arctan { value: 0.into() })),
         ];
 
         let executors = get_available_executors();
         for (executor_name, mut executor) in executors {
             let runtime_context = TestingRuntimeContext::default();
-            let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+            let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
             assert!(
                 (result - y).abs() < 1e-6,
                 "Assertion failed for executor: {executor_name}, atan({x}) = {result}, expected {y}",
@@ -1783,13 +1835,16 @@ fn test_atan2() {
         let nodes = vec![
             IRNode::Value(*y),
             IRNode::Value(*x),
-            IRNode::OpCode(OpCode::Arctan2(Arctan2 { y: 0, x: 1 })),
+            IRNode::OpCode(OpCode::Arctan2(Arctan2 {
+                y: 0.into(),
+                x: 1.into(),
+            })),
         ];
 
         let executors = get_available_executors();
         for (executor_name, mut executor) in executors {
             let runtime_context = TestingRuntimeContext::default();
-            let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+            let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
             assert!(
                 (result - expected).abs() < 1e-6,
                 "Assertion failed for executor: {executor_name}, atan2({y}, {x}) = {result}, expected {expected}",
@@ -1801,14 +1856,14 @@ fn test_atan2() {
 #[test]
 fn test_degree_pi() {
     let nodes = vec![
-        IRNode::Value(std::f32::consts::PI),                 // 0
-        IRNode::OpCode(OpCode::Degree(Degree { value: 0 })), // 1
+        IRNode::Value(std::f32::consts::PI),                        // 0
+        IRNode::OpCode(OpCode::Degree(Degree { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert!(
             (result - 180.0).abs() < 1e-6,
             "Assertion failed for executor: {executor_name}, got {result}, expected 180.0"
@@ -1819,14 +1874,14 @@ fn test_degree_pi() {
 #[test]
 fn test_degree_zero() {
     let nodes = vec![
-        IRNode::Value(0.0),                                  // 0
-        IRNode::OpCode(OpCode::Degree(Degree { value: 0 })), // 1
+        IRNode::Value(0.0),                                         // 0
+        IRNode::OpCode(OpCode::Degree(Degree { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 0.0,
             "Assertion failed for executor: {}",
@@ -1838,14 +1893,14 @@ fn test_degree_zero() {
 #[test]
 fn test_degree_negative() {
     let nodes = vec![
-        IRNode::Value(-std::f32::consts::PI / 2.0),          // 0
-        IRNode::OpCode(OpCode::Degree(Degree { value: 0 })), // 1
+        IRNode::Value(-std::f32::consts::PI / 2.0), // 0
+        IRNode::OpCode(OpCode::Degree(Degree { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert!(
             (result + 90.0).abs() < 1e-6,
             "Assertion failed for executor: {executor_name}, got {result}, expected -90.0"
@@ -1856,14 +1911,14 @@ fn test_degree_negative() {
 #[test]
 fn test_radian_180() {
     let nodes = vec![
-        IRNode::Value(180.0),                                // 0
-        IRNode::OpCode(OpCode::Radian(Radian { value: 0 })), // 1
+        IRNode::Value(180.0),                                       // 0
+        IRNode::OpCode(OpCode::Radian(Radian { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert!(
             (result - std::f32::consts::PI).abs() < 1e-6,
             "Assertion failed for executor: {executor_name}"
@@ -1874,14 +1929,14 @@ fn test_radian_180() {
 #[test]
 fn test_radian_zero() {
     let nodes = vec![
-        IRNode::Value(0.0),                                  // 0
-        IRNode::OpCode(OpCode::Radian(Radian { value: 0 })), // 1
+        IRNode::Value(0.0),                                         // 0
+        IRNode::OpCode(OpCode::Radian(Radian { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 0.0,
             "Assertion failed for executor: {}",
@@ -1893,14 +1948,14 @@ fn test_radian_zero() {
 #[test]
 fn test_radian_negative() {
     let nodes = vec![
-        IRNode::Value(-90.0),                                // 0
-        IRNode::OpCode(OpCode::Radian(Radian { value: 0 })), // 1
+        IRNode::Value(-90.0),                                       // 0
+        IRNode::OpCode(OpCode::Radian(Radian { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert!(
             (result + std::f32::consts::FRAC_PI_2).abs() < 1e-6,
             "Assertion failed for executor: {executor_name}"
@@ -1911,14 +1966,14 @@ fn test_radian_negative() {
 #[test]
 fn test_log_regular_value() {
     let nodes = vec![
-        IRNode::Value(10.0),                           // 0 = value
-        IRNode::OpCode(OpCode::Log(Log { value: 0 })), // 1
+        IRNode::Value(10.0),                                  // 0 = value
+        IRNode::OpCode(OpCode::Log(Log { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert!(
             (result - 10f32.ln()).abs() < 1e-6,
             "Assertion failed for executor: {executor_name}"
@@ -1929,14 +1984,14 @@ fn test_log_regular_value() {
 #[test]
 fn test_log_of_1() {
     let nodes = vec![
-        IRNode::Value(1.0),                            // 0 = value
-        IRNode::OpCode(OpCode::Log(Log { value: 0 })), // 1
+        IRNode::Value(1.0),                                   // 0 = value
+        IRNode::OpCode(OpCode::Log(Log { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 0.0,
             "Assertion failed for executor: {}",
@@ -1948,14 +2003,14 @@ fn test_log_of_1() {
 #[test]
 fn test_log_of_e() {
     let nodes = vec![
-        IRNode::Value(std::f32::consts::E),            // 0 = value
-        IRNode::OpCode(OpCode::Log(Log { value: 0 })), // 1
+        IRNode::Value(std::f32::consts::E),                   // 0 = value
+        IRNode::OpCode(OpCode::Log(Log { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert!(
             (result - 1.0).abs() < 1e-6,
             "Assertion failed for executor: {executor_name}"
@@ -1966,14 +2021,14 @@ fn test_log_of_e() {
 #[test]
 fn test_log_of_zero() {
     let nodes = vec![
-        IRNode::Value(0.0),                            // 0 = value
-        IRNode::OpCode(OpCode::Log(Log { value: 0 })), // 1
+        IRNode::Value(0.0),                                   // 0 = value
+        IRNode::OpCode(OpCode::Log(Log { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert!(
             result.is_infinite() && result.is_sign_negative(),
             "Assertion failed for executor: {executor_name}"
@@ -1984,14 +2039,14 @@ fn test_log_of_zero() {
 #[test]
 fn test_log_of_negative() {
     let nodes = vec![
-        IRNode::Value(-1.0),                           // 0 = value
-        IRNode::OpCode(OpCode::Log(Log { value: 0 })), // 1
+        IRNode::Value(-1.0),                                  // 0 = value
+        IRNode::OpCode(OpCode::Log(Log { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert!(
             result.is_nan(),
             "Assertion failed for executor: {executor_name}"
@@ -2002,14 +2057,14 @@ fn test_log_of_negative() {
 #[test]
 fn test_sign_positive() {
     let nodes = vec![
-        IRNode::Value(42.0),                             // 0
-        IRNode::OpCode(OpCode::Sign(Sign { value: 0 })), // 1
+        IRNode::Value(42.0),                                    // 0
+        IRNode::OpCode(OpCode::Sign(Sign { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 1.0,
             "Assertion failed for executor: {}",
@@ -2021,14 +2076,14 @@ fn test_sign_positive() {
 #[test]
 fn test_sign_negative() {
     let nodes = vec![
-        IRNode::Value(-std::f32::consts::PI),            // 0
-        IRNode::OpCode(OpCode::Sign(Sign { value: 0 })), // 1
+        IRNode::Value(-std::f32::consts::PI),                   // 0
+        IRNode::OpCode(OpCode::Sign(Sign { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, -1.0,
             "Assertion failed for executor: {}",
@@ -2040,14 +2095,14 @@ fn test_sign_negative() {
 #[test]
 fn test_sign_zero() {
     let nodes = vec![
-        IRNode::Value(0.0),                              // 0
-        IRNode::OpCode(OpCode::Sign(Sign { value: 0 })), // 1
+        IRNode::Value(0.0),                                     // 0
+        IRNode::OpCode(OpCode::Sign(Sign { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert_eq!(
             result, 0.0,
             "Assertion failed for executor: {}",
@@ -2059,14 +2114,14 @@ fn test_sign_zero() {
 #[test]
 fn test_sign_nan() {
     let nodes = vec![
-        IRNode::Value(f32::NAN),                         // 0
-        IRNode::OpCode(OpCode::Sign(Sign { value: 0 })), // 1
+        IRNode::Value(f32::NAN),                                // 0
+        IRNode::OpCode(OpCode::Sign(Sign { value: 0.into() })), // 1
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        let result = executor.execute(&nodes, 1, &mut runtime_context.as_ctx() as _);
+        let result = executor.execute(&nodes, 1.into(), &mut runtime_context.as_ctx() as _);
         assert!(
             result.is_nan(),
             "Assertion failed for executor: {executor_name}"
@@ -2077,19 +2132,22 @@ fn test_sign_nan() {
 #[test]
 fn test_random_range_and_variance() {
     let nodes = vec![
-        IRNode::Value(5.0),                                        // min
-        IRNode::Value(10.0),                                       // max
-        IRNode::OpCode(OpCode::Random(Random { min: 0, max: 1 })), // random node
+        IRNode::Value(5.0),  // min
+        IRNode::Value(10.0), // max
+        IRNode::OpCode(OpCode::Random(Random {
+            min: 0.into(),
+            max: 1.into(),
+        })), // random node
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        executor.prepare(&nodes, 2);
+        executor.prepare(&nodes, 2.into());
 
         let mut results = std::collections::HashSet::new();
         for _ in 0..10 {
-            let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+            let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
             assert!(
                 (5.0..=10.0).contains(&result),
                 "Random result {result} out of range [5.0, 10.0] for executor {executor_name}",
@@ -2109,17 +2167,20 @@ fn test_random_integer_range_and_integral() {
     let nodes = vec![
         IRNode::Value(1.0), // min inclusive
         IRNode::Value(5.0), // max exclusive
-        IRNode::OpCode(OpCode::RandomInteger(RandomInteger { min: 0, max: 1 })), // random int node
+        IRNode::OpCode(OpCode::RandomInteger(RandomInteger {
+            min: 0.into(),
+            max: 1.into(),
+        })), // random int node
     ];
 
     let executors = get_available_executors();
     for (executor_name, mut executor) in executors {
         let runtime_context = TestingRuntimeContext::default();
-        executor.prepare(&nodes, 2);
+        executor.prepare(&nodes, 2.into());
 
         let mut results = std::collections::HashSet::new();
         for _ in 0..10 {
-            let result = executor.execute(&nodes, 2, &mut runtime_context.as_ctx() as _);
+            let result = executor.execute(&nodes, 2.into(), &mut runtime_context.as_ctx() as _);
             assert!(
                 (1.0..5.0).contains(&result),
                 "RandomInteger result {result} out of range [1.0, 5.0) for executor {executor_name}",
