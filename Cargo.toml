@@ -1,8 +1,9 @@
 [workspace]
 resolver = "2"
-members = ["crates/cranelift", "crates/interpreter", "crates/ir", "crates/macros", "crates/models", "crates/runtime", "crates/resources", "crates/tests"]
+members = ["crates/bytecode","crates/cranelift", "crates/debugger-wasm", "crates/interpreter", "crates/ir", "crates/macros", "crates/models", "crates/resources", "crates/runtime", "crates/tests"]
 
 [workspace.dependencies]
+sonorust-bytecode = { path = "./crates/bytecode" }
 sonorust-ir = { path = "./crates/ir" }
 sonorust-interpreter = { path = "./crates/interpreter" }
 sonorust-cranelift = { path = "./crates/cranelift" }
@@ -16,5 +17,22 @@ serde = { version = "1.0", features = ["derive", "rc"] }
 serde_json = { version = "1.0" }
 tracing = { version = "0.1" }
 
-tsify = { version = "0.5" }
+tsify = { git = "https://github.com/madonoharu/tsify", default-features = false, features = ["js"] }
 wasm-bindgen = { version = "0.2" }
+
+# Read the optimization guideline for more details: https://tauri.app/concept/size/#cargo-configuration
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 3
+panic = "abort"
+strip = true
+
+[profile.wasm-release]
+# Default to release profile values.
+inherits = "release"
+# Optimize with size in mind (also try "z", sometimes it is better).
+# Slightly slows compile times, great improvements to file size and runtime performance.
+opt-level = "s"
+# Strip all debugging information from the binary to slightly reduce file size.
+strip = "debuginfo"

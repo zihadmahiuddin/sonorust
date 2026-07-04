@@ -159,6 +159,7 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
                 OpCode::SetModPointed(node) => self.build_set_mod_pointed_ir(node),
                 OpCode::SetModShifted(node) => self.build_set_mod_shifted_ir(node),
                 OpCode::Copy(node) => self.build_copy_ir(node),
+                _ => todo!(),
             },
         }
     }

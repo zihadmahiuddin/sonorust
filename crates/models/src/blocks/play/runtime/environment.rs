@@ -25,6 +25,7 @@ pub struct PlayRuntimeEnvironment {
 
 impl PlayRuntimeEnvironment {
     pub const BLOCK_ID: u64 = 1000;
+    pub const SIZE: usize = 9;
 
     pub const INDEX_DEBUG_MODE: usize = 0;
     pub const INDEX_SCREEN_ASPECT_RATIO: usize = 1;

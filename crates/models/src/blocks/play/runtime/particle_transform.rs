@@ -16,6 +16,8 @@ pub struct PlayRuntimeParticleTransform(pub Mat4);
 
 impl PlayRuntimeParticleTransform {
     pub const BLOCK_ID: u64 = 1004;
+
+    pub const SIZE: usize = 16;
 }
 
 impl ReadableBlock for PlayRuntimeParticleTransform {

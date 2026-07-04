@@ -27,6 +27,8 @@ pub struct PlayEntityMemory(
 );
 
 impl PlayEntityMemory {
+    pub const BLOCK_ID: u64 = 4000;
+
     pub const SIZE: usize = 64;
 }
 
@@ -42,10 +44,6 @@ impl Default for PlayEntityMemory {
 #[cfg_attr(feature = "wasm", derive(Tsify))]
 pub struct PlayEntityMemoryArray {
     pub items: BTreeMap<EntityId, PlayEntityMemory>,
-}
-
-impl PlayEntityMemoryArray {
-    pub const BLOCK_ID: u64 = 4000;
 }
 
 impl PlayEntityMemoryArray {

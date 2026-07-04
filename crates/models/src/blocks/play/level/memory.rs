@@ -18,16 +18,17 @@ pub struct PlayLevelMemory(
         serde(deserialize_with = "crate::serde::deserialize_array"),
         serde(serialize_with = "crate::serde::serialize_array")
     )]
-    pub [IRValue; 4096],
+    pub [IRValue; Self::SIZE],
 );
 
 impl PlayLevelMemory {
     pub const BLOCK_ID: u64 = 2000;
+    pub const SIZE: usize = 4096;
 }
 
 impl Default for PlayLevelMemory {
     fn default() -> Self {
-        Self([0.0; 4096])
+        Self([0.0; Self::SIZE])
     }
 }
 

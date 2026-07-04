@@ -22,6 +22,7 @@ pub struct PlayRuntimeBackground {
 
 impl PlayRuntimeBackground {
     pub const BLOCK_ID: u64 = 1005;
+    pub const SIZE: usize = 8;
 
     pub const fn as_array(&self) -> [IRValue; 8] {
         [

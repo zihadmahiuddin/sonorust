@@ -18,17 +18,18 @@ pub struct TemporaryMemory(
         serde(deserialize_with = "crate::serde::deserialize_array"),
         serde(serialize_with = "crate::serde::serialize_array")
     )]
-    pub [IRValue; 4096],
+    pub [IRValue; Self::SIZE],
 );
 
 impl Default for TemporaryMemory {
     fn default() -> Self {
-        Self([0.0; 4096])
+        Self([0.0; Self::SIZE])
     }
 }
 
 impl TemporaryMemory {
     pub const BLOCK_ID: u64 = 10000;
+    pub const SIZE: usize = 4096;
 }
 
 impl ReadableBlock for TemporaryMemory {

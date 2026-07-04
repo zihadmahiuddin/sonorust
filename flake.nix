@@ -36,9 +36,15 @@
               jujutsu
               mold
               pkg-config
+              fontconfig
               rust-toolchain
               gdb
               lldb
+              nodejs
+              pnpm
+              glib
+              gtk3
+              binaryen
             ];
             buildInputs = [
               openssl
@@ -55,6 +61,8 @@
               libxrandr
               libxkbcommon
               wayland
+              librsvg
+              webkitgtk_4_1
             ];
             RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
             LD_LIBRARY_PATH = lib.makeLibraryPath [
@@ -63,9 +71,12 @@
               libxi
               libxcursor
               libxkbcommon
+              wayland
             ];
 
-            shellHook = "";
+            shellHook = '''
+              export PATH="$PATH:$HOME/.local/share/pnpm/bin"
+            '';
           };
       }
     );

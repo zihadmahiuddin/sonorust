@@ -21,6 +21,7 @@ pub struct PlayRuntimeUpdate {
 
 impl PlayRuntimeUpdate {
     pub const BLOCK_ID: u64 = 1001;
+    pub const SIZE: usize = 4;
 
     pub const INDEX_TIME: usize = 0;
     pub const INDEX_DELTA_TIME: usize = 1;

@@ -40,6 +40,7 @@ impl Default for PlayLevelLife {
 
 impl PlayLevelLife {
     pub const BLOCK_ID: u64 = 2005;
+    pub const SIZE: usize = 8;
 
     pub const INDEX_CONSECUTIVE_PERFECT_INCREMENT: usize = 0;
     pub const INDEX_CONSECUTIVE_PERFECT_STEP: usize = 1;

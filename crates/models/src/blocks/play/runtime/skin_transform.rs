@@ -16,6 +16,8 @@ pub struct PlayRuntimeSkinTransform(pub Mat4);
 
 impl PlayRuntimeSkinTransform {
     pub const BLOCK_ID: u64 = 1003;
+
+    pub const SIZE: usize = 16;
 }
 
 impl ReadableBlock for PlayRuntimeSkinTransform {

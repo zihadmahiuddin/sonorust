@@ -3,8 +3,6 @@ use std::ops::{Deref, DerefMut};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "wasm")]
-use tsify::Tsify;
-#[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::wasm_bindgen;
 
 pub mod nodes;
@@ -19,7 +17,7 @@ export type IRValue = number;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Default, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[cfg_attr(feature = "wasm", derive(Tsify), wasm_bindgen)]
+#[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub struct IRIndex(usize);
 
 impl From<usize> for IRIndex {

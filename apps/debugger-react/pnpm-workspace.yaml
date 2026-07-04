@@ -1,0 +1,2 @@
+overrides:
+  sonorust-debugger-wasm: link:../../crates/debugger-wasm/pkg

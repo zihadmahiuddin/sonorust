@@ -22,6 +22,7 @@ pub struct PlayRuntimeUiConfiguration {
 
 impl PlayRuntimeUiConfiguration {
     pub const BLOCK_ID: u64 = 1007;
+    pub const SIZE: usize = PlayRuntimeUiConfigurationItem::SIZE * 5;
 
     pub const INDEX_MENU: usize = 0;
     pub const INDEX_JUDGMENT: usize = 1;

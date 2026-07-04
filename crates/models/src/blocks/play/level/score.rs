@@ -29,6 +29,7 @@ pub struct PlayLevelScore {
 
 impl PlayLevelScore {
     pub const BLOCK_ID: u64 = 2004;
+    pub const SIZE: usize = 12;
 
     pub const INDEX_PERFECT_MULTIPLIER: usize = 0;
     pub const INDEX_GREAT_MULTIPLIER: usize = 1;

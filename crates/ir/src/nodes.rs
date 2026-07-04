@@ -28,6 +28,7 @@ pub enum OpCode {
     SwitchWithDefault(SwitchWithDefault),
     SwitchInteger(SwitchInteger),
     SwitchIntegerWithDefault(SwitchIntegerWithDefault),
+    JumpLoop(JumpLoop),
 
     // Math
     Abs(Abs),
@@ -110,6 +111,9 @@ pub enum OpCode {
     SetRemPointed(SetRemPointed),
     SetRemShifted(SetRemShifted),
     Copy(Copy),
+
+    DebugLog(DebugLog),
+    DebugPause(DebugPause),
 }
 
 // Control Flow

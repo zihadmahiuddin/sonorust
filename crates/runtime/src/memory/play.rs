@@ -1,33 +1,50 @@
-use std::sync::nonpoison::RwLock;
+use std::{collections::HashMap, sync::nonpoison::RwLock};
 
+use sonorust_ir::IRValue;
 use sonorust_macros::MemoryAccess;
-use sonorust_models::blocks::{
-    ReadableBlock, WritableBlock,
-    common::TemporaryMemory,
-    play::{
-        archetype::{life::PlayArchetypeLife, score::PlayArchetypeScore},
-        engine_rom::PlayEngineRom,
-        entity::{
-            data::{PlayEntityData, PlayEntityDataArray},
-            despawn::PlayEntityDespawn,
-            info::{PlayEntityInfo, PlayEntityInfoArray},
-            input::PlayEntityInput,
-            life::PlayEntityLife,
-            memory::{PlayEntityMemory, PlayEntityMemoryArray},
-            score::PlayEntityScore,
-            shared_memory::{PlayEntitySharedMemory, PlayEntitySharedMemoryArray},
+use sonorust_models::{
+    blocks::{
+        ReadableBlock, WritableBlock,
+        common::TemporaryMemory,
+        play::{
+            archetype::{
+                life::{PlayArchetypeLife, PlayArchetypeLifeItem},
+                score::PlayArchetypeScore,
+            },
+            engine_rom::PlayEngineRom,
+            entity::{
+                data::{PlayEntityData, PlayEntityDataArray},
+                despawn::PlayEntityDespawn,
+                info::{PlayEntityInfo, PlayEntityInfoArray},
+                input::{PlayEntityInput, PlayEntityInputItem},
+                life::{PlayEntityLife, PlayEntityLifeItem},
+                memory::{PlayEntityMemory, PlayEntityMemoryArray},
+                score::PlayEntityScore,
+                shared_memory::{PlayEntitySharedMemory, PlayEntitySharedMemoryArray},
+            },
+            level::{
+                bucket::{PlayLevelBucket, PlayLevelBucketItem},
+                data::PlayLevelData,
+                life::PlayLevelLife,
+                memory::PlayLevelMemory,
+                option::PlayLevelOption,
+                score::PlayLevelScore,
+            },
+            runtime::{
+                background::PlayRuntimeBackground,
+                environment::PlayRuntimeEnvironment,
+                particle_transform::PlayRuntimeParticleTransform,
+                skin_transform::PlayRuntimeSkinTransform,
+                touch_array::{PlayRuntimeTouch, PlayRuntimeTouchArray},
+                ui::PlayRuntimeUi,
+                ui_configuration::PlayRuntimeUiConfiguration,
+                update::PlayRuntimeUpdate,
+            },
         },
-        level::{
-            bucket::PlayLevelBucket, data::PlayLevelData, life::PlayLevelLife,
-            memory::PlayLevelMemory, option::PlayLevelOption, score::PlayLevelScore,
-        },
-        runtime::{
-            background::PlayRuntimeBackground, environment::PlayRuntimeEnvironment,
-            particle_transform::PlayRuntimeParticleTransform,
-            skin_transform::PlayRuntimeSkinTransform, touch_array::PlayRuntimeTouchArray,
-            ui::PlayRuntimeUi, ui_configuration::PlayRuntimeUiConfiguration,
-            update::PlayRuntimeUpdate,
-        },
+    },
+    engine::{
+        common::archetype::callbacks::EngineArchetypeCallbackType,
+        play::archetype::callbacks::PlayEngineArchetypeCallbackType,
     },
 };
 
@@ -69,7 +86,7 @@ pub struct PlayPreprocessMemoryAccess<'a> {
     #[memory]
     engine_rom: &'a PlayEngineRom,
 
-    #[memory(index = "*ctx.current_entity.id * PlayEntityMemory::SIZE")]
+    #[memory(block = PlayEntityMemory, index = "*ctx.current_entity.id * PlayEntityMemory::SIZE")]
     entity_memory: &'a RwLock<PlayEntityMemoryArray>,
     #[memory]
     #[memory(block = PlayEntityData, index = "*ctx.current_entity.id * PlayEntityData::SIZE")]
@@ -134,7 +151,7 @@ pub struct PlayInitializationMemoryAccess<'a> {
     #[memory]
     engine_rom: &'a PlayEngineRom,
 
-    #[memory(index = "*ctx.current_entity.id * PlayEntityMemory::SIZE")]
+    #[memory(block = PlayEntityMemory, index = "*ctx.current_entity.id * PlayEntityMemory::SIZE")]
     entity_memory: &'a RwLock<PlayEntityMemoryArray>,
     #[memory]
     #[memory(block = PlayEntityData, index = "*ctx.current_entity.id * PlayEntityData::SIZE")]
@@ -199,7 +216,7 @@ pub struct PlaySequentialMemoryAccess<'a> {
     #[memory]
     engine_rom: &'a PlayEngineRom,
 
-    #[memory(index = "*ctx.current_entity.id * PlayEntityMemory::SIZE")]
+    #[memory(block = PlayEntityMemory, index = "*ctx.current_entity.id * PlayEntityMemory::SIZE")]
     entity_memory: &'a RwLock<PlayEntityMemoryArray>,
     #[memory]
     #[memory(block = PlayEntityData, index = "*ctx.current_entity.id * PlayEntityData::SIZE")]
@@ -264,7 +281,7 @@ pub struct PlayParallelMemoryAccess<'a> {
     #[memory]
     engine_rom: &'a PlayEngineRom,
 
-    #[memory(index = "*ctx.current_entity.id * PlayEntityMemory::SIZE")]
+    #[memory(block = PlayEntityMemory, index = "*ctx.current_entity.id * PlayEntityMemory::SIZE")]
     entity_memory: &'a RwLock<PlayEntityMemoryArray>,
     #[memory]
     #[memory(block = PlayEntityData, index = "*ctx.current_entity.id * PlayEntityData::SIZE")]
@@ -328,6 +345,159 @@ pub struct MemoryBlocks {
 }
 
 impl MemoryBlocks {
+    pub fn with_memory_for<F, R>(&self, callback_type: EngineArchetypeCallbackType, f: F) -> R
+    where
+        F: for<'a> FnOnce(&'a dyn MemoryAccess) -> R,
+    {
+        use PlayEngineArchetypeCallbackType::*;
+
+        match &callback_type {
+            EngineArchetypeCallbackType::Play(play_callback_type) => match play_callback_type {
+                Preprocess => self.with_preprocess_access(|mem| f(&mem)),
+                SpawnOrder | ShouldSpawn | Initialize => {
+                    self.with_initialization_access(|mem| f(&mem))
+                }
+                UpdateSequential | Touch => self.with_sequential_access(|mem| f(&mem)),
+                UpdateParallel | Terminate => self.with_parallel_access(|mem| f(&mem)),
+            },
+            _ => todo!(),
+        }
+    }
+
+    pub fn read_range_from_block(
+        &self,
+        block_id: u64,
+        range: impl Iterator<Item = usize>,
+    ) -> Vec<IRValue> {
+        let block: Option<&dyn ReadableBlock> = match block_id {
+            PlayRuntimeEnvironment::BLOCK_ID => Some(&*self.runtime_environment.read()),
+            PlayRuntimeUpdate::BLOCK_ID => Some(&*self.runtime_update.read()),
+            PlayRuntimeTouchArray::BLOCK_ID => Some(&*self.runtime_touch_array.read()),
+            PlayRuntimeSkinTransform::BLOCK_ID => Some(&*self.runtime_skin_transform.read()),
+            PlayRuntimeParticleTransform::BLOCK_ID => {
+                Some(&*self.runtime_particle_transform.read())
+            }
+            PlayRuntimeBackground::BLOCK_ID => Some(&*self.runtime_background.read()),
+            PlayRuntimeUi::BLOCK_ID => Some(&*self.runtime_ui.read()),
+            PlayRuntimeUiConfiguration::BLOCK_ID => Some(&*self.runtime_ui_configuration.read()),
+            PlayLevelMemory::BLOCK_ID => Some(&*self.level_memory.read()),
+            PlayLevelData::BLOCK_ID => Some(&*self.level_data.read()),
+            PlayLevelOption::BLOCK_ID => Some(&*self.level_option.read()),
+            PlayLevelBucket::BLOCK_ID => Some(&*self.level_bucket.read()),
+            PlayLevelScore::BLOCK_ID => Some(&*self.level_score.read()),
+            PlayLevelLife::BLOCK_ID => Some(&*self.level_life.read()),
+            PlayEngineRom::BLOCK_ID => Some(&*self.engine_rom.read()),
+            PlayEntityDataArray::BLOCK_ID => Some(&*self.entity_data.read()),
+            PlayEntitySharedMemoryArray::BLOCK_ID => Some(&*self.entity_shared_memory.read()),
+            PlayEntityInfoArray::BLOCK_ID => Some(&*self.entity_info.read()),
+            PlayEntityDespawn::BLOCK_ID => Some(&*self.entity_despawn.read()),
+            PlayEntityInput::BLOCK_ID => Some(&*self.entity_input.read()),
+            PlayEntityScore::BLOCK_ID => Some(&*self.entity_score.read()),
+            PlayEntityLife::BLOCK_ID => Some(&*self.entity_life.read()),
+            PlayArchetypeScore::BLOCK_ID => Some(&*self.archetype_score.read()),
+            PlayArchetypeLife::BLOCK_ID => Some(&*self.archetype_life.read()),
+            TemporaryMemory::BLOCK_ID => Some(&*self.temporary_memory.read()),
+
+            PlayEntityMemory::BLOCK_ID
+            | PlayEntityData::BLOCK_ID
+            | PlayEntitySharedMemory::BLOCK_ID
+            | PlayEntityInfo::BLOCK_ID => {
+                tracing::warn!(
+                    "Attempted to read range from block ID {block_id} which requires current entity.",
+                );
+                None
+            }
+            other => {
+                tracing::warn!("Attempted to read from unknown block ID {}", other,);
+                None
+            }
+        };
+
+        let Some(block) = block else {
+            return vec![];
+        };
+
+        range.map_while(|i| block.read(i)).collect()
+    }
+
+    pub fn get_memory_block_sizes(&self) -> HashMap<u64, usize> {
+        [
+            (
+                PlayRuntimeEnvironment::BLOCK_ID,
+                PlayRuntimeEnvironment::SIZE,
+            ),
+            (PlayRuntimeUpdate::BLOCK_ID, PlayRuntimeUpdate::SIZE),
+            (
+                PlayRuntimeTouchArray::BLOCK_ID,
+                self.runtime_touch_array.read().0.len() * PlayRuntimeTouch::SIZE,
+            ),
+            (
+                PlayRuntimeSkinTransform::BLOCK_ID,
+                PlayRuntimeSkinTransform::SIZE,
+            ),
+            (
+                PlayRuntimeParticleTransform::BLOCK_ID,
+                PlayRuntimeParticleTransform::SIZE,
+            ),
+            (PlayRuntimeBackground::BLOCK_ID, PlayRuntimeBackground::SIZE),
+            (PlayRuntimeUi::BLOCK_ID, PlayRuntimeUi::SIZE),
+            (
+                PlayRuntimeUiConfiguration::BLOCK_ID,
+                PlayRuntimeUiConfiguration::SIZE,
+            ),
+            (PlayLevelMemory::BLOCK_ID, PlayLevelMemory::SIZE),
+            (PlayLevelData::BLOCK_ID, PlayLevelData::SIZE),
+            (PlayLevelOption::BLOCK_ID, self.level_option.read().0.len()),
+            (
+                PlayLevelBucket::BLOCK_ID,
+                self.level_bucket.read().0.len() * PlayLevelBucketItem::SIZE,
+            ),
+            (PlayLevelScore::BLOCK_ID, PlayLevelScore::SIZE),
+            (PlayLevelLife::BLOCK_ID, PlayLevelLife::SIZE),
+            (PlayEngineRom::BLOCK_ID, self.engine_rom.read().0.len()),
+            (
+                PlayEntityDataArray::BLOCK_ID,
+                self.entity_data.read().items.len() * PlayEntityData::SIZE,
+            ),
+            (
+                PlayEntitySharedMemoryArray::BLOCK_ID,
+                self.entity_shared_memory.read().items.len() * PlayEntitySharedMemory::SIZE,
+            ),
+            (
+                PlayEntityInfoArray::BLOCK_ID,
+                self.entity_info.read().items.len() * PlayEntityInfo::SIZE,
+            ),
+            (
+                PlayEntityDespawn::BLOCK_ID,
+                self.entity_despawn.read().items.len(),
+            ),
+            (
+                PlayEntityInput::BLOCK_ID,
+                self.entity_input.read().items.len() * PlayEntityInputItem::SIZE,
+            ),
+            (
+                PlayEntityScore::BLOCK_ID,
+                self.entity_score.read().items.len(),
+            ),
+            (
+                PlayEntityLife::BLOCK_ID,
+                self.entity_life.read().items.len() * PlayEntityLifeItem::SIZE,
+            ),
+            (
+                PlayArchetypeScore::BLOCK_ID,
+                self.archetype_score.read().items.len(),
+            ),
+            (
+                PlayArchetypeLife::BLOCK_ID,
+                self.archetype_life.read().items.len() * PlayArchetypeLifeItem::SIZE,
+            ),
+            (TemporaryMemory::BLOCK_ID, TemporaryMemory::SIZE),
+        ]
+        .iter()
+        .copied()
+        .collect()
+    }
+
     pub fn with_preprocess_access<F, R>(&self, f: F) -> R
     where
         F: FnOnce(PlayPreprocessMemoryAccess<'_>) -> R,
