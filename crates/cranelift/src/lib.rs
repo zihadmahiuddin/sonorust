@@ -7,7 +7,7 @@ use cranelift::{
     module::{Linkage, Module},
     prelude::{isa::CallConv, *},
 };
-use sonorust_ir::{IRValue, nodes::IRNode};
+use sonorust_ir::{IRIndex, IRValue, nodes::IRNode};
 use sonorust_runtime::{
     SonorustIRExecutor,
     context::{RuntimeContext, get_external_functions},
@@ -23,18 +23,15 @@ fn ir_value_cranelift_const(ins: FuncInstBuilder, value: IRValue) -> Value {
     ins.f32const(value)
 }
 
-#[derive(Debug, PartialEq, Eq, Hash)]
-struct NodeIndex(usize);
-
 type CompiledFunctionPointer = fn(*mut RuntimeContext) -> IRValue;
 
 #[derive(Debug, Default)]
 pub struct CraneliftJitExecutor {
-    prepared_functions: HashMap<NodeIndex, CompiledFunctionPointer>,
+    prepared_functions: HashMap<IRIndex, CompiledFunctionPointer>,
 }
 
 impl CraneliftJitExecutor {
-    fn build_function(nodes: &[IRNode], root_index: usize) -> CompiledFunctionPointer {
+    fn build_function(nodes: &[IRNode], root_index: IRIndex) -> CompiledFunctionPointer {
         let externals_addrs = get_external_functions();
         let mut externals_func_refs = HashMap::new();
 
@@ -86,20 +83,20 @@ impl CraneliftJitExecutor {
 }
 
 impl SonorustIRExecutor for CraneliftJitExecutor {
-    fn prepare(&mut self, nodes: &[IRNode], root_index: usize) {
+    fn prepare(&mut self, nodes: &[IRNode], root_index: IRIndex) {
         let func = Self::build_function(nodes, root_index);
-        self.prepared_functions.insert(NodeIndex(root_index), func);
+        self.prepared_functions.insert(root_index, func);
     }
 
     fn execute(
         &mut self,
         nodes: &[IRNode],
-        root_index: usize,
+        root_index: IRIndex,
         runtime_context: &mut RuntimeContext,
     ) -> IRValue {
         let func = self
             .prepared_functions
-            .get(&NodeIndex(root_index))
+            .get(&root_index)
             .copied()
             .unwrap_or_else(|| Self::build_function(nodes, root_index));
 
@@ -111,7 +108,7 @@ fn build_cranelift_function(
     func: &mut Function,
     externals_func_refs: &HashMap<&str, FuncRef>,
     nodes: &[IRNode],
-    root_index: usize,
+    root_index: IRIndex,
 ) {
     let mut ctx = FunctionBuilderContext::new();
     let mut builder = FunctionBuilder::new(func, &mut ctx);

@@ -2,10 +2,10 @@ use cranelift::codegen::ir::BlockArg;
 use cranelift::prelude::*;
 
 use crate::codegen::CodegenContext;
-use sonorust_ir::nodes::*;
+use sonorust_ir::{IRIndex, nodes::*};
 
 impl<'s, 'b> CodegenContext<'s, 'b> {
-    fn build_comparison_ir(&mut self, cond: FloatCC, lhs: usize, rhs: usize) -> Value {
+    fn build_comparison_ir(&mut self, cond: FloatCC, lhs: IRIndex, rhs: IRIndex) -> Value {
         let lhs = self.build_node_ir(lhs);
         let rhs = self.build_node_ir(rhs);
         let compare_result = self.builder.ins().fcmp(cond, lhs, rhs);

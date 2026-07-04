@@ -1,7 +1,7 @@
 use crate::codegen::CodegenContext;
 
 use cranelift::prelude::*;
-use sonorust_ir::nodes::*;
+use sonorust_ir::{IRIndex, nodes::*};
 
 impl<'s, 'b> CodegenContext<'s, 'b> {
     fn build_read_mem(&mut self, block_id: Value, index: Value) -> Value {
@@ -24,9 +24,9 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
 
     fn build_pointed_addr(
         &mut self,
-        block_id_node: usize,
-        index_node: usize,
-        offset_node: usize,
+        block_id_node: IRIndex,
+        index_node: IRIndex,
+        offset_node: IRIndex,
     ) -> (Value, Value) {
         let block_id_float = self.build_node_ir(block_id_node);
         let block_id = self.builder.ins().fcvt_to_sint(types::I64, block_id_float);
@@ -59,10 +59,10 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
 
     fn build_shifted_addr(
         &mut self,
-        block_id_node: usize,
-        x_node: usize,
-        y_node: usize,
-        s_node: usize,
+        block_id_node: IRIndex,
+        x_node: IRIndex,
+        y_node: IRIndex,
+        s_node: IRIndex,
     ) -> (Value, Value) {
         let block_id_float = self.build_node_ir(block_id_node);
         let block_id = self.builder.ins().fcvt_to_sint(types::I64, block_id_float);
@@ -85,7 +85,7 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     fn build_set_like_op<F>(
         &mut self,
         read: impl Fn(&mut Self) -> (Value, Value),
-        value_node: usize,
+        value_node: IRIndex,
         op: F,
     ) -> Value
     where
@@ -98,7 +98,13 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
         self.build_write_mem(block_id, index, new_value)
     }
 
-    fn build_set_op_ir<F>(&mut self, block_id: usize, index: usize, value: usize, op: F) -> Value
+    fn build_set_op_ir<F>(
+        &mut self,
+        block_id: IRIndex,
+        index: IRIndex,
+        value: IRIndex,
+        op: F,
+    ) -> Value
     where
         F: FnOnce(&mut Self, Value, Value) -> Value,
     {

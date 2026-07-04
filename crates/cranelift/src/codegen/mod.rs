@@ -10,7 +10,10 @@ use cranelift::{
     prelude::{Block, FunctionBuilder, Value},
 };
 
-use sonorust_ir::nodes::{IRNode, OpCode};
+use sonorust_ir::{
+    IRIndex,
+    nodes::{IRNode, OpCode},
+};
 
 #[derive(Debug, Clone)]
 pub enum BlockKind {
@@ -60,8 +63,8 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
     }
 
     // Helper to build arbitrary nodes recursively
-    pub fn build_node_ir(&mut self, node_index: usize) -> Value {
-        match &self.nodes[node_index] {
+    pub fn build_node_ir(&mut self, node_index: IRIndex) -> Value {
+        match &self.nodes[*node_index] {
             IRNode::Value(value) => crate::ir_value_cranelift_const(self.builder.ins(), *value),
             IRNode::OpCode(opcode) => match opcode {
                 // Control Flow

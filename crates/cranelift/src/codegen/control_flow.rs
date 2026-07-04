@@ -109,7 +109,7 @@ impl<'s, 'b> CodegenContext<'s, 'b> {
 
     pub(crate) fn build_break_ir(&mut self, node: &Break) -> Value {
         let value_to_return = self.build_node_ir(node.value);
-        let break_count = match self.nodes[node.count] {
+        let break_count = match self.nodes[*node.count] {
             IRNode::Value(count) => count as usize,
             _ => unimplemented!("Break with dynamic count is not supported."),
         };
