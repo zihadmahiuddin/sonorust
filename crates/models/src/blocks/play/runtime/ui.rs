@@ -2,9 +2,17 @@ use glam::Vec2;
 use sonorust_ir::IRValue;
 use tracing::warn;
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+#[cfg(feature = "wasm")]
+use tsify::Tsify;
+
 use crate::blocks::{ReadableBlock, WritableBlock};
 
 #[derive(Debug, Default)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 pub struct PlayRuntimeUi {
     pub menu: PlayRuntimeUiItem,
     pub judgment: PlayRuntimeUiItem,
@@ -30,6 +38,9 @@ impl PlayRuntimeUi {
 }
 
 #[derive(Debug, Default)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 pub struct PlayRuntimeUiItem {
     pub anchor: Vec2,
     pub pivot: Vec2,
@@ -57,6 +68,9 @@ impl PlayRuntimeUiItem {
 }
 
 #[derive(Debug, Default, Clone, Copy)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 pub enum HorizontalAlignment {
     Left,
     #[default]

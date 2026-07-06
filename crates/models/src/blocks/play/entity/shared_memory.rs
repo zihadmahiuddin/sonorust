@@ -3,12 +3,20 @@ use std::collections::BTreeMap;
 use sonorust_ir::IRValue;
 use tracing::warn;
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+#[cfg(feature = "wasm")]
+use tsify::Tsify;
+
 use crate::{
     blocks::{ReadableBlock, WritableBlock},
     ids::EntityId,
 };
 
 #[derive(Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 pub struct PlayEntitySharedMemoryArray {
     pub items: BTreeMap<EntityId, PlayEntitySharedMemory>,
 }
@@ -26,6 +34,9 @@ impl PlayEntitySharedMemoryArray {
 }
 
 #[derive(Debug, Clone)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 pub struct PlayEntitySharedMemory(pub [IRValue; Self::SIZE]);
 
 impl PlayEntitySharedMemory {

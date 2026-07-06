@@ -1,12 +1,23 @@
 use sonorust_ir::IRValue;
 use tracing::warn;
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+#[cfg(feature = "wasm")]
+use tsify::Tsify;
+
 use crate::blocks::{ReadableBlock, WritableBlock};
 
 #[derive(Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 pub struct PlayLevelBucket(pub Vec<PlayLevelBucketItem>);
 
 #[derive(Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 pub struct PlayLevelBucketItem {
     pub min_perfect_window: IRValue,
     pub max_perfect_window: IRValue,

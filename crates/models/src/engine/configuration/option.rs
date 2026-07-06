@@ -1,9 +1,18 @@
-use serde::{Deserialize, Serialize};
 use sonorust_ir::IRValue;
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-#[serde(tag = "type")]
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+#[cfg(feature = "wasm")]
+use tsify::Tsify;
+
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(rename_all = "camelCase"),
+    serde(tag = "type")
+)]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 pub enum EngineOption {
     Slider {
         name: String,

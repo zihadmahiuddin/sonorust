@@ -1,24 +1,44 @@
 use std::sync::Arc;
 
-use serde::Deserialize;
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+#[cfg(feature = "wasm")]
+use tsify::Tsify;
 
 pub type EngineArchetypeName = Arc<str>;
 pub type EngineArchetypeDataName = Arc<str>;
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Clone)]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(rename_all = "camelCase")
+)]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 pub struct EnginePlayDataArchetypeCallback {
     pub index: usize,
     pub order: Option<i64>,
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Clone)]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(rename_all = "camelCase")
+)]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 pub struct EnginePlayDataArchetypeImport {
     pub name: EngineArchetypeDataName,
     pub index: usize,
 }
 
-#[derive(Debug, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Clone)]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(rename_all = "camelCase")
+)]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 pub struct EnginePlayDataArchetype {
     pub name: EngineArchetypeName,
     pub has_input: bool,

@@ -7,5 +7,12 @@ edition = "2024"
 sonorust-ir = { workspace = true }
 
 glam = { workspace = true }
-serde = { workspace = true }
+serde = { workspace = true, optional = true }
 tracing = { workspace = true }
+tsify = { workspace = true, optional = true }
+wasm-bindgen = { workspace = true, optional = true }
+
+[features]
+default = ["serde", "wasm"]
+serde = ["dep:serde", "glam/serde"]
+wasm = ["dep:wasm-bindgen", "dep:tsify"]

@@ -1,10 +1,25 @@
 use sonorust_ir::IRValue;
 use tracing::warn;
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+#[cfg(feature = "wasm")]
+use tsify::Tsify;
+
 use crate::blocks::{ReadableBlock, WritableBlock};
 
 #[derive(Debug)]
-pub struct PlayLevelMemory(pub [IRValue; 4096]);
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
+pub struct PlayLevelMemory(
+    #[cfg_attr(
+        feature = "serde",
+        serde(deserialize_with = "crate::serde::deserialize_array"),
+        serde(serialize_with = "crate::serde::serialize_array")
+    )]
+    pub [IRValue; 4096],
+);
 
 impl PlayLevelMemory {
     pub const BLOCK_ID: u64 = 2000;

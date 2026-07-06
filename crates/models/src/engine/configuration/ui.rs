@@ -1,8 +1,18 @@
-use serde::{Deserialize, Serialize};
 use sonorust_ir::IRValue;
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+#[cfg(feature = "wasm")]
+use tsify::Tsify;
+
+#[derive(Default, Debug, Clone, PartialEq)]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(rename_all = "camelCase"),
+    serde(tag = "type")
+)]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 pub struct Ui {
     pub primary_metric: String,
     pub secondary_metric: String,
@@ -21,22 +31,40 @@ pub struct Ui {
     pub judgment_error_min: IRValue,
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[derive(Default, Debug, Clone, PartialEq)]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(rename_all = "camelCase"),
+    serde(tag = "type")
+)]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 pub struct Visibility {
     pub scale: IRValue,
     pub alpha: IRValue,
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[derive(Default, Debug, Clone, PartialEq)]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(rename_all = "camelCase"),
+    serde(tag = "type")
+)]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 pub struct Animation {
     pub scale: AnimatedValue,
     pub alpha: AnimatedValue,
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[derive(Default, Debug, Clone, PartialEq)]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(rename_all = "camelCase"),
+    serde(tag = "type")
+)]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 pub struct AnimatedValue {
     pub from: IRValue,
     pub to: IRValue,

@@ -1,5 +1,10 @@
 use std::collections::BTreeMap;
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+#[cfg(feature = "wasm")]
+use tsify::Tsify;
+
 use sonorust_ir::IRValue;
 use tracing::warn;
 
@@ -9,6 +14,9 @@ use crate::{
 };
 
 #[derive(Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 pub struct PlayEntityInfoArray {
     pub items: BTreeMap<EntityId, PlayEntityInfo>,
 }
@@ -58,6 +66,9 @@ impl ReadableBlock for PlayEntityInfoArray {
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 pub enum EntityState {
     #[default]
     Waiting,
@@ -89,6 +100,9 @@ impl From<EntityState> for IRValue {
 }
 
 #[derive(Debug, Clone)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 pub struct PlayEntityInfo {
     pub index: usize,
     pub archetype_id: ArchetypeId,
