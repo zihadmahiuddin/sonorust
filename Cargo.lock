@@ -1307,7 +1307,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "sonorust-rest"
+name = "sonorust-resources"
 version = "0.1.0"
 dependencies = [
  "flate2",

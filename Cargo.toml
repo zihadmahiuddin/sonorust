@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/cranelift", "crates/interpreter", "crates/ir", "crates/macros", "crates/models", "crates/rest", "crates/runtime", "crates/tests"]
+members = ["crates/cranelift", "crates/interpreter", "crates/ir", "crates/macros", "crates/models", "crates/runtime", "crates/resources", "crates/tests"]
 
 [workspace.dependencies]
 sonorust-ir = { path = "./crates/ir" }
@@ -8,6 +8,7 @@ sonorust-interpreter = { path = "./crates/interpreter" }
 sonorust-cranelift = { path = "./crates/cranelift" }
 sonorust-models = { path = "./crates/models" }
 sonorust-runtime = { path = "./crates/runtime" }
+sonorust-resources = { path = "./crates/resources" }
 sonorust-tests = { path = "./crates/tests" }
 
 glam = { version = "0.33" }
