@@ -5,7 +5,9 @@ edition = "2024"
 
 [dependencies]
 nom = "8"
+rand = "0.10"
 sonorust-ir = { workspace = true }
+sonorust-models = { workspace = true }
 sonorust-runtime = { workspace = true }
 serde = { workspace = true, optional = true }
 serde_json = { workspace = true }

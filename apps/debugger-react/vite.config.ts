@@ -6,6 +6,11 @@ import path from "node:path";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
   server: {
     fs: {
       allow: [
@@ -14,6 +19,9 @@ export default defineConfig({
         path.resolve(__dirname, "src"),
         path.resolve(__dirname, "..", "..", "crates", "debugger-wasm", "pkg"),
       ],
+    },
+    proxy: {
+      "/sonolus": "https://sonolus.sekai.best",
     },
   },
 });

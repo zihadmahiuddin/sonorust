@@ -112,8 +112,39 @@ pub enum OpCode {
     SetRemShifted(SetRemShifted),
     Copy(Copy),
 
+    // Spawning
+    Spawn(Spawn),
+
+    // Drawing
+    Draw(Draw),
+
+    // Timing
+    BeatToTime(BeatToTime),
+
+    // Debug
     DebugLog(DebugLog),
     DebugPause(DebugPause),
+
+    // Audio
+    HasEffectClip(HasEffectClip),
+    Play(Play),
+    PlayLooped(PlayLooped),
+    PlayLoopedScheduled(PlayLoopedScheduled),
+    PlayScheduled(PlayScheduled),
+    StopLooped(StopLooped),
+    StopLoopedScheduled(StopLoopedScheduled),
+
+    // Particle
+    DestroyParticleEffect(DestroyParticleEffect),
+    HasParticleEffect(HasParticleEffect),
+    SpawnParticleEffect(SpawnParticleEffect),
+
+    // Gameplay
+    Judge(Judge),
+
+    // Replay
+    ExportValue(ExportValue),
+    StreamSet(StreamSet),
 }
 
 // Control Flow
@@ -168,9 +199,9 @@ pub struct DoWhile {
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[cfg_attr(feature = "wasm", derive(Tsify))]
 pub struct JumpLoop {
-    pub first_branch: IRIndex,
-    pub mid_branches: Vec<IRIndex>,
-    pub last_branch: IRIndex,
+    pub first: IRIndex,
+    pub middle: Vec<IRIndex>,
+    pub last: IRIndex,
 }
 #[derive(Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -1191,8 +1222,11 @@ pub struct Draw {
     pub y3: IRIndex,
     pub x4: IRIndex,
     pub y4: IRIndex,
-    pub z: IRIndex,
     pub alpha: IRIndex,
+    pub z1: IRIndex,
+    pub z2: Option<IRIndex>,
+    pub z3: Option<IRIndex>,
+    pub z4: Option<IRIndex>,
 }
 #[derive(Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]

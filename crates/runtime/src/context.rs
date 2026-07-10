@@ -5,16 +5,7 @@ use sonorust_ir::IRValue;
 use sonorust_models::ids::{ArchetypeId, EntityId};
 use tracing::warn;
 
-pub trait MemoryAccess {
-    fn read(&self, ctx: &RuntimeContext, block_id: u64, index: usize) -> Option<IRValue>;
-    fn write(
-        &self,
-        ctx: &RuntimeContext,
-        block_id: u64,
-        index: usize,
-        value: IRValue,
-    ) -> Option<IRValue>;
-}
+use crate::access::{MemoryAccess, SideEffectAccess, TimingAccess};
 
 #[derive(Debug, Clone, Copy)]
 pub struct CurrentEntity {
@@ -25,6 +16,8 @@ pub struct CurrentEntity {
 pub struct RuntimeContext<'a> {
     pub current_entity: CurrentEntity,
     pub memory: &'a dyn MemoryAccess,
+    pub timing: &'a dyn TimingAccess,
+    pub side_effects: &'a dyn SideEffectAccess,
 }
 
 impl<'a> RuntimeContext<'a> {

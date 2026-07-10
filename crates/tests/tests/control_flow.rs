@@ -1,5 +1,5 @@
 use sonorust_ir::nodes::*;
-use sonorust_runtime::{context::MemoryAccess, testing::TestingRuntimeContext};
+use sonorust_runtime::{access::MemoryAccess, testing::TestingRuntimeContext};
 use sonorust_tests::get_available_executors;
 
 #[test]

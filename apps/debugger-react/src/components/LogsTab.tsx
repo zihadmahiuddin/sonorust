@@ -1,7 +1,7 @@
 import { Eraser, Logs } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useLogStore } from "../stores/logStore";
-import { cn } from "../lib/tailwind";
+import { cn } from "@/lib/utils";
 import { useShallow } from "zustand/shallow";
 
 export type LogEntry = {

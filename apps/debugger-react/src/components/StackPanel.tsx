@@ -1,9 +1,11 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { cn } from "../lib/tailwind";
+import { cn } from "@/lib/utils";
 import { memo, useMemo, useRef, useState } from "react";
 import { beginResize } from "../lib/resize";
 import { useShallow } from "zustand/react/shallow";
-import { useVMStore, useVMStoreInstance } from "../stores/vmStore";
+import { useDebuggerStore } from "../stores/debuggerStore";
+import { usePlayerStore } from "../stores/playerStore";
+import type { UsedStackIndices } from "sonorust-debugger-wasm";
 
 type StackRow = {
   addr: number;
@@ -11,13 +13,14 @@ type StackRow = {
 };
 
 const StackPanel = memo(() => {
-  const { pc, stack } = useVMStore(
+  const { pc, stack, target } = useDebuggerStore(
     useShallow((s) => ({
-      pc: s.pc,
-      stack: s.stack,
+      pc: s.currentVmState.pc,
+      stack: s.currentVmState.stack,
+      target: s.target,
     })),
   );
-  const store = useVMStoreInstance();
+  const player = usePlayerStore((s) => s.player);
 
   const [stackWidth, setStackWidth] = useState(400);
 
@@ -25,10 +28,17 @@ const StackPanel = memo(() => {
     () => stack.map((value, index) => ({ addr: index, value })),
     [stack],
   );
-  const usedStackIndices = useMemo(
-    () => store.getState().getInstUsedStackIndices(pc),
-    [pc],
-  );
+  const usedStackIndices = useMemo(() => {
+    let result: UsedStackIndices;
+    if (target) {
+      result = player.getInstUsedStackIndices(
+        target.archetypeId,
+        target.callbackType,
+        pc,
+      );
+    }
+    return result ?? new Map<number, string>();
+  }, [pc, target]);
 
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -70,7 +80,7 @@ const StackPanel = memo(() => {
               {rowVirtualizer.getVirtualItems().map((virtualRow) => {
                 const invertedIndex = stackRows.length - 1 - virtualRow.index;
                 const row = stackRows[invertedIndex];
-                const rowLabel = usedStackIndices.get(virtualRow.index) ?? "";
+                const rowLabel = usedStackIndices.get(invertedIndex) ?? "";
 
                 return (
                   <div

@@ -9,7 +9,7 @@ sonorust-interpreter = { path = "./crates/interpreter" }
 sonorust-cranelift = { path = "./crates/cranelift" }
 sonorust-models = { path = "./crates/models" }
 sonorust-runtime = { path = "./crates/runtime" }
-sonorust-resources = { path = "./crates/resources" }
+sonorust-resources = { path = "./crates/resources", default-features = false }
 sonorust-tests = { path = "./crates/tests" }
 
 glam = { version = "0.33" }

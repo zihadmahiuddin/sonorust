@@ -1,8 +1,8 @@
 import { AlignLeft, GitBranch } from "lucide-react";
 import { useRef, useEffect, memo } from "react";
 import GraphDisassembly from "./GraphDisassembly";
-import { useVMStore } from "../stores/vmStore";
 import LinearDisassembly from "./LinearDisassembly";
+import { useDebuggerStore } from "../stores/debuggerStore";
 
 export type DisassemblyViewMode = "linear" | "graph";
 
@@ -16,7 +16,7 @@ const DisassemblyPanel = memo(
     disassemblyViewMode: DisassemblyViewMode;
     setDisassemblyViewMode: (viewMode: DisassemblyViewMode) => void;
   }) => {
-    const pc = useVMStore((s) => s.pc);
+    const pc = useDebuggerStore((s) => s.currentVmState.pc);
 
     const currentLineRef = useRef(null);
 

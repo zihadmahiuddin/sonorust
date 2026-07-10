@@ -4,8 +4,10 @@
 use crate::context::RuntimeContext;
 use sonorust_ir::{IRIndex, IRValue, nodes::IRNode};
 
+pub mod access;
 pub mod context;
 pub mod memory;
+pub mod side_effects;
 pub mod testing;
 
 pub trait SonorustIRExecutor {

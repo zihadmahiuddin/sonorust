@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Bug, Hammer } from "lucide-react";
-import { type EngineArchetypeCallbackType } from "sonorust-debugger-wasm";
 import { wasmResource } from "../lib/wasmLoader";
 import DisassemblyPanel, { type DisassemblyViewMode } from "./DisassemblyPanel";
 import ToolbarButton from "./ToolbarButton";
@@ -8,49 +7,25 @@ import StackPanel from "./StackPanel";
 import ExecutionControls from "./ExecutionControls";
 import StatusBar from "./StatusBar";
 import BottomPanel from "./BottomPanel";
-import type { CallbackTypeOption } from "./CompileForm";
-import { useVmBatchRunner } from "../hooks/useVmBatchRunner";
-import { useVMStore, useVMStoreInstance } from "../stores/vmStore";
 import CompileDialogModal, {
   type CompileDialogHandle,
 } from "./CompileDialogModal";
 import { useBreakpointHitLog } from "../hooks/useBreakpointHitLog";
+import { DebuggerToolbar } from "./DebuggerToolbar";
+import type { CompileConfig } from "../stores/playerStore";
 
 const TODO_COMMENTS = new Map<number, string>();
 
 export default function Debugger({
-  currentScript,
-  currentCallbackType,
-  callbackTypeOptions,
-  onRecompile,
+  onCompile,
 }: {
-  currentScript: string;
-  currentCallbackType: EngineArchetypeCallbackType;
-  callbackTypeOptions: CallbackTypeOption[];
-  onRecompile: (
-    callbackType: EngineArchetypeCallbackType,
-    script: string,
-  ) => void;
+  onCompile: (compileConfig: CompileConfig) => Promise<void>;
 }) {
   wasmResource.read();
 
   const [disassemblyViewMode, setDisassemblyViewMode] =
     useState<DisassemblyViewMode>("linear");
 
-  const state = useVMStore((s) => s.state);
-  const store = useVMStoreInstance();
-
-  useVmBatchRunner(
-    state,
-    (entityId: number, archetypeId: number, maxSteps: number) => {
-      store.getState().run(entityId, archetypeId, maxSteps);
-    },
-    {
-      entityId: 5,
-      archetypeId: 2,
-      maxSteps: 5,
-    },
-  );
   useBreakpointHitLog();
 
   const compileDialogRef = useRef<CompileDialogHandle>(null);
@@ -94,6 +69,8 @@ export default function Debugger({
           />
         </div>
 
+        <DebuggerToolbar />
+
         <ExecutionControls />
       </div>
 
@@ -111,13 +88,7 @@ export default function Debugger({
         <BottomPanel />
       </div>
       <StatusBar disassemblyViewMode={disassemblyViewMode} />
-      <CompileDialogModal
-        ref={compileDialogRef}
-        callbackTypeOptions={callbackTypeOptions}
-        currentScript={currentScript}
-        currentCallbackType={currentCallbackType}
-        onCompile={onRecompile}
-      />
+      <CompileDialogModal ref={compileDialogRef} onCompile={onCompile} />
     </div>
   );
 }

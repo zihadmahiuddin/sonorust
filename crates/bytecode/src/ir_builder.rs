@@ -80,6 +80,11 @@ impl IRBuilder {
                                 index: args[1],
                                 value: args[2],
                             })),
+                            "set_add" => IRNode::OpCode(OpCode::SetAdd(SetAdd {
+                                block_id: args[0],
+                                index: args[1],
+                                value: args[2],
+                            })),
                             "get" => IRNode::OpCode(OpCode::Get(Get {
                                 block_id: args[0],
                                 index: args[1],

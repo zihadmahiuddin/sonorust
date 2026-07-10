@@ -22,7 +22,7 @@ pub struct LevelItem {
     pub name: String,
     pub source: Option<String>,
     pub version: i64,
-    pub rating: i64,
+    pub rating: f32,
     pub title: String,
     pub artists: String,
     pub author: String,

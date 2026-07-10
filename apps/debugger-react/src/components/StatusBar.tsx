@@ -2,7 +2,7 @@ import { VMState } from "sonorust-debugger-wasm";
 import type { DisassemblyViewMode } from "./DisassemblyPanel";
 import { hex } from "../lib/utils";
 import { useShallow } from "zustand/shallow";
-import { useVMStore } from "../stores/vmStore";
+import { useDebuggerStore } from "../stores/debuggerStore";
 
 function StateDot({ state }: { state: VMState }) {
   const bg =
@@ -19,12 +19,12 @@ export default function StatusBar({
 }: {
   disassemblyViewMode: DisassemblyViewMode;
 }) {
-  const { pc, state, totalBreakpoints, totalInstructions } = useVMStore(
+  const { pc, state, totalBreakpoints, totalInstructions } = useDebuggerStore(
     useShallow((s) => ({
-      pc: s.pc,
-      state: s.state,
-      totalBreakpoints: s.breakpoints.size,
-      totalInstructions: s.compilationResult.instructions.length,
+      pc: s.currentVmState.pc,
+      state: s.currentVmState.state,
+      totalBreakpoints: s.currentVmState.breakpoints.size,
+      totalInstructions: s.currentVmState.compilationResult.instructions.length,
     })),
   );
 

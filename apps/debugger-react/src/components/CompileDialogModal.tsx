@@ -7,27 +7,21 @@ import {
   useRef,
   useState,
 } from "react";
-import type { EngineArchetypeCallbackType } from "sonorust-debugger-wasm";
 import { useLogStore, type LogLevel } from "../stores/logStore";
-import { CompileForm, type CallbackTypeOption } from "./CompileForm";
+import { CompileForm } from "./CompileForm";
+import type { CompileConfig } from "../stores/playerStore";
 
 export type CompileDialogHandle = {
   open: () => void;
 };
 
 export type CompileDialogModalProps = {
-  currentScript: string;
-  currentCallbackType: EngineArchetypeCallbackType;
-  callbackTypeOptions: CallbackTypeOption[];
-  onCompile: (
-    callbackType: EngineArchetypeCallbackType,
-    script: string,
-  ) => void;
+  onCompile: (compileConfig: CompileConfig) => Promise<void>;
 };
 
 const CompileDialogModal = memo(
   forwardRef<CompileDialogHandle, CompileDialogModalProps>(function (
-    { currentScript, currentCallbackType, callbackTypeOptions, onCompile },
+    { onCompile },
     ref,
   ) {
     const addLog = (level: LogLevel, text: string) => {
@@ -52,11 +46,10 @@ const CompileDialogModal = memo(
     };
 
     const handleSubmit = useCallback(
-      (callbackType: EngineArchetypeCallbackType, script: string) => {
+      async (compileConfig: CompileConfig) => {
         setIsCompiling(true);
         try {
-          onCompile(callbackType, script);
-          addLog("INFO", "Rebuilding VM with new script");
+          await onCompile(compileConfig);
           dialogRef.current?.close();
         } catch (err) {
           addLog("ERROR", `Compile failed: ${String(err)}`);
@@ -88,9 +81,6 @@ const CompileDialogModal = memo(
         <CompileForm
           isSubmitting={isCompiling}
           submitLabel="Compile"
-          callbackTypeOptions={callbackTypeOptions}
-          initialScript={currentScript}
-          initialCallbackType={currentCallbackType}
           onSubmit={handleSubmit}
           onCancel={handleCancel}
         />

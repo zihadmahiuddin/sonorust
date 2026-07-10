@@ -1,6 +1,10 @@
 use std::{cell::RefCell, collections::HashMap};
 
-use crate::context::{CurrentEntity, MemoryAccess, RuntimeContext};
+use crate::{
+    access::{MemoryAccess, SideEffectAccess, TimingAccess},
+    context::{CurrentEntity, RuntimeContext},
+    side_effects::{DrawSideEffect, SpawnSideEffect},
+};
 
 use sonorust_ir::IRValue;
 use sonorust_models::ids::{ArchetypeId, EntityId};
@@ -10,6 +14,8 @@ use tracing::warn;
 #[allow(dead_code)] // used in tests
 pub struct TestingRuntimeContext {
     pub memory: TestingMemory,
+    pub timing: TestingTiming,
+    pub side_effects: TestingSideEffects,
 }
 
 impl<'a> TestingRuntimeContext {
@@ -21,6 +27,8 @@ impl<'a> TestingRuntimeContext {
                 archetype_id: ArchetypeId(0),
             },
             memory: &self.memory,
+            timing: &self.timing,
+            side_effects: &self.side_effects,
         }
     }
 }
@@ -79,5 +87,38 @@ impl MemoryAccess for TestingMemory {
         } else {
             None
         }
+    }
+}
+
+#[derive(Debug, Default)]
+pub struct TestingTiming;
+
+impl TimingAccess for TestingTiming {
+    fn beat_to_time(&self, _beat: IRValue) -> IRValue {
+        todo!()
+    }
+
+    fn beat_to_bpm(&self, _beat: IRValue) -> IRValue {
+        todo!()
+    }
+
+    fn time_to_scaled_time(&self, _time: IRValue) -> IRValue {
+        todo!()
+    }
+}
+
+#[derive(Debug, Default)]
+pub struct TestingSideEffects {
+    spawns: RefCell<Vec<SpawnSideEffect>>,
+    draws: RefCell<Vec<DrawSideEffect>>,
+}
+
+impl SideEffectAccess for TestingSideEffects {
+    fn spawn(&self, spawn_side_effect: SpawnSideEffect) {
+        self.spawns.borrow_mut().push(spawn_side_effect);
+    }
+
+    fn draw(&self, draw_side_effect: DrawSideEffect) {
+        self.draws.borrow_mut().push(draw_side_effect);
     }
 }

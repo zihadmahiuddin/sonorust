@@ -7,8 +7,9 @@ import {
   type VirtualItem,
 } from "@tanstack/react-virtual";
 import { useLogStore } from "../stores/logStore";
-import { useVMStore, useVMStoreInstance } from "../stores/vmStore";
 import { beginResize } from "../lib/resize";
+import { usePlayerStore } from "../stores/playerStore";
+import { useDebuggerStore } from "../stores/debuggerStore";
 
 export type MemoryTab = {
   blockId: number;
@@ -16,12 +17,10 @@ export type MemoryTab = {
 };
 
 const MemoryTabs = memo(() => {
-  const memoryBlockSizes = useVMStore((s) => s.memoryBlockSizes);
+  const memoryBlockSizes = useDebuggerStore((s) => s.memoryBlockSizes);
 
   const addLog = useLogStore((s) => s.addLog);
-  const [memTabs, setMemTabs] = useState<MemoryTab[]>(() => {
-    return [{ blockId: 10000, totalItems: memoryBlockSizes.get(10000) }];
-  });
+  const [memTabs, setMemTabs] = useState<MemoryTab[]>([]);
   const [activeTabBlockId, setActiveTabBlockId] = useState(10000);
   const [addingTab, setAddingTab] = useState(false);
   const [newTabValue, setNewTabValue] = useState("");
@@ -42,7 +41,7 @@ const MemoryTabs = memo(() => {
       return;
     }
 
-    const memoryBlockSize = memoryBlockSizes.get(blockId);
+    const memoryBlockSize = memoryBlockSizes.get(blockId) ?? 0;
 
     setMemTabs((prev) => {
       if (prev.some((t) => t.blockId === blockId)) return prev;
@@ -214,8 +213,8 @@ const MemoryTab = memo(
     tabInfo: MemoryTab;
     virtualItems: VirtualItem[];
   }) => {
-    const pc = useVMStore((s) => s.pc);
-    const store = useVMStoreInstance();
+    const pc = useDebuggerStore((s) => s.currentVmState.pc);
+    const player = usePlayerStore((s) => s.player);
 
     const fetchStartIndex =
       virtualItems.length > 0 ? virtualItems[0].index * itemsPerRow : 0;
@@ -224,9 +223,11 @@ const MemoryTab = memo(
     const visibleFloats = useMemo(() => {
       if (fetchCount === 0) return new Float32Array(0);
 
-      return store
-        .getState()
-        .readMemoryRange(tabInfo.blockId, fetchStartIndex, fetchCount);
+      return player.readMemoryRange(
+        BigInt(tabInfo.blockId),
+        fetchStartIndex,
+        fetchCount,
+      );
       // pc to track memory updates. maybe in the future make it so it only happens when memory mutation opcodes run?
     }, [tabInfo?.blockId, fetchStartIndex, fetchCount, pc]);
 

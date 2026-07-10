@@ -1,59 +1,70 @@
 import { memo, useCallback } from "react";
 import { Play, Pause, Square, RotateCcw, ArrowDown } from "lucide-react";
-import { VMState } from "sonorust-debugger-wasm";
+import {
+  PlayEngineArchetypeCallbackType,
+  VMState,
+} from "sonorust-debugger-wasm";
 import ToolbarButton from "./ToolbarButton";
 import { hex } from "../lib/utils";
 import { useLogStore, type LogLevel } from "../stores/logStore";
-import { useVMStore, useVMStoreInstance } from "../stores/vmStore";
+import { useDebuggerStore } from "../stores/debuggerStore";
+import { usePlayerStore } from "../stores/playerStore";
 
 function addLog(level: LogLevel, text: string) {
   useLogStore.getState().addLog(level, text);
 }
 
 const ExecutionControls = memo(() => {
-  const state = useVMStore((s) => s.state);
-  console.log("state:", state);
-  const store = useVMStoreInstance();
+  const state = useDebuggerStore((s) => s.currentVmState.state);
+  console.log("state:", state, VMState[state]);
 
   const doContinue = useCallback(() => {
-    const { pc, resume } = store.getState();
-    resume();
-    addLog("INFO", `Execution resumed at ${hex(pc)}`);
-  }, [store]);
+    const { target } = useDebuggerStore.getState();
+    const { player, start } = usePlayerStore.getState();
+    const pc = player.getVmPc(target.archetypeId, target.callbackType);
+    start();
+    addLog(
+      "INFO",
+      `Execution resumed from ${hex(pc)} (entity ${target.entityId}, archetype ${target.archetypeId}, callback ${PlayEngineArchetypeCallbackType[target.callbackType]})`,
+    );
+  }, []);
 
   const doPause = useCallback(() => {
-    const { pc, pause } = store.getState();
-    pause();
-    addLog("WARN", `Execution paused at ${hex(pc)}`);
-  }, [store]);
+    const { pause, player } = usePlayerStore.getState();
+    const target = pause();
+    const pc = player.getVmPc(target.archetypeId, target.callbackType);
+    useDebuggerStore.getState().setTarget(target);
+    addLog(
+      "WARN",
+      `Execution paused at ${hex(pc)} (entity ${target.entityId}, archetype ${target.archetypeId}, callback ${PlayEngineArchetypeCallbackType[target.callbackType]})`,
+    );
+  }, []);
 
   const doStep = useCallback(() => {
-    const { step } = store.getState();
-    step(1, 2);
-    // Why this? Because otherwise you might get the old pc!
-    queueMicrotask(() => {
-      const { pc } = store.getState();
-      addLog("INFO", `Step: now at ${hex(pc)}`);
-    });
-  }, [store]);
+    const { player, stepOver } = usePlayerStore.getState();
+    stepOver();
+    const { target } = useDebuggerStore.getState();
+    const pc = player.getVmPc(target.archetypeId, target.callbackType);
+    addLog("INFO", `Step: now at ${hex(pc)}`);
+  }, []);
 
   const doStop = useCallback(() => {
-    const { stop } = store.getState();
-    stop();
+    // const { player } = usePlayerStore.getState();
+    // player.stop();
     addLog("ERROR", "Process terminated by user");
-  }, [store]);
+  }, []);
 
   const doRestart = useCallback(() => {
-    const { resume, stop } = store.getState();
-    stop();
+    // const { player } = usePlayerStore.getState();
+    // player.stop();
     addLog("INFO", "Process restarted");
-    resume();
-  }, [store]);
+    // player.resume();
+  }, []);
 
   const canContinue = state !== VMState.Done && state !== VMState.Running;
   const canPause = state === VMState.Running;
   const canStep = state === VMState.Paused;
-  const canStop = state !== VMState.Done && state !== VMState.Stopped;
+  // const canStop = state !== VMState.Done && state !== VMState.Stopped;
 
   return (
     <div className="flex items-center gap-1">
@@ -75,10 +86,16 @@ const ExecutionControls = memo(() => {
         icon={Square}
         label="Stop"
         onClick={doStop}
-        disabled={!canStop}
+        disabled
+        // disabled={!canStop}
         tone="red"
       />
-      <ToolbarButton icon={RotateCcw} label="Restart" onClick={doRestart} />
+      <ToolbarButton
+        disabled
+        icon={RotateCcw}
+        label="Restart"
+        onClick={doRestart}
+      />
       <span className="w-px h-5 bg-border-secondary mx-1.5" />
       <ToolbarButton
         icon={ArrowDown}

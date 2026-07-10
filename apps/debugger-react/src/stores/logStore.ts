@@ -17,7 +17,7 @@ interface LogStore {
 
 const MAX_LOGS = 1000;
 
-export const useLogStore = create<LogStore>((set, get) => ({
+export const useLogStore = create<LogStore>((set) => ({
   logs: [],
 
   addLog: (level, text) => {

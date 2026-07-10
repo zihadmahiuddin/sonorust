@@ -1,17 +1,19 @@
 import { useCallback } from "react";
 import { hex } from "../lib/utils";
-import { useVMStore, useVMStoreInstance } from "../stores/vmStore";
 import { useLogStore } from "../stores/logStore";
+import { useDebuggerStore } from "../stores/debuggerStore";
 
 export function useToggleBreakpoint() {
-  const store = useVMStoreInstance();
-  const vmToggleBreakpoint = useVMStore((s) => s.toggleBreakpoint);
+  const target = useDebuggerStore((s) => s.target);
+  const vmToggleBreakpoint = useDebuggerStore((s) => s.toggleBreakpoint);
   const addLog = useLogStore((s) => s.addLog);
 
   return useCallback(
     (index: number) => {
-      const wasSet = store.getState().breakpoints.has(index);
-      vmToggleBreakpoint(index);
+      const wasSet = useDebuggerStore
+        .getState()
+        .currentVmState.breakpoints.has(index);
+      vmToggleBreakpoint(target.archetypeId, target.callbackType, index);
       addLog(
         "INFO",
         wasSet
@@ -19,6 +21,6 @@ export function useToggleBreakpoint() {
           : `Breakpoint set at ${hex(index)}`,
       );
     },
-    [store, vmToggleBreakpoint, addLog],
+    [target, vmToggleBreakpoint, addLog],
   );
 }

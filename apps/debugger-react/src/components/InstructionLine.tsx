@@ -1,11 +1,12 @@
 import { Circle } from "lucide-react";
 import { memo, type Ref } from "react";
-import { cn } from "../lib/tailwind";
+import { cn } from "@/lib/utils";
 import { hex } from "../lib/utils";
 import { InstructionKind } from "sonorust-debugger-wasm";
-import { useVMStore, useVMStoreInstance } from "../stores/vmStore";
 import { useShallow } from "zustand/shallow";
 import { useToggleBreakpoint } from "../hooks/useToggleBreakpoint";
+import { useDebuggerStore } from "../stores/debuggerStore";
+import { usePlayerStore } from "../stores/playerStore";
 
 function colorClassForInstKind(instKind: InstructionKind) {
   if (instKind === InstructionKind.StackManipulation) {
@@ -42,14 +43,15 @@ const InstructionLine = memo(
     currentLineRef?: Ref<HTMLDivElement>;
     label?: string;
   }) => {
-    const { isBreakpoint, isCurrent } = useVMStore(
+    const { isBreakpoint, isCurrent, target } = useDebuggerStore(
       useShallow((s) => ({
-        isBreakpoint: s.breakpoints.has(addr),
-        isCurrent: s.pc === addr,
+        isBreakpoint: s.currentVmState.breakpoints.has(addr),
+        isCurrent: s.currentVmState.pc === addr,
+        target: s.target,
       })),
     );
     const toggleBreakpoint = useToggleBreakpoint();
-    const store = useVMStoreInstance();
+    const player = usePlayerStore((s) => s.player);
 
     return (
       <>
@@ -87,17 +89,26 @@ const InstructionLine = memo(
           <div
             className={cn(
               "font-semibold overflow-hidden text-ellipsis",
-              colorClassForInstKind(store.getState().getInstKind(addr)),
+              colorClassForInstKind(
+                player.getInstKind(
+                  target.archetypeId,
+                  target.callbackType,
+                  addr,
+                ),
+              ),
             )}
           >
-            {store.getState().getInstMnemonic(addr)}
+            {player.getInstMnemonic(
+              target.archetypeId,
+              target.callbackType,
+              addr,
+            )}
           </div>
           <div className="flex items-center overflow-hidden">
             <span className="text-[#d8dee9] overflow-hidden text-ellipsis whitespace-nowrap">
-              {store
-                .getState()
-                .getInstOperands(addr)
-                .map(store.getState().getOperandAsString)
+              {player
+                .getInstOperands(target.archetypeId, target.callbackType, addr)
+                .map((operand) => player.getOperandAsString(operand))
                 .join(", ")}
             </span>
             {comment && (

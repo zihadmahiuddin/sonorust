@@ -12,6 +12,7 @@ import {
   Handle,
   Position,
   type NodeProps,
+  MiniMap,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import dagre from "@dagrejs/dagre";
@@ -22,7 +23,8 @@ import type {
 } from "sonorust-debugger-wasm";
 import { memo, useEffect, useMemo, useRef, type Ref } from "react";
 import InstructionLine from "./InstructionLine";
-import { useVMStore } from "../stores/vmStore";
+import { usePlayerStore } from "../stores/playerStore";
+import { useDebuggerStore } from "../stores/debuggerStore";
 
 export const BasicBlockNode = memo(({ data }: NodeProps<BasicBlockNode>) => {
   const { block, comments, currentLineRef, instructions, label } = data;
@@ -96,7 +98,9 @@ function GraphDisassemblyInner({
   comments: Map<number, string>;
   currentLineRef: Ref<HTMLDivElement>;
 }) {
-  const compilationResult = useVMStore((s) => s.compilationResult);
+  const compilationResult = useDebuggerStore(
+    (s) => s.currentVmState.compilationResult,
+  );
 
   const raw = useMemo(() => {
     const nodes: Node[] = compilationResult.basicBlocks.map((block) => ({
@@ -159,7 +163,7 @@ function GraphDisassemblyInner({
       }
     });
     return { nodes, edges };
-  }, [compilationResult]);
+  }, []);
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>(raw.nodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(raw.edges);
@@ -204,7 +208,9 @@ function GraphDisassemblyInner({
       nodeTypes={nodeTypes}
       fitView
       colorMode="system"
-    />
+    >
+      <MiniMap nodeStrokeWidth={3} pannable zoomable />
+    </ReactFlow>
   );
 }
 

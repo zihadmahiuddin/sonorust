@@ -8,6 +8,14 @@ use sonorust_runtime::context::RuntimeContext;
 
 use crate::instruction::Instruction;
 
+mod control_flow;
+mod debug;
+mod logical;
+mod math;
+mod memory;
+mod side_effects;
+mod timing;
+
 pub struct VM {
     pub stack: Vec<IRValue>,
     pub pc: usize,
@@ -20,10 +28,22 @@ pub struct VM {
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[cfg_attr(feature = "wasm", wasm_bindgen::prelude::wasm_bindgen)]
 pub enum VMState {
+    /// Initial state, the VM has not started yet, or has been reset after reaching `VMState::Done`
     Stopped,
+    /// The VM should currently be running, but not necessarily _is_ running
+    /// (e.g. when `max_steps` is reached but `run` hasn't been called again yet)
     Running,
+    /// The VM is currently paused, either at a breakpoint or via manually claling `VM::pause()`
     Paused,
+    /// The VM has finished executing all the instructions.
     Done,
+}
+
+#[derive(Debug)]
+pub enum RunResult {
+    StepLimitReached,
+    Paused,
+    Finished,
 }
 
 impl VM {
@@ -37,7 +57,7 @@ impl VM {
         }
     }
 
-    pub fn load_bytecode(&mut self, bytecode: &[Instruction]) {
+    pub fn load_instructions(&mut self, bytecode: &[Instruction]) {
         self.state = VMState::Stopped;
         self.stack.clear();
         self.instructions.clear();
@@ -71,25 +91,26 @@ impl VM {
 
     /// Executes instructions up to `max_steps`, but yields EARLY
     /// if the VM hits a pause, breakpoint, or halt instruction.
-    pub fn run(&mut self, runtime_ctx: &mut RuntimeContext, max_steps: usize) -> VMState {
-        if self.state != VMState::Running {
-            return self.state;
+    pub fn run(&mut self, runtime_ctx: &RuntimeContext, max_steps: usize) -> RunResult {
+        if self.state == VMState::Done {
+            self.stop();
+        }
+        if self.state == VMState::Stopped {
+            self.state = VMState::Running;
         }
 
         for _ in 0..max_steps {
-            let new_state = self.step(runtime_ctx);
-
-            // If the step changed our state (e.g., hit a Pause instruction),
-            // break the loop and return control to the caller
-            if new_state != VMState::Running {
-                break;
+            match self.step(runtime_ctx) {
+                VMState::Stopped | VMState::Done => return RunResult::Finished,
+                VMState::Paused => return RunResult::Paused,
+                VMState::Running => continue,
             }
         }
 
-        self.state
+        RunResult::StepLimitReached
     }
 
-    pub fn step(&mut self, runtime_ctx: &mut RuntimeContext) -> VMState {
+    pub fn step(&mut self, runtime_ctx: &RuntimeContext) -> VMState {
         if self.state != VMState::Running && self.state != VMState::Paused {
             return self.state;
         }
@@ -99,128 +120,97 @@ impl VM {
             return self.state;
         }
 
+        // for stepping while paused
         let originally_paused = self.state == VMState::Paused;
         if originally_paused {
             self.state = VMState::Running;
         }
 
+        if !originally_paused && self.breakpoints.contains(&self.pc) {
+            self.pause();
+            return VMState::Paused;
+        }
+
         let inst = &self.instructions[self.pc];
 
+        use Instruction::*;
         match inst {
-            Instruction::Push(val) => {
+            Push(val) => {
                 self.stack.push(*val);
                 self.pc += 1;
             }
-            Instruction::Pop => {
+            Pop => {
                 self.stack.pop().expect("Stack underflow on Pop");
                 self.pc += 1;
             }
-            Instruction::Dup => {
-                let val = *self.stack.last().expect("Stack underflow on Dup operation");
-                self.stack.push(val);
+            Dup { count, offset } => {
+                let len = self.stack.len();
+                // offset: How many items from the top to skip
+                let start = len - offset - count;
+                let end = len - offset;
+                self.stack.extend_from_within(start..end);
                 self.pc += 1;
             }
-            Instruction::Add => {
-                let b = self.stack.pop().expect("Stack underflow on Add (rhs)");
-                let a = self.stack.pop().expect("Stack underflow on Add (lhs)");
-                self.stack.push(a + b);
-                self.pc += 1;
+            Halt => {
+                self.state = VMState::Done;
             }
-            Instruction::Equal => {
-                let b = self.stack.pop().expect("Stack underflow on Equal (rhs)");
-                let a = self.stack.pop().expect("Stack underflow on Equal (lhs)");
-                self.stack.push(if a == b { 1.0 } else { 0.0 });
-                self.pc += 1;
-            }
-            Instruction::Less => {
-                let b = self.stack.pop().expect("Stack underflow on Less (rhs)");
-                let a = self.stack.pop().expect("Stack underflow on Less (lhs)");
-                let result = if a < b { 1.0 } else { 0.0 };
-                self.stack.push(result);
-                self.pc += 1;
-            }
-            Instruction::ReadMem => {
-                // TODO: maybe instead of rounding it's better to do strict checks... that's for future me to worry about
-                let index = self
-                    .stack
-                    .pop()
-                    .expect("Stack underflow on Get (index)")
-                    .round() as usize;
-                let block_id = self
-                    .stack
-                    .pop()
-                    .expect("Stack underflow on Get (block_id)")
-                    .round() as u64;
-                let value = runtime_ctx
-                    .memory
-                    .read(&runtime_ctx, block_id, index)
-                    .unwrap_or_default();
-                self.stack.push(value);
-                self.pc += 1;
-            }
-            Instruction::WriteMem => {
-                let value = self.stack.pop().expect("Stack underflow on Set (value)");
-                let index = self
-                    .stack
-                    .pop()
-                    .expect("Stack underflow on Set (index)")
-                    .round() as usize;
-                let block_id = self
-                    .stack
-                    .pop()
-                    .expect("Stack underflow on Set (block_id)")
-                    .round() as u64;
-                let value = runtime_ctx
-                    .memory
-                    .write(&runtime_ctx, block_id, index, value)
-                    .unwrap_or_default();
-                self.stack.push(value);
-                self.pc += 1;
-            }
-            Instruction::Jump(target) => {
-                self.pc = *target;
-            }
-            Instruction::JumpZero(target) => {
-                let cond = self.stack.pop().expect("Stack underflow on JumpIfFalse");
-                if cond == 0.0 {
-                    self.pc = *target;
-                } else {
-                    self.pc += 1;
-                }
-            }
-            Instruction::JumpTable {
-                targets,
-                default_target,
-            } => {
-                let index_val = self
-                    .stack
-                    .pop()
-                    .expect("Stack underflow reading JumpTable key");
-                let index = index_val as usize;
-
-                if index < targets.len() {
-                    self.pc = targets[index];
-                } else {
-                    self.pc = *default_target;
-                }
-            }
-            Instruction::DebugLog => {
-                let val = self.stack.pop().expect("Stack underflow on DebugLog");
-                eprintln!("DebugLog: {val}");
-                self.stack.push(0.0);
-                self.pc += 1;
-            }
-            Instruction::DebugPause => {
-                eprintln!("TODO: DebugPause");
-                self.stack.push(0.0);
-                self.pc += 1;
-                self.pause();
-            }
-        }
-
-        if self.state == VMState::Running && self.breakpoints.contains(&self.pc) {
-            self.pause();
-            return VMState::Paused;
+            Add => self.execute_add(),
+            Divide => self.execute_divide(),
+            Multiply => self.execute_multiply(),
+            Subtract => self.execute_subtract(),
+            Abs => self.execute_abs(),
+            Frac => self.execute_frac(),
+            Trunc => self.execute_trunc(),
+            Negate => self.execute_negate(),
+            Mod => self.execute_mod(),
+            Rem => self.execute_rem(),
+            Power => self.execute_power(),
+            Clamp => self.execute_clamp(),
+            Lerp => self.execute_lerp(),
+            LerpClamped => self.execute_lerpclamped(),
+            Unlerp => self.execute_unlerp(),
+            UnlerpClamped => self.execute_unlerpclamped(),
+            Min => self.execute_min(),
+            Max => self.execute_max(),
+            Remap => self.execute_remap(),
+            RemapClamped => self.execute_remapclamped(),
+            Round => self.execute_round(),
+            Floor => self.execute_floor(),
+            Ceil => self.execute_ceil(),
+            Sin => self.execute_sin(),
+            Sinh => self.execute_sinh(),
+            Cos => self.execute_cos(),
+            Cosh => self.execute_cosh(),
+            Tan => self.execute_tan(),
+            Tanh => self.execute_tanh(),
+            Arcsin => self.execute_arcsin(),
+            Arccos => self.execute_arccos(),
+            Arctan => self.execute_arctan(),
+            Arctan2 => self.execute_arctan2(),
+            Degree => self.execute_degree(),
+            Radian => self.execute_radian(),
+            Log => self.execute_log(),
+            Sign => self.execute_sign(),
+            Random => self.execute_random(),
+            RandomInteger => self.execute_randominteger(),
+            Less => self.execute_less(),
+            LessOr => self.execute_less_or(),
+            Greater => self.execute_greater(),
+            GreaterOr => self.execute_greater_or(),
+            And => self.execute_and(),
+            Or => self.execute_or(),
+            Equal => self.execute_equal(),
+            Not => self.execute_not(),
+            ReadMem => self.execute_read_mem(runtime_ctx),
+            WriteMem => self.execute_write_mem(runtime_ctx),
+            Jump(target) => self.execute_jump(*target),
+            JumpZero(target) => self.execute_jump_zero(*target),
+            JumpTable { .. } => self.execute_jump_table(),
+            DebugLog => self.execute_debug_log(),
+            Pause => self.execute_debug_pause(),
+            Draw => self.execute_draw(runtime_ctx),
+            Spawn => self.execute_spawn(runtime_ctx),
+            BeatToTime => self.execute_beat_to_time(runtime_ctx),
         }
 
         if originally_paused && self.state == VMState::Running {
@@ -230,11 +220,21 @@ impl VM {
         return self.state;
     }
 
-    pub fn toggle_breakpoint(&mut self, index: usize) {
-        if self.breakpoints.contains(&index) {
-            self.breakpoints.remove(&index);
+    pub fn toggle_breakpoint(&mut self, pc: usize) -> bool {
+        if self.breakpoints.contains(&pc) {
+            self.breakpoints.remove(&pc);
+            false
         } else {
-            self.breakpoints.insert(index);
+            self.breakpoints.insert(pc);
+            true
         }
+    }
+
+    #[inline(always)]
+    fn pop_value(&mut self, name: &str) -> IRValue {
+        self.stack.pop().expect(&format!(
+            "Stack underflow on {:?} ({name})",
+            self.instructions[self.pc]
+        ))
     }
 }

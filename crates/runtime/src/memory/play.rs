@@ -48,7 +48,7 @@ use sonorust_models::{
     },
 };
 
-use crate::context::{MemoryAccess, RuntimeContext};
+use crate::{access::MemoryAccess, context::RuntimeContext};
 
 /// This is used for the Preprocess callbacks
 #[derive(MemoryAccess)]
